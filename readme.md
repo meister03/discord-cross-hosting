@@ -8,6 +8,15 @@ The first package, which allows broadcastEvaling over Cross Hosted Machines and 
 - Combination of Internal Sharding & Sharding Manager | Hybrid-Sharding -> less resources
 - Machine & Shard Count Managing -> which Machine should host, which Shard...
 
+### See below for the Guide
+
+**If you need help feel free to join our <a href="https://discord.gg/YTdNBHh">discord server</a>. We will provied you all help ☺**
+# Download
+You can download it from npm:
+```cli
+npm i discord-hybrid-sharding
+```
+
 # Guide:
 1. **How it works**
 2. **Test | Response Time & Results**
@@ -21,7 +30,7 @@ For ensuring a fast, reliable and secure Connection, where you can also sent a t
 
 If you don't have a MongoDB Server, then you can create one for free under [this link](https://account.mongodb.com/account/register), which I also used for my tests.
 
-## Test | Response Time & Results:
+## 2.Test | Response Time & Results:
 The following Test has been accomplished on 4 different hosted Machines with different Places.
 Each of the Machines had 2 Clusters (Process), which contained 2 internal Shards.
 The test Object was a 20k Server Discord Bot.
@@ -42,7 +51,7 @@ The Results seem to be good, assuming how much data we recieved. When your Mongo
 |`...this.guilds.cache.values()`| `582-776 ms`  | 
 |`this`,Guilds,Roles,Channels...| `1100-1600 ms`|
 
-## Using the Package with Hybrid-Sharding & Machine,Shard Count Managing 
+## 3.Using the Package with Hybrid-Sharding & Machine,Shard Count Managing 
 This is the most comfortable Solution, when you are taff on manually managing, creating Shard list. 
 Another Advantage is, that you are combining Internal Sharding and Normal Sharding, which follows to less resources, also known as Clustering.
 
@@ -115,8 +124,9 @@ crosshost.on('message',console.log);
 The Code Example above gives how the files in the Master Machine looks
 - The Bot.js file looks same on all machines, like on the Example.
 
-Machine 1 | cluster.js File | 
 When your totalMachines is more than the Example, all Machines excluding the Master Machine, will have the same file style, like below. Just change the machineID
+
+Machine 1 | cluster.js File 
 ```js
 const {Manager} = require('discord-cross-hosting');
 const Cluster = require("discord-hybrid-sharding");
@@ -149,7 +159,7 @@ In addition, you are now using Hybrid-Sharding. You will see a difference in you
 
 
 
-## Using the Package with Discord.js Sharding Manager & Machine/Shard Managing
+## 4.Using the Package with Discord.js Sharding Manager & Machine/Shard Managing
 This Package can also be used for managing Shards with the normal Sharding Manager or broadcasting
 
 
@@ -217,8 +227,9 @@ crosshost.on('message',console.log);
 The Code Example above gives how the files in the Master Machine looks
 - The Bot.js file looks same on all machines, like on the Example.
 
-Machine 1 | shard.js File | 
 When your totalMachines is more than the Example, all Machines excluding the Master Machine, will have the same file style, like below. Just change the machineID
+
+Machine 1 | shard.js File 
 ```js
 const {Manager} = require('discord-cross-hosting');
 const { ShardingManager } = require('discord.js');
@@ -249,7 +260,7 @@ crosshost.on('debug', console.log); ///Recieve Important Messages
 WoW! Thats it, when you want to broadcastEval over all Machines, just do `client.crosshost.broadcastEval`.
 
 
-## Using the Package in Standalone Mode for just sending Messages
+## 5.Using the Package in Standalone Mode for just sending Messages
 
 When you just want to send messages, like from your Api (E.g Welcome Api) to your bot, then listen to the crosshost message event.
 
@@ -266,3 +277,15 @@ crosshost = new Crosshost.Client(`MongoDB Connection Url`, {
 crosshost.send(`hello`)
 crosshost.on('message',console.log); //Log out all messages -> e.g Logs on every connectd Machine [Object with .message hello]
 ```
+
+## 6. Api References
+
+I need a little more time to add some good references
+
+Crosshost.Manager
+Crosshost.Client
+
+**Have fun and feel free to contribute/suggest or contact me on my discord server or per dm on Meister#9667**
+
+# Bugs, Glitches and Issues
+If you encounter any problems feel free to open an issue in our <a href="https://github.com/meister03/discord-hybrid-sharding/issues">github repository or join the discord server.</a>
