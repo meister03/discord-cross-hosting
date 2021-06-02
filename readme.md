@@ -32,5 +32,8 @@ The test Object was a 20k Server Discord Bot.
 All Shards recieved a random long Message sent from a Machine in less than `12-19 milliseconds`
 ### Test 2 | BroadcastEval:
 
-|BroadcastEval|Response Time|Response|
-|`this.guilds.cache.size` 
+| BroadcastEval:         | Response Time |
+| ---------------------- | ------------- |
+| Math Evalution         | `121-197 ms`  |
+|`this.guilds.cache.size`| `176-291 ms`  |
+|`this.guilds.cache.get(`| `176-291 ms`  |
