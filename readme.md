@@ -58,7 +58,7 @@ The Results seem to be good, assuming how much data we recieved. When your Mongo
 This is the most comfortable Solution, when you are taff on manually managing, creating Shard list. 
 Another Advantage is, that you are combining Internal Sharding and Normal Sharding, which follows to less resources, also known as Clustering.
 
-**Want to use the normal Sharding Manager then scroll down!**
+**Want to use the normal Sharding Manager? Then scroll down!**
 
 ### Important Notes:
 Please read this carefully through since it contains a lot of important Information.

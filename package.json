@@ -1,7 +1,7 @@
 {
   "name": "discord-cross-hosting",
-  "version": "1.0.0",
-  "description": "The first package which combines Sharding Manager & Internal Sharding to save a lot of ressources",
+  "version": "1.0.1",
+  "description": "The first package, which allows broadcastEvaling over Cross Hosted Machines and effecient Machine & Shard Managing.",
   "main": "index.js",
   "dependencies": {
     "mongoose": "^4.13.21"
