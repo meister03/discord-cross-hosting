@@ -9,16 +9,17 @@ The first package, which allows broadcastEvaling over Cross Hosted Machines and 
 - Machine & Shard Count Managing -> which Machine should host, which Shard...
 
 # Guide:
-1. How it works
-2. Test | Response Time & Results
-3. Using the Package with Hybrid-Sharding & Machine,Shard Count Managing 
-4. Using the Package with Discord.js Sharding Manager & Machine/Shard Managing
-5. Using the Package in Standalone Mode for just sending Messages
+1. **How it works**
+2. **Test | Response Time & Results**
+3. **Using the Package with Hybrid-Sharding & Machine, Shard Count Managing** 
+4. **Using the Package with Discord.js Sharding Manager & Machine/Shard Managing**
+5. **Using the Package in Standalone Mode for just sending Messages**
+6. **Api References | Very Important !!!**
 
 ## 1.How does it works?
 For ensuring a fast, reliable and secure Connection, where you can also sent a ton of Data, followed to our Decision that we use MongoDB, which allows us sending messages and broadcastEval with a unlimited length and without needing a Main Server such as a TCP Server.
 
-If you don't have a MongoDB Server, then you can create one for free under this link, which I also used for my tests.
+If you don't have a MongoDB Server, then you can create one for free under [this link](https://account.mongodb.com/account/register), which I also used for my tests.
 
 ## Test | Response Time & Results:
 The following Test has been accomplished on 4 different hosted Machines with different Places.
@@ -45,18 +46,19 @@ The Results seem to be good, assuming how much data we recieved. When your Mongo
 This is the most comfortable Solution, when you are taff on manually managing, creating Shard list. 
 Another Advantage is, that you are combining Internal Sharding and Normal Sharding, which follows to less resources, also known as Clustering.
 
+**Want to use the normal Sharding Manager then scroll down!**
+
 ### Important Notes:
 Please read this carefully through since it contains a lot of important Information.
 - Machine ID's start from 0 and there can be no Gaps. E.g: 0,1,2
 - The Master Machine has the Machine ID 0 and the Initalization can just be perfomed on the Master Machine
-- Chaning the Machine Count or Shard Count requires a manual restart on all Machines
+- Changing the Machine Count or Shard Count requires a manual restart on all Machines
 - You can just init, reinit or update values, such as above, on the Master Machine
 
 This Example will have two Machines, Master Machine 0 & Machine 1.
 **First start the Master Machine 0 File for first Initalization**
 
-In Machine 0
-cluster.js
+In Machine 0 | cluster.js
 ```js
 const {Manager} = require('discord-cross-hosting');
 const Cluster = require("discord-hybrid-sharding");
@@ -111,9 +113,10 @@ client.on('ready', async () => {
 crosshost.on('message',console.log);
 ```
 The Code Example above gives how the files in the Master Machine looks
-- The Bot.js file looks same on all machines, like on the Example:
+- The Bot.js file looks same on all machines, like on the Example.
 
-Machine 1 cluster.js File | When your totalMachines is more then the Example, all Machines excluding the Master Machine, will have the same file style, like below. Just change the machineID
+Machine 1 | cluster.js File | 
+When your totalMachines is more than the Example, all Machines excluding the Master Machine, will have the same file style, like below. Just change the machineID
 ```js
 const {Manager} = require('discord-cross-hosting');
 const Cluster = require("discord-hybrid-sharding");
@@ -141,4 +144,125 @@ async function start(){
 crosshost.on('debug', console.log); ///Recieve Important Messages
 ```
 WoW! Thats it, when you want to broadcastEval over all Machines just do `client.crosshost.broadcastEval`.
-In addition, you are now using Hybrid-Sharding. You will see a difference in your usage!
+
+In addition, you are now using Hybrid-Sharding. You will see a difference in your ressource usage!
+
+
+
+## Using the Package with Discord.js Sharding Manager & Machine/Shard Managing
+This Package can also be used for managing Shards with the normal Sharding Manager or broadcasting
+
+
+### Important Notes:
+Please read this carefully through since it contains a lot of important Information.
+- Machine ID's start from 0 and there can be no Gaps. E.g: 0,1,2
+- The Master Machine has the Machine ID 0 and the Initalization can just be perfomed on the Master Machine
+- Changing the Machine Count or Shard Count requires a manual restart on all Machines
+- You can just init, reinit or update values, such as above, on the Master Machine
+
+This Example will have two Machines, Master Machine 0 & Machine 1.
+**First start the Master Machine 0 File for first Initalization**
+
+In Machine 0 | shard.js
+```js
+const {Manager} = require('discord-cross-hosting');
+const { ShardingManager } = require('discord.js');
+
+const crosshost = new Manager(`Your MongoDB Connection Url`, {
+    totalShards: 4,    //The Amount of Total Shards 
+    totalMachines: 2, // The Amount of the Machines, you want to host it
+    machineID: 0,    //  The Machine ID
+    master: true,   //   Master on true for Initalizing
+})
+start()
+
+async function start(){
+  const data = await crosshost.getData();
+
+  const manager = new ShardingManager('./bot.js', { 
+      totalShards: data.totalShards ,
+      shardList: data.shardList,
+      token: token 
+  });
+  
+   crosshost.listen(manager); //Listen to Messages and BroadcastEval
+
+   manager.on('shardCreate', shard => console.log(`Launched shard ${shard.id}`));
+   manager.spawn(undefined, undefined, -1);
+}
+
+crosshost.on('debug', console.log); ///Recieve Important Messages
+```
+Bot.js file in Machine 0:
+```js
+const Crosshost = require(`discord-cross-hosting`);
+const Discord = require('discord.js')
+const client = new Discord.Client({});
+
+client.crosshost = new Crosshost.Client(`MongoDB Connection Url`, {
+	totalMachines: 2,            //The Total Amount of Machines
+	TimeoutforResponses: 10000, ///After how many milliseconds the broadcastEval will be resolved, with no response
+});
+client.on('ready', async () => {
+	console.log(`Shards ${client.shard.id} is ready!`)
+	if(client.cluster.id === 0 && client.cluster.ids.has(0)){
+		setTimeout(async () => {
+				const result = await client.crosshost.broadcastEval(`this.guilds.cache.size`)
+                console.log(result)
+		}, 20000);
+	}
+})
+crosshost.on('message',console.log);
+```
+The Code Example above gives how the files in the Master Machine looks
+- The Bot.js file looks same on all machines, like on the Example.
+
+Machine 1 | shard.js File | 
+When your totalMachines is more than the Example, all Machines excluding the Master Machine, will have the same file style, like below. Just change the machineID
+```js
+const {Manager} = require('discord-cross-hosting');
+const { ShardingManager } = require('discord.js');
+
+const crosshost = new Manager(`Your MongoDB Connection Url`, {
+    machineID: 1,    //  The Machine ID
+    master: true,   //   Master on true for Initalizing
+})
+start()
+
+async function start(){
+  const data = await crosshost.getData();
+
+  const manager = new ShardingManager('./bot.js', { 
+      totalShards: data.totalShards ,
+      shardList: data.shardList,
+      token: token 
+  });
+  
+   crosshost.listen(manager); //Listen to Messages and BroadcastEval
+
+   manager.on('shardCreate', shard => console.log(`Launched shard ${shard.id}`));
+   manager.spawn(undefined, undefined, -1);
+}
+
+crosshost.on('debug', console.log); ///Recieve Important Messages
+```
+WoW! Thats it, when you want to broadcastEval over all Machines, just do `client.crosshost.broadcastEval`.
+
+
+## Using the Package in Standalone Mode for just sending Messages
+
+When you just want to send messages, like from your Api (E.g Welcome Api) to your bot, then listen to the crosshost message event.
+
+You can send messages through `crosshost.send('My Cool Message', targetShard)`
+
+Macine 1,2,3,4...
+```js
+const Crosshost = require(`discord-cross-hosting`);
+crosshost = new Crosshost.Client(`MongoDB Connection Url`, {
+	totalMachines: 2,            //The Total Amount of Machines
+	TimeoutforResponses: 10000, ///After how many milliseconds the broadcastEval will be resolved, with no response
+});
+
+crosshost.send(`hello`)
+crosshost.on('message',console.log); //Log out all messages -> e.g Logs on every connectd Machine [Object with .message hello]
+```
