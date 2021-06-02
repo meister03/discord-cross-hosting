@@ -31,9 +31,11 @@ The test Object was a 20k Server Discord Bot.
 ### Test 1 | Sending Messages:
 All Shards recieved a random long Message sent from a Machine in less than `12-19 milliseconds`
 ### Test 2 | BroadcastEval:
-
-| BroadcastEval:         | Response Time |
-| ---------------------- | ------------- |
-| Math Evalution         | `121-197 ms`  |
-|`this.guilds.cache.size`| `176-291 ms`  |
-|`this.guilds.cache.get(`| `176-291 ms`  |
+The Results seem to be good, assuming how much data we recieved. When your MongoDB Server and your Host are good, then the Response Time can be much more better.
+| BroadcastEval:                | Response Time |
+| ------------------------------| ------------- |
+| Math Evalution                | `121-197 ms`  |
+|`this.guilds.cache.size`       | `176-291 ms`  |
+|`this.guilds.cache.get('123')` | `221-373 ms`  |
+|`...this.guilds.cache.values()`| `582-776 ms`  | 
+|`this` | Guilds + Roles + Ch...| `1100-1600 ms`|
