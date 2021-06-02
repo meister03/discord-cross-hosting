@@ -1,0 +1,36 @@
+{
+  "name": "discord-cross-hosting",
+  "version": "1.0.0",
+  "description": "The first package which combines Sharding Manager & Internal Sharding to save a lot of ressources",
+  "main": "index.js",
+  "dependencies": {
+    "mongoose": "^4.9.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meister03/discord-cross-hosting.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "discord",
+    "bots",
+    "discord-cross-hosting",
+    "discord-sharding",
+    "discord-clustering",
+    "cluster",
+    "machine-broadcast"
+    "cross-hosting",
+    "vertical-scaling",
+    "multiply-machines"
+    "framework"
+  ],
+  "author": "meister03",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/meister03/discord-cross-hosting/issues"
+  },
+  "homepage": "https://github.com/meister03/discord-cross-hosting#readme"
+}
