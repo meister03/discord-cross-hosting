@@ -6,15 +6,44 @@ const clusterdata  = require('./schema/clusterdata.js');
 class HostClient extends EventEmitter {
     constructor(url, options = {}){
         super();
+        /**
+        * The MongoDB Connection URL
+        * @type {String}
+        */
         this.url = url;
+
+        /**
+        * The Total Amount of Machines
+        * @type {Number}
+        */
         this.totalMachines = options.totalMachines;
+        if(!this.totalMachines) throw new Error(`You must provide the total Amount of machines`);
+
+        /**
+        * When a request, should timeout and be resolved
+        * @type {Number}
+        */
         this.timeout = options.TimeoutforResponses || 5000;
 
-        if(!this.totalMachines) throw new Error(`You must provide the total Amount of machines on Standalone Mode`)
-
+        /**
+        * If your machine is connected
+        * @type {Boolean}
+        */
         this.connected = false;
+
+        /**
+        * Save running evals and responses for resolving back
+        * @type {Map}
+        */
         this.evals = new Map();
     }
+
+    /**
+    * Connects with the mongodb server
+    * <warn>You shouldnt need to call this manually.</warn>
+    * @param {String} [connectionURL] The mongodb connection url
+    * @returns {Promise<Connect>}
+    */
     async connect(connectionURL = this.url){
         const connection = await mongoose.connect(connectionURL, {
             useNewUrlParser: true,
@@ -25,6 +54,18 @@ class HostClient extends EventEmitter {
         Message.watch({ fullDocument: 'updateLookup' }).on('change', this.handleStream.bind(this))
         return connection;
     }
+
+    /**
+    * Evaluates a script or function on all machine, or a given shard, in the context of the {@link Client}s.
+    * @param {string|Function} script JavaScript to run on each cluster
+    * @param {number} [shard] Shard to run script on, all if undefined
+    * @returns {Promise<*>|Promise<Array<*>>} Results of the script execution
+    * @example
+    * client.crosshost.broadcastEval('this.guilds.cache.size')
+    *   .then(results => console.log(`${results.reduce((prev, val) => prev + val, 0)} total guilds`))
+    *   .catch(console.error);
+    * @see {@link CrosshostManager#broadcastEval}
+    */
     async broadcastEval(script, shard){
         if(!this.connected) await this.connect(this.url);
         return new Promise(async (resolve, reject) => {
@@ -46,6 +87,13 @@ class HostClient extends EventEmitter {
             }, this.timeout);
         });
     }
+
+    /**
+    * Handles the MongoDB change stream & broadcastEVal
+    * <warn>You shouldnt need to call this manually.</warn>
+    * @param {Object} [stream] The Object, which was delivered on the Stream
+    * @returns {Promise<Message>}
+    */
     async handleStream(stream){
         const data = stream.fullDocument
         if(!data) return;
@@ -66,15 +114,27 @@ class HostClient extends EventEmitter {
                 }
             }
         }
+
+        /**
+        * Emitted upon recieving a message.
+        * @event HostClient#message
+        * @param {message} message message, which was recieved
+        */
         this.emit(`message`, emitmessage);
         return;
     }
 
+    /**
+    * Sends a message to all connected Machines.
+    * @param {*} message The message, which should be sent.
+    * @param {string|number} shard The target shard for better handling
+    * @returns {Promise<request>}
+    */
     async send(message, shard){
         return new Promise(async (resolve, reject) => {
              const request = new Message({
                 message: message,
-                shard: shard
+                shard: {target: shard}
             })
             request.save().then((r) => resolve(r)).catch(e => reject(`[Error] ` +e))
         });

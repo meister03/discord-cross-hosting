@@ -3,34 +3,87 @@ const mongoose = require('mongoose');
 const message = require('./schema/message.js');
 const EmitMessage = require('./schema/emitMessage.js')
 const clusterdata  = require('./schema/clusterdata.js');
+
 class HostManager extends EventEmitter {
-    /**
-    * @param {string} connectionurl The Mongodb connectionurl to connect on
-    */
+   /**
+   * @param {string} connectionurl The Mongodb connection url
+   * @param {Object} [options] Options for the Host Manager
+   * @param {string|number} [options.totalShards='auto'] Number of total internal shards or "auto"
+   * @param {string|number} [options.totalMachines] Number of Machines
+   * @param {string|number} [options.machineID] The ID of the current Machine
+   * @param {Boolean} [options.master=false] if the Machine is Master.
+   * @param {string} [options.token] Token to use for automatic internal shard count and passing to Shard Manager
+   */
     constructor(connectionurl, option = {}) {
-        super()
-      this.totalCluster = option.totalCluster;  
+      super()
+      /**
+      * The Total Amount of Clusters
+      * @type {Number}
+      */
+      this.totalCluster = option.totalCluster; 
+
+      /**
+      * The Total Amount of Shards
+      * @type {Number}
+      */ 
       this.totalShards = option.totalShards; 
+
+      /**
+      * The Total Amount of Machines
+      * @type {Number}
+      */
       this.totalMachines = option.totalMachines; 
-      this.machineID = option.machineID; 
-      this.master = option.master || false;
-      this.token =  option.token ? option.token.replace(/^Bot\s*/i, '') : null;
       if(!this.totalMachines && this.master) throw new Error('MISSING_OPTION', 'Total Machines', 'Provide the Amount of your Machines');
+
+      /**
+      * The Current MachineID
+      * @type {Number}
+      */
+      this.machineID = option.machineID; 
       if(isNaN(this.machineID)) throw new Error('MISSING_OPTION', 'MachineID MISSING', 'Provide the Number for the current machine, 1.Machine: 0, 2.Machine: 1 ....');
 
+      /**
+      * If the Machine is Master
+      * @type {Boolean}
+      */
+      this.master = option.master || false;
+
+      /**
+      * Your Discord Bot token
+      * @type {String}
+      */
+      this.token =  option.token ? option.token.replace(/^Bot\s*/i, '') : null;
+
+      /**
+      * The MongoDB Connection Url
+      * @type {String}
+      */
       this.url = connectionurl 
       if(!this.url) throw new Error('MISSING_OPTION', 'Connection URL', 'Provide a vaild mongodb connection url');
-
+      
+      /**
+      * If your machine is connected
+      * @type {Boolean}
+      */
       this.connected;
+
+      /**
+      * The shardList, which will be hosted by all Machines
+      * @type {Array[]}
+      */
       this.shardList;
+
+      /**
+      * The Manager instance, which should be listened, when broadcasting
+      * @type {Object}
+      */
       this.manager = {};
-      this.responses = new Map();
     }
+
    /**
    * Connects with the mongodb server
-   * <warn>You should need to call this manually.</warn>
+   * <warn>You shouldnt need to call this manually.</warn>
    * @param {String} [connectionURL] The mongodb connection url
-   * before resolving. (-1 or Infinity for no wait)
    * @returns {Promise<Connect>}
    */
     async connect(connectionURL = this.url){
@@ -44,7 +97,10 @@ class HostManager extends EventEmitter {
         message.watch({ fullDocument: 'updateLookup' }).on('change', this.handleStream.bind(this))
         return connection;
     } 
-
+    /**
+    * Initalizes all Machines, gets the Data and give the back for the manager.
+    * @returns {Promise<Object<shardList, totalShards>>}
+    */
     async getData(){
         if(!this.connected) await this.connect()
         const data = await clusterdata.find({})
@@ -87,6 +143,7 @@ class HostManager extends EventEmitter {
                 })
                 await machine.save().catch((e) => {throw new Error(e)})
             }
+
             this.emit(`debug`,`[Master] Ended Initalizing for all Machines`)
         }else{
             const p = data.findIndex(m => m.machineID === this.machineID)
@@ -126,24 +183,46 @@ class HostManager extends EventEmitter {
         return {shardList: this.shardList, ShardsperCluster: this.ShardsperCluster, totalShards: masterdata.totalShards};
     }
 
+    /**
+    * Gives back how many clusters, we need
+    * @param {string|number} shardAmount The Amount of Shards, which should be fit/allocated in a Cluster
+    * @returns {clusterAmount}
+    */
     ShardsperCluster(shardAmount){
         if(!shardAmount) throw new Error(`Shard Amount has not beed provided`);
         const clusterAmount = Math.ceil(this.shardList.length/shardAmount);
         return clusterAmount;
     }
-
+    
+    /**
+    * Listens to MongoDb messages such as BroadcastEval or Normal Messages
+    * @param {Object} manager the Shard/Cluster manager, which should be listened on.
+    * @returns {manager}
+    */
     listen(manager){
         if(!manager) throw new Error(`A Cluster Manager has not been provided`);
         this.manager = manager
         return this.manager;
     }
 
+    /**
+    * This removed given Machines
+    * @param {string|number} machineID The machineID, which should be removed from the ClusterData
+    * @returns {machine}
+    */
     async deleteMachine(machineID){
         if(!machineID) throw new Error(`A MachineID has not been provided`);
         const machine = await clusterdata.findOneAndDelete({machineID: machineID})
         return machine;
     }
 
+
+    /**
+    * Handles the MongoDB change stream
+    * <warn>You shouldnt need to call this manually.</warn>
+    * @param {Object} [stream] The Object, which was delivered on the Stream
+    * @returns {Promise<Message>}
+    */
     async handleStream(stream){
         const data = stream.fullDocument
         if(!data) return;
@@ -160,15 +239,27 @@ class HostManager extends EventEmitter {
             }
         }
         const emitmessage = new EmitMessage(data);
+
+        /**
+        * Emitted upon recieving a message.
+        * @event HostManager#message
+        * @param {message} message message, which was recieved
+        */
         this.emit(`message`, emitmessage);
         return;
     }
 
-    async send(message){
+    /**
+    * Sends a message to all connected Machines.
+    * @param {*} message The message, which should be sent.
+    * @param {string|number} shard The target shard for better handling
+    * @returns {Promise<request>}
+    */
+    async send(message, shard){
         return new Promise(async (resolve, reject) => {
              const request = new message({
                 message: message,
-                shard: shard
+                shard: {target: shard}
             })
             request.save().then((r) => resolve(r)).catch(e => reject(`[Error] ` +e))
         });

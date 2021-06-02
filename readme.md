@@ -285,7 +285,7 @@ I need a little more time to add some good references
 Crosshost.Manager
 Crosshost.Client
 
-**Have fun and feel free to contribute/suggest or contact me on my discord server or per dm on Meister#9667**
+**Have fun and feel free to Contribute/Suggest or Contact me on my Discord server or per DM on Meister#9667**
 
-# Bugs, Glitches and Issues
+## Bugs, Glitches and Issues
 If you encounter any problems feel free to open an issue in our <a href="https://github.com/meister03/discord-hybrid-sharding/issues">github repository or join the discord server.</a>
