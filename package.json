@@ -4,7 +4,7 @@
   "description": "The first package which combines Sharding Manager & Internal Sharding to save a lot of ressources",
   "main": "index.js",
   "dependencies": {
-    "mongoose": "^4.9.1"
+    "mongoose": "^4.13.21"
   },
   "devDependencies": {},
   "repository": {
