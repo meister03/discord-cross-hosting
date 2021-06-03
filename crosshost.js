@@ -27,20 +27,35 @@ class HostManager extends EventEmitter {
       * @type {Number}
       */ 
       this.totalShards = option.totalShards; 
+      if (this.totalShards !== 'auto') {
+        if (typeof this.totalShards !== 'number' || isNaN(this.totalShards)) {
+          throw new TypeError('CLIENT_INVALID_OPTION', 'Amount of internal shards', 'a number.');
+        }
+        if (this.totalShards < 1) throw new RangeError('CLIENT_INVALID_OPTION', 'Amount of internal shards', 'at least 1.');
+        if (!Number.isInteger(this.totalShards)) {
+          throw new RangeError('CLIENT_INVALID_OPTION', 'Amount of internal shards', 'an integer.');
+        }
+      }
 
       /**
       * The Total Amount of Machines
       * @type {Number}
       */
       this.totalMachines = option.totalMachines; 
-      if(!this.totalMachines && this.master) throw new Error('MISSING_OPTION', 'Total Machines', 'Provide the Amount of your Machines');
+      if(!this.totalMachines) throw new Error('MISSING_OPTION', 'Total Machines', 'Provide the Amount of your Machines');
+      if(typeof this.totalMachines !== 'number' || isNaN(this.totalMachines)) {
+        throw new TypeError('MACHINE_INVALID_OPTION', 'Machine ID', 'must be a number.');
+      }
+      if(!Number.isInteger(this.totalMachines)) {
+        throw new TypeError('MACHINE_INVALID_OPTION', 'Machine ID', 'must be a number.');
+      }
 
       /**
       * The Current MachineID
       * @type {Number}
       */
       this.machineID = option.machineID; 
-      if(isNaN(this.machineID)) throw new Error('MISSING_OPTION', 'MachineID MISSING', 'Provide the Number for the current machine, 1.Machine: 0, 2.Machine: 1 ....');
+      if(isNaN(this.machineID)) throw new Error('WRONG/MISSING_OPTION', 'MachineID MISSING', 'Provide the Number for the current machine, 1.Machine: 0, 2.Machine: 1 ....');
 
       /**
       * If the Machine is Master
@@ -104,6 +119,12 @@ class HostManager extends EventEmitter {
     async getData(){
         if(!this.connected) await this.connect()
         const data = await clusterdata.find({})
+
+        if (this.totalShards === 'auto') {
+            amount = await Discord.fetchRecommendedShards(this.token, 1000);
+            this.totalShards = amount;
+        }
+        
         if(data.length === 0){
             if(!this.master) throw new Error('COULD NOT INITALIZE MACHINE', 'MACHINE MUST BE MASTER ON INIT', 'ADD THE OPTION master: true on your main machine');
             if(!this.totalMachines) throw new Error('COULD NOT INITALIZE AMOUNT OF MACHINES', 'GIVE THE TOTAL AMOUNT OF ALL YOUR MACHINES', 'ADD THE OPTION totalMachines: machineamount ');

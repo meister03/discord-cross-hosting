@@ -68,6 +68,7 @@ Please read this carefully through since it contains a lot of important Informat
 - You can just init, reinit or update values, such as above, on the Master Machine
 
 This Example will have two Machines, Master Machine 0 & Machine 1.
+
 **First start the Master Machine 0 File for first Initalization**
 
 In Machine 0 | cluster.js
@@ -285,8 +286,22 @@ crosshost.on('message',console.log); //Log out all messages -> e.g Logs on every
 
 I need a little more time to add some good references
 
-Crosshost.Manager
-Crosshost.Client
+`new Crosshost.Manager(MongodbConnectionUrl,options)`
+
+|    Options    |     Type      |    Default    |   Description |
+| ------------- | ------------- | ------------- | ------------- |
+| totalShards   | number/string |    'auto'     | The Number of Internal Shards, which should be spawned |
+| totalMachines | number/string |   required    | The Number of Total Machines, where the totalShards are spawned |
+| MachineID     | number/string |   required    | The Machine ID of the Machine, E.g 2xMachines => Machine ID's = 0,1 |
+| master        | Boolean       |    false      | If the Machine is master and is able to change values |
+| token         | string        | not-required  | The Bot token is just required, when you set the totalShards on auto |
+
+`new Crosshost.Client(MongoDbConnectionUrl, options)`
+
+|    Options             |     Type      |    Default    |   Description |
+| -----------------------| ------------- | ------------- | ------------- |
+| totalMachines          | number/string |   required    | The Number of Total Machines, to know the amount of Responses, which should be recieved |
+| TimeoutforResponses    | number        |   required    | The Amount of Milliseconds to wait, until all Responses has been recieved |
 
 **Have fun and feel free to Contribute/Suggest or Contact me on my Discord server or per DM on Meister#9667**
 
