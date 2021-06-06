@@ -36,6 +36,12 @@ class HostClient extends EventEmitter {
         * @type {Map}
         */
         this.evals = new Map();
+
+        /**
+        * Save sent Messages
+        * @type {Map}
+        */
+          this.messages = new Map();
     }
 
     /**
@@ -114,7 +120,7 @@ class HostClient extends EventEmitter {
                 }
             }
         }
-
+        if(this.messages.has(data.id)) return this.messages.delete(data.id);
         /**
         * Emitted upon recieving a message.
         * @event HostClient#message
@@ -137,6 +143,7 @@ class HostClient extends EventEmitter {
                 shard: {target: shard}
             })
             request.save().then((r) => resolve(r)).catch(e => reject(`[Error] ` +e))
+            this.messages.set(request.id, request);
         });
     }
 }
