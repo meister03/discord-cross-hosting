@@ -4,7 +4,7 @@
   "description": "The first package, which allows broadcastEvaling over Cross Hosted Machines and effecient Machine & Shard Managing.",
   "main": "index.js",
   "dependencies": {
-    "mongoose": "^4.13.21"
+    "mongoose": "^5.10.2"
   },
   "repository": {
     "type": "git",

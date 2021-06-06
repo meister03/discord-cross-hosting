@@ -60,6 +60,15 @@ class HostClient extends EventEmitter {
         Message.watch({ fullDocument: 'updateLookup' }).on('change', this.handleStream.bind(this))
         return connection;
     }
+    
+    /**
+    * Listens to the Message Event and Broadcasts
+    * <warn>You must  need to call this manually.</warn>
+    * @returns {Promise<Connect>}
+    */
+    async listen(){
+        if(!this.connected) await this.connect(this.url);
+    }
 
     /**
     * Evaluates a script or function on all machine, or a given shard, in the context of the {@link Client}s.
