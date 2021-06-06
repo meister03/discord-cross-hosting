@@ -288,7 +288,6 @@ crosshost.on('message',console.log); //Log out all messages -> e.g Logs on every
 
 ## 6. Api References
 
-I need a little more time to add some good references
 
 `new Crosshost.Manager(MongodbConnectionUrl,options)`
 
