@@ -129,7 +129,7 @@ class HostClient extends EventEmitter {
                 }
             }
         }
-        if(this.messages.has(data.id)) return this.messages.delete(data.id);
+        if(this.messages.has(String(data._id))) return this.messages.delete(String(data._id));
         /**
         * Emitted upon recieving a message.
         * @event HostClient#message
