@@ -114,6 +114,8 @@ client.crosshost = new Crosshost.Client(`MongoDB Connection Url`, {
 	totalMachines: 2,            //The Total Amount of Machines
 	TimeoutforResponses: 10000, ///After how many milliseconds the broadcastEval will be resolved, with no response
 });
+client.crosshost.connect();
+
 client.on('ready', async () => {
 	console.log(`Shards ${client.shard.ids.keys()} are ready!`)
 	if(client.cluster.id === 0 && client.cluster.ids.has(0)){
@@ -217,6 +219,8 @@ client.crosshost = new Crosshost.Client(`MongoDB Connection Url`, {
 	totalMachines: 2,            //The Total Amount of Machines
 	TimeoutforResponses: 10000, ///After how many milliseconds the broadcastEval will be resolved, with no response
 });
+client.crosshost.connect()
+
 client.on('ready', async () => {
 	console.log(`Shards ${client.shard.id} is ready!`)
 	if(client.cluster.id === 0 && client.cluster.ids.has(0)){
@@ -277,7 +281,7 @@ crosshost = new Crosshost.Client(`MongoDB Connection Url`, {
 	totalMachines: 2,            //The Total Amount of Machines
 	TimeoutforResponses: 10000, ///After how many milliseconds the broadcastEval will be resolved, with no response
 });
-
+crosshost.connect()
 crosshost.send(`hello`)
 crosshost.on('message',console.log); //Log out all messages -> e.g Logs on every connectd Machine [Object with .message hello]
 ```
