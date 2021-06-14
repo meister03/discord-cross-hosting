@@ -139,7 +139,6 @@ const Cluster = require("discord-hybrid-sharding");
 
 const crosshost = new Manager(`Your MongoDB Connection Url`, {
     machineID: 1,    //  The Machine ID
-    master: true,   //   Master on true for Initalizing
 })
 start()
 async function start(){
@@ -244,7 +243,6 @@ const { ShardingManager } = require('discord.js');
 
 const crosshost = new Manager(`Your MongoDB Connection Url`, {
     machineID: 1,    //  The Machine ID
-    master: true,   //   Master on true for Initalizing
 })
 start()
 
