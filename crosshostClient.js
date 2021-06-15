@@ -133,9 +133,9 @@ class HostClient extends EventEmitter {
                     Message.findOneAndDelete({_id: String(data._id)}).then((e) => {emitmessage.deleted = true;}).catch((e) => new Error(e))
                     let endrepsonse = data.response;
                     if(this.parseasShardArray){
-                    	     endresponse = endreponse.reduce((prev, curr) => prev.concat(curr), [] );
+                    	     endrepsonse = endrepsonse.reduce((prev, curr) => prev.concat(curr), [] );
                     }
-                    instance.resolve(endresponse);
+                    instance.resolve(endrepsonse);
                 }
             }
         }
