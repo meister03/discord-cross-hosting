@@ -27,6 +27,7 @@ class HostManager extends EventEmitter {
       * @type {Number}
       */ 
       this.totalShards = option.totalShards; 
+      if (this.totalShards !== undefined) {
       if (this.totalShards !== 'auto') {
         if (typeof this.totalShards !== 'number' || isNaN(this.totalShards)) {
           throw new TypeError('CLIENT_INVALID_OPTION', 'Amount of internal shards', 'a number.');
@@ -36,6 +37,7 @@ class HostManager extends EventEmitter {
           throw new RangeError('CLIENT_INVALID_OPTION', 'Amount of internal shards', 'an integer.');
         }
       }
+     }
 
       /**
       * The Total Amount of Machines
