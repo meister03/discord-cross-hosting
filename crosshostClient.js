@@ -26,6 +26,12 @@ class HostClient extends EventEmitter {
         this.timeout = options.TimeoutforResponses || 5000;
 
         /**
+        * If the BroadcastEval should be parsed as Machine Array or as Shard Array
+        * @type {Boolean}
+        */
+       this.parseasShardArray = options.parseasShardArray || false;
+
+        /**
         * If your machine is connected
         * @type {Boolean}
         */
@@ -125,7 +131,11 @@ class HostClient extends EventEmitter {
                     }
                     this.evals.delete(String(data._id));
                     Message.findOneAndDelete({_id: String(data._id)}).then((e) => {emitmessage.deleted = true;}).catch((e) => new Error(e))
-                    instance.resolve(data.response);
+                    let endrepsonse = data.response;
+                    if(this.parseasShardArray){
+                    	     endresponse = endreponse.reduce((prev, curr) => prev.concat(curr), [] );
+                    }
+                    instance.resolve(endresponse);
                 }
             }
         }
