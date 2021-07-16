@@ -1,4 +1,5 @@
 const EventEmitter = require('events');
+const Discord = require('discord.js');
 const mongoose = require('mongoose');
 const message = require('./schema/message.js');
 const EmitMessage = require('./schema/emitMessage.js')
