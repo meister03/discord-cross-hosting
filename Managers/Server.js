@@ -60,6 +60,12 @@ class BridgeServer extends Server {
         this.shardList = options.shardList ?? [];
 
         /**
+        * If the Package will be used in standalone mode
+        * @type {Boolean}
+        */
+        this.standAlone = options.standAlone ?? false;
+
+        /**
         * The shardCLusterList, which will be hosted by all Machines
         * @type {Array[Array[]]}
         */
@@ -97,7 +103,7 @@ class BridgeServer extends Server {
     _handleReady(url) {
         this._debug(`[READY] Bridge operational on ${url}`)
         setTimeout(() => {
-            this.initalizeShardData();
+            if(!this.standAlone) this.initalizeShardData();
         }, 5000)
     }
 
