@@ -1,0 +1,25 @@
+exports.messageType = createEnum([
+    'HEARTBEAT',
+    'HEARTBEATACK',
+    'SHARDLIST_DATA_REQUEST',
+    'SHARDLIST_DATA_UPDATE',
+    'CLIENT_SHARDLIST_DATA_CURRENT',
+    'CLIENT_BROADCAST_REQUEST',
+    'CLIENT_BROADCAST_RESPONSE',
+    'SERVER_BROADCAST_REQUEST',
+    'SERVER_BROADCAST_RESPONSE',
+]);
+
+
+
+
+
+function createEnum(keys) {
+    const obj = {};
+    for (const [index, key] of keys.entries()) {
+        if (key === null) continue;
+        obj[key] = index;
+        obj[index] = key;
+    }
+    return obj;
+}
