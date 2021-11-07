@@ -68,12 +68,13 @@ class BridgeClient extends Client {
         if(message.type === messageType.GUILD_DATA_REQUEST){
             if (!this.manager) throw new Error(`A Cluster/Shard Manager has not been loaded to net-ipc`);
             message.type = messageType.GUILD_DATA_RESPONSE;
-            message.script = `this.guilds.cache.get('${message.guildId}')`
+            if(!message.script) message.script = `this.guilds.cache.get('${message.guildId}')`
             this.manager.evalOnCluster(message.script, message.options).then(e => res(e)).catch(e => res(e));
             return;
         }
         if(message.type === messageType.GUILD_EVAL_REQUEST){
             if (!this.manager) throw new Error(`A Cluster/Shard Manager has not been loaded to net-ipc`);
+            message.type = messageType.GUILD_EVAL_RESPONSE;
             this.manager.evalOnCluster(message.script, message.options).then(e => res(e)).catch(e => res(e));
             return;
         }
