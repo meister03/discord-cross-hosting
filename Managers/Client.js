@@ -57,12 +57,24 @@ class BridgeClient extends Client {
 
     _handleRequest(message, res, client) {
         if (message?.type === undefined) return;
-       
         ///BroadcastEval
         if (message.type === messageType.SERVER_BROADCAST_REQUEST) {
             if (!this.manager) throw new Error(`A Cluster/Shard Manager has not been loaded to net-ipc`);
             message.type = messageType.CLIENT_BROADCAST_RESPONSE;
             this.manager.broadcastEval(message.script, message.options).then(e => res(e)).catch(e => res(e));
+            return;
+        }
+
+        if(message.type === messageType.GUILD_DATA_REQUEST){
+            if (!this.manager) throw new Error(`A Cluster/Shard Manager has not been loaded to net-ipc`);
+            message.type = messageType.GUILD_DATA_RESPONSE;
+            message.script = `this.guilds.cache.get('${message.guildId}')`
+            this.manager.evalOnCluster(message.script, message.options).then(e => res(e)).catch(e => res(e));
+            return;
+        }
+        if(message.type === messageType.GUILD_EVAL_REQUEST){
+            if (!this.manager) throw new Error(`A Cluster/Shard Manager has not been loaded to net-ipc`);
+            this.manager.evalOnCluster(message.script, message.options).then(e => res(e)).catch(e => res(e));
             return;
         }
     }
@@ -103,6 +115,13 @@ class BridgeClient extends Client {
         const message = { script, options }
         message.type = messageType.CLIENT_BROADCAST_REQUEST;
         return this.request(message)
+    }
+
+    async requestToGuild(message ={}){
+        if (!message.guildId) throw new Error('GuildID has not been provided!');
+        if(!message.eval) message.type = messageType.GUILD_DATA_REQUEST;
+        else message.type = messageType.GUILD_EVAL_REQUEST;
+        return this.request(message);
     }
 
 

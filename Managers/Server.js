@@ -173,6 +173,11 @@ class BridgeServer extends Server {
             this.clients.set(client.id, client);
             return;
         }
+
+        ///Guild Data Request
+        if (message.type === messageType.GUILD_DATA_REQUEST) {
+            this.requestToGuild(message).then(e => res(e)).catch(e => res(e));
+        }
     }
 
     //Shard Data:
@@ -235,6 +240,26 @@ class BridgeServer extends Server {
         const promises = [];
         for (const client of clients) promises.push(client.request(message));
         return Promise.all(promises);
+    }
+
+
+
+    async requestToGuild(message = {}){
+        if (!message?.guildId) throw new Error('GuildID has not been provided!');
+        const internalShard = Util.shardIdForGuildId(message.guildId, this.totalShards);
+        console.log(internalShard)
+
+        const targetclient = [...this.clients.values()].find(x => x?.shardList?.flat()?.includes(internalShard));
+
+        if(!targetclient) throw new Error('Internal Shard not found!'); 
+        if(!message.options) message.options = {};
+
+        if(message.eval) message.type = messageType.GUILD_EVAL_REQUEST;
+        else message.type = messageType.GUILD_DATA_REQUEST;
+
+        message.options.shard = internalShard;
+
+        return targetclient.request(message);  
     }
 
 
