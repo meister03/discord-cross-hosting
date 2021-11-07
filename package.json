@@ -1,6 +1,37 @@
+
 {
+  "name": "discord-cross-hosting",
+  "version": "0.0.1",
+  "description": "The first package, which allows broadcastEvaling over Cross Hosted Machines and effecient Machine & Shard Managing.",
+  "main": "index.js",
   "dependencies": {
     "net-ipc": "^1.3.1",
     "node-fetch": "^2.6.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meister03/discord-cross-hosting.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "discord",
+    "bots",
+    "discord-cross-hosting",
+    "discord-sharding",
+    "discord-clustering",
+    "cluster",
+    "machine-broadcast",
+    "cross-hosting",
+    "vertical-scaling",
+    "multiply-machines",
+    "framework"
+  ],
+  "author": "meister03",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/meister03/discord-cross-hosting/issues"
+  },
+  "homepage": "https://github.com/meister03/discord-cross-hosting#readme"
 }
