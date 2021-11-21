@@ -2,6 +2,8 @@ const { Client } = require("net-ipc");
 const { messageType } = require("../Utils/Constants.js");
 class BridgeClient extends Client {
     constructor(options = {}) {
+        options?.secure = true;
+        options?.handshake = true;
         super(options)
 
         this.authToken = options?.authToken;

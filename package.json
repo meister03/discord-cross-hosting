@@ -1,10 +1,10 @@
 {
   "name": "discord-cross-hosting",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "The first package, which allows broadcastEvaling over Cross Hosted Machines and effecient Machine & Shard Managing.",
   "main": "index.js",
   "dependencies": {
-    "net-ipc": "^1.3.1",
+    "net-ipc": "github:timotejroiko/net-ipc",
     "node-fetch": "^2.6.1"
   },
   "repository": {
