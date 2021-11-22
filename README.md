@@ -69,7 +69,7 @@ Bridge | Server.js
     const {Bridge} = require('discord-cross-hosting');
 
     const server = new Bridge({ 
-        port: 3333, //The Port of the Server
+        port: 4444, //The Port of the Server | Proxy Connection (Replit, Heroku) needs Port 443
         authToken: 'Your_auth_token_same_in_cluster.js', 
         totalShards: 40, //The Total Shards of the Bot or 'auto'
         totalMachines: 2, //The Total Machines, where the Clusters will run
@@ -96,7 +96,13 @@ Cluster | Cluster.js
 ```js
 const {Client} = require('discord-cross-hosting');
 
-const client = new Client({agent: 'bot', url: "localhost:3333", authToken: 'theauthtoken'});
+const client = new Client({
+    agent: 'bot', 
+    host: "localhost", ///Domain without https
+    port: 4444, ///Proxy Connection (Replit, Heroku) needs Port 443
+    //proxy: true, When Replit, Heroku or any other Proxy is used
+    authToken: 'theauthtoken'
+});
 client.on('debug', console.log)
 client.connect();
 
