@@ -67,13 +67,13 @@ class BridgeServer extends Server {
 
         /**
         * The shardCLusterList, which will be hosted by all Machines
-        * @type {Array[Array[]]}
+        * @type {Array[]}
         */
         this.shardClusterList;
 
         /**
         * The shardCLusterLisQueue, the shardList which has to be spawned on the appropriated Machine
-        * @type {Array[Array[]]}
+        * @type {Array[]}
         */
         this.shardClusterListQueue;
 
@@ -96,10 +96,17 @@ class BridgeServer extends Server {
         this.clients = new Map();
     }
 
+    /**
+    * Starts the Bridge.
+    */
     start() {
         return super.start()
     }
 
+    /**
+    * Handle the Ready Event and lot out, when the Bridge is ready.
+    * @private
+    */
     _handleReady(url) {
         this._debug(`[READY] Bridge operational on ${url}`)
         setTimeout(() => {
@@ -107,10 +114,18 @@ class BridgeServer extends Server {
         }, 5000)
     }
 
+    /**
+    * Handle the Error Event of the Bridge
+    * @private
+    */
     _handleError(error) {
 
     }
 
+    /**
+    * Handles the Connection of new Clients
+    * @private
+    */
     _handleConnect(client, initialdata) {
         if (initialdata?.authToken !== this.authToken) return client.close("ACCESS DENIED").catch(e => console.log(e));
         client.authToken = initialdata.authToken;
@@ -119,6 +134,10 @@ class BridgeServer extends Server {
         this._debug(`[CM => Connected][${client.id}]`, {cm: true})
     }
 
+    /**
+    * Handles the Disconnection of Clients
+    * @private
+    */
     _handleDisconnect(client, reason) {
         client = this.clients.get(client.id);
         if (!client) return;
@@ -129,6 +148,11 @@ class BridgeServer extends Server {
         this.clients.delete(client.id);
     }
 
+    /**
+    * Handles the Message Event of the Bridge and executes Requests based on the Mesage
+    * @param {Object} message - Message, which has been sent from the Bridge
+    * @private
+    */
     _handleMessage(message, client) {
         if (message?.type === undefined) return;
 
@@ -147,6 +171,11 @@ class BridgeServer extends Server {
         }
     }
 
+    /**
+    * Handles the Request Event of the Bridge and executes Requests based on the Mesage
+    * @param {Object} message - Request, which has been sent from the Bridge
+    * @private
+    */
     _handleRequest(message, res, client) {
         if (message?.type === undefined) return;
         if (!this.clients.has(client.id)) return;
@@ -180,7 +209,10 @@ class BridgeServer extends Server {
         }
     }
 
-    //Shard Data:
+    /**
+    * Based on the User provided Data a Shard List, ShardCount and a ShardCluster List is created.
+    * @return {array} shardClusterList - The shardClusterList, which should be spaned on the MachineClient's
+    */
     async initalizeShardData() {
         if (this.totalShards === 'auto' && !this.shardList) {
             if (!this.token) throw new Error('CLIENT_MISSING_OPTION', 'A token must be provided when getting shard count on auto', 'Add the Option token: DiscordBOTTOKEN');
@@ -230,7 +262,17 @@ class BridgeServer extends Server {
 
 
 
-    ///broadcastEval:
+    /**
+    * Evaluates a script or function on all clusters, or a given cluster, in the context of the {@link Client}s.
+    * @param {string|Function} script JavaScript to run on each cluster
+    * @param {object} options Options provided for the ClusterClient broadcastEval Function
+    * @returns {Promise<*>|Promise<Array<*>>} Results of the script execution
+    * @example
+    * client.crosshost.broadcastEval('this.guilds.cache.size')
+    *   .then(results => console.log(`${results.reduce((prev, val) => prev + val, 0)} total guilds`))
+    *   .catch(console.error);
+    * @see {@link Server#broadcastEval}
+    */
     async broadcastEval(script, options = {}) {
         if (!script) throw new Error('Script for BroadcastEvaling has not been provided!');
         script = typeof script === 'function' ? `(${script})(this)` : script;
@@ -243,7 +285,15 @@ class BridgeServer extends Server {
     }
 
 
-
+    /**
+    * Sends a Request to the Guild and returns the reply
+    * @param {BaseMessage} message Message, which should be sent as request and handled by the User
+    * @returns {Promise<*>} Reply of the Message
+    * @example
+    * client.crosshost.request({content: 'hello', guildId: '123456789012345678'})
+    *   .then(result => console.log(result)) //hi
+    *   .catch(console.error);
+    */
     async requestToGuild(message = {}){
         if (!message?.guildId) throw new Error('GuildID has not been provided!');
         const internalShard = Util.shardIdForGuildId(message.guildId, this.totalShards);

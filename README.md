@@ -69,7 +69,7 @@ Bridge | Server.js
     const {Bridge} = require('discord-cross-hosting');
 
     const server = new Bridge({ 
-        port: 4444, //The Port of the Server | Proxy Connection (Replit, Heroku) needs Port 443
+        port: 4444, //The Port of the Server | Proxy Connection (Replit) needs Port 443
         authToken: 'Your_auth_token_same_in_cluster.js', 
         totalShards: 40, //The Total Shards of the Bot or 'auto'
         totalMachines: 2, //The Total Machines, where the Clusters will run
@@ -99,8 +99,8 @@ const {Client} = require('discord-cross-hosting');
 const client = new Client({
     agent: 'bot', 
     host: "localhost", ///Domain without https
-    port: 4444, ///Proxy Connection (Replit, Heroku) needs Port 443
-    //proxy: true, When Replit, Heroku or any other Proxy is used
+    port: 4444, ///Proxy Connection (Replit) needs Port 443
+    //handshake: true, When Replit or any other Proxy is used
     authToken: 'theauthtoken'
 });
 client.on('debug', console.log)
@@ -156,6 +156,130 @@ client.login(process.env.token);
 * You can broadcastEval from the bridge, from the ClusterManager and from the Client
 
 ## Standalone Mode and Api-References is on work.
+
+## Example:
+As an example, We will show you how to use the Package with a Bot, Dashboard...
+Bridge:
+```js
+const {Bridge} = require('discord-cross-hosting');
+const server = new Bridge({ 
+    port: 4423,
+    authToken: 'xxx-auth-token', 
+    totalShards: 2, 
+    totalMachines: 1,
+    shardsPerCluster: 2
+});
+server.on('debug', console.log)
+server.start();
+
+server.on('ready', (url) => {
+    console.log('Server is ready' + url);
+
+    setInterval(() => {server.broadcastEval('this.guilds.cache.size').then(e => console.log(e))}, 10000)
+})
+```
+
+Cluster:
+```js
+const {Client} = require('discord-cross-hosting');
+const client = new Client({ 
+    agent: 'bot', 
+    host: "localhost", 
+    port: 4423,
+    authToken: 'xxx-auth-token', 
+    retries: 360 ,
+
+});
+client.on('debug', console.log)
+client.connect();
+
+client.on('ready', () => {
+    console.log('Client is ready');
+})
+
+const Cluster = require("discord-hybrid-sharding");
+let { token } = require("./config.json");
+const manager = new Cluster.Manager(`${__dirname}/bot.js`, {
+    totalShards: 2,
+    totalClusters: 2,
+    token: token,
+})
+manager.on('clusterCreate', cluster => console.log(`Launched Cluster ${cluster.id}`));
+manager.on('debug', console.log)
+
+///Request ShardData from the Bridge
+client.requestShardData().then(e => {
+    if (!e) return;
+    manager.totalShards = e.totalShards;
+    manager.totalClusters = e.shardList.length;
+    manager.shardList = e.shardList;
+    manager.spawn(undefined, undefined, -1)
+}).catch(e => console.log(e));
+
+//Listen to the Manager Events
+client.listen(manager);
+```
+
+Bot:
+```js
+const Cluster = require("discord-hybrid-sharding");
+const Discord = require("discord.js");
+const client = new Discord.Client({
+    intents: ['GUILDS'],
+ 	shards: Cluster.data.SHARD_LIST,        
+	shardCount: Cluster.data.TOTAL_SHARDS, 
+});
+
+
+client.cluster = new Cluster.Client(client); .
+
+////Initalize ClientMachine
+const Shard = require('../Managers/Shard.js');
+client.machine = new Shard(client.cluster);
+
+client.on('ready', () =>console.log('Client is ready'));
+
+client.cluster.on('message', (message) => {
+	if(!message._sRequest) return;
+    if(message.guildId && !message.eval){
+		const guild = client.guilds.cache.get(message.guildId);
+		const customguild = {};
+		customguild.id = guild.id;
+		customguild.name = guild.name;
+		customguild.icon = guild.icon;
+		customguild.ownerId = guild.ownerId;
+		customguild.roles = [...guild.roles.cache.values()];
+		customguild.channels = [...guild.channels.cache.values()];
+		message.reply({data: customguild});
+	}
+})
+
+
+client.login(process.env.token);
+```
+
+Dashboard:
+```js
+const {Client} = require('discord-cross-hosting');
+const client = new Client({agent: 'dashboard', url: "localhost:3333", authToken: 'xxx-auth-token'});
+
+client.on('debug', console.log)
+client.connect();
+client.on('ready', ( ) => {
+    console.log('Client is ready');
+})
+
+///My Express stuff- custom code
+/* Pseodo Code*/
+///listen to express event:
+app.get('/guild/:id', async function (req, res) {
+    const guildId = req.params.id; 
+    client.requestToGuild({ guildId: '734707332163829780' }).then(e => res.send(e)).catch(e => res.send(e));
+})
+
+```
+
+
 
 **Have fun and feel free to Contribute/Suggest or Contact me on my Discord server or per DM on Meister#9667**
 

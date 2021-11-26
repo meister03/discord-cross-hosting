@@ -2,19 +2,34 @@ const { Client } = require("net-ipc");
 const { messageType } = require("../Utils/Constants.js");
 class BridgeClient extends Client {
     constructor(options = {}) {
-        if(options.proxy){
-            options.secure = true;
-            options.handshake = true;
-        }   
         super(options)
 
+        /**
+        * A authentication token to be able to verify the connection to the Bridge. 
+        * @type {String}}
+        */
         this.authToken = options?.authToken;
         if(!this.authToken) throw new Error('ClIENT_MISSING_OPTION', 'authToken must be provided', 'String');
 
+        
+        /**
+        * A custom settable agent name. BroadcastEvals are just executed on Agents with the name 'bot'
+        * @type {String}
+        */
         this.agent = options?.agent;
         if(!this.authToken) throw new Error('ClIENT_MISSING_OPTION', 'agent must be provided', 'Default: bot');
         
+        /**
+        * A array of Internal ShardIds, which should be spawned in the Machine.
+        * @type {Array}
+        */
         this.shardList;
+
+        
+        /**
+        * The Amount of Total Shards in all Machines.
+        * @type {Array}
+        */
         this.totalShards;
 
         this.on('ready', this._handleReady.bind(this))
@@ -24,15 +39,28 @@ class BridgeClient extends Client {
 
     }
 
+    /**
+    * Connect your MachineClient to the Bridge with your Custom Data.
+    * @param {Object} args - Custom Data, which can be sent to the Bridge when connecting.
+    */
     connect(args) {
         this._debug(`[Connect] Connecting to Bridge with the given Data`);
         return super.connect({ ...args, authToken: this.authToken, agent: this.agent })
     }
 
+    /**
+    * Handle the Ready Event and lot out, when the Client connected to the Bridge.
+    * @private
+    */
     _handleReady(data) {
         this._debug(`[Ready] Client connected to Bridge`);
     }
 
+    /**
+    * Handles the Request Event of the Client and executes Requests based on the Mesage
+    * @param {Object} message - Request, which has been sent from the Bridge
+    * @private
+    */
     _handleMessage(message, client) {
         if (message?.type === undefined) return;
 
@@ -59,6 +87,11 @@ class BridgeClient extends Client {
         }
     }
 
+    /**
+    * Handles the Request Event of the Client and executes Requests based on the Mesage
+    * @param {Object} message - Request, which has been sent from the Bridge
+    * @private
+    */
     _handleRequest(message, res, client) {
         if (message?.type === undefined) return;
         ///BroadcastEval
@@ -94,7 +127,10 @@ class BridgeClient extends Client {
     }
 
 
-    ///Shard Data:
+    /**
+    * Request some Shard and Important Data from the Bridge.
+    * @return {Object} response - The ShardList, TotalShards and other Data requested from the Bridge
+    */
     async requestShardData() {
         const message = {}
         message.type = messageType.SHARDLIST_DATA_REQUEST;
@@ -123,6 +159,17 @@ class BridgeClient extends Client {
         return this.manager;
     }
 
+    /**
+    * Evaluates a script or function on all clusters, or a given cluster, in the context of the {@link Client}s.
+    * @param {string|Function} script JavaScript to run on each cluster
+    * @param {object} options Options provided for the ClusterClient broadcastEval Function
+    * @returns {Promise<*>|Promise<Array<*>>} Results of the script execution
+    * @example
+    * client.crosshost.broadcastEval('this.guilds.cache.size')
+    *   .then(results => console.log(`${results.reduce((prev, val) => prev + val, 0)} total guilds`))
+    *   .catch(console.error);
+    * @see {@link Server#broadcastEval}
+    */
     async broadcastEval(script, options) {
         if (!script) throw new Error('Script for BroadcastEvaling has not been provided!');
         script = typeof script === 'function' ? `(${script})(this)` : script;
@@ -131,6 +178,15 @@ class BridgeClient extends Client {
         return this.request(message)
     }
 
+    /**
+    * Sends a Request to the Guild and returns the reply
+    * @param {BaseMessage} message Message, which should be sent as request and handled by the User
+    * @returns {Promise<*>} Reply of the Message
+    * @example
+    * client.crosshost.request({content: 'hello', guildId: '123456789012345678'})
+    *   .then(result => console.log(result)) //hi
+    *   .catch(console.error);
+    */
     async requestToGuild(message ={}){
         if (!message.guildId) throw new Error('GuildID has not been provided!');
         if(!message.eval) message.type = messageType.GUILD_DATA_REQUEST;
@@ -140,7 +196,10 @@ class BridgeClient extends Client {
 
 
 
-    ///Rolling Restart
+    /**
+    * Executes a rolling Restart, which has been executed by the Bridge
+    * @private
+    */
     rollingRestart() {
         const clusters = [...this.manager.clusters.values()];
         const length = clusters.length < this.manager.shardclusterlist.length ? this.manager.shardclusterlist.length : clusters.length;
