@@ -1,4 +1,6 @@
 exports.messageType = createEnum([
+    'CUSTOM_REQUEST',
+    'CUSTOM_MESSAGE',
     'HEARTBEAT',
     'HEARTBEATACK',
     'SHARDLIST_DATA_REQUEST',

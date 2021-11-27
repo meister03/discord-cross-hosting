@@ -1,3 +1,4 @@
+const {IPCMessage, BaseMessage} = require("../Structures/IPCMessage.js");
 class ShardClient {
     constructor(shard) {
         this.shard = shard;
@@ -26,7 +27,14 @@ class ShardClient {
     * @returns {Promise<request>}
     */
     async send(message) {
-        return this.shard.evalOnManager(`this.netipc.send('${message}')`);
+        if (!message) throw new Error('Request has not been provided!');
+        if(typeof message !== 'object') throw new TypeError('The Request has to be an object')
+        if (!options) options = {};
+        message.options = options;
+        message._sRequest = false;
+        message._sReply = false;
+        message = new BaseMessage(message).toJSON()
+        return this.shard.evalOnManager(`this.netipc.send('${JSON.stringify(message)}')`);
     }
 
     /**
@@ -37,8 +45,17 @@ class ShardClient {
     * .then(result => console.log(result)) //hi
     * .catch(console.error);
     */
-    async request(message) {
-        return this.shard.evalOnManager(`this.netipc.request('${message}')`);
+    async request(message ={}, options = {}) {
+        if (!message) throw new Error('Request has not been provided!');
+        if(typeof message !== 'object' && !options.internal) throw new TypeError('The Request has to be an object')
+        if (!options) options = {};
+        message.options = options;
+        if(!options.internal){
+            message._sRequest = true;
+            message._sReply = false;
+            message = new BaseMessage(message).toJSON()
+        }
+        return this.shard.evalOnManager(`this.netipc.request('${JSON.stringify(message)}')`);
     }
 
     /**
@@ -54,7 +71,7 @@ class ShardClient {
         if (!message.guildId) throw new Error('GuildID has not been provided!');
         if(!message.eval) message.type = messageType.GUILD_DATA_REQUEST;
         else message.type = messageType.GUILD_EVAL_REQUEST;
-        return this.request(message);
+        return this.request(message,  {internal: true});
     }
 }
 module.exports = ShardClient;

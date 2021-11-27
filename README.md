@@ -25,8 +25,10 @@ This package had a massive rewrite and breaking changes, follow the Guide for ad
 1. **How it works**
 2. **Test | Response Time & Results**
 3. **Using the Package with Hybrid-Sharding & Machine, Shard Count Managing** 
-4. **Standalone Mode**
-5. **Api References**
+4. **Use TLS for a secure Connection**
+5. **Standalone Mode**
+6. **Api References**
+7. **Example**
 
 ## 1.How does it works?
 For ensuring a fast, reliable and secure Connection, where you can also sent a ton of Data, followed to our Decision that we changed to a TCP-Server. This opens up the opportunity to connect all your services to the same Server.
@@ -155,9 +157,110 @@ client.login(process.env.token);
 * When you now change the ShardCount or the options of the Bridge and restart it, it will send a message to all connected Clusters, which will update the Shardlist and restart the Clusters, when the ShardList changed.
 * You can broadcastEval from the bridge, from the ClusterManager and from the Client
 
-## Standalone Mode and Api-References is on work.
+## 4. Using the Package with the `TLS` Option
+* When using the package on a "open System" -> when you want to connect from different Machines on your IP/Domain, then a secure connection has to be ensured in order to prevent security flaws.
+* This is done by using the `TLS` Option, which will be set to `true` on the Bridge & Client Options.
+* The TLS Option can be used with:
+  - [`PSK`](https://nodejs.org/api/tls.html#pre-shared-keys), which allows basic securtiy.
+  - [`Certificate`](https://nodejs.org/api/tls.html#tlscreatesecurecontextoptions) which requires a generated Certificate and Private Key, but allows a high Security level.
+* For futher Info and Control over the Options check the official [`TLS`](https://nodejs.org/api/tls.html) Documentation
 
-## Example:
+### 4.1. `PSK` Mode:
+```js
+/* Bridge */
+const server = new Bridge({ 
+    port: 4423,
+    authToken: 'xxx-auth-token', 
+    totalShards: 2, 
+    totalMachines: 1,
+    shardsPerCluster: 2,
+    tls: true,
+    options: {
+      pskCallback: (socket, identity) => {
+        const key = Buffer.from("passwordhere");
+        if(identity === "username") return key;
+      },
+      ciphers: "PSK",
+    }
+});
+
+/* Machine */
+const client = new Client({ 
+    agent: 'bot', 
+    host: "localhost", 
+    port: 4423,
+    authToken: 'xxx-auth-token', 
+    retries: 360 ,
+    tls: true,
+    options: {
+        pskCallback: () => {
+          return { psk: Buffer.from("passwordhere"), identity: "username" }
+        },
+        ciphers: "PSK",
+        checkServerIdentity: () => void 0,
+    }
+});
+```
+### 4.2. `Certificate` Mode:
+```js
+/* Bridge */
+const server = new Bridge({ 
+    port: 4423,
+    authToken: 'xxx-auth-token', 
+    totalShards: 2, 
+    totalMachines: 1,
+    shardsPerCluster: 2,
+    tls: true,
+    options: {
+        key: fs.readFileSync(`path to certificate`),
+        cert: fs.readFileSync(`path to certificate`),
+    }
+});
+
+/*Machine */
+const client = new Client({ 
+    agent: 'bot', 
+    host: "localhost", 
+    port: 4423,
+    authToken: 'xxx-auth-token', 
+    retries: 360 ,
+    tls: true,
+});
+```
+
+
+## 5|6 Standalone Mode and Api-References is on work.
+
+## 6. Temporary Api References:
+* Check [`net-ipc`](https://npmjs.com/net-ipc) for all Brige/Client related functions
+### 6.1.1 Bridge `Options`:
+| Option | Type | Description |
+| ------------- | ------------- | ------------------------------------------------------ |
+| authToken  | string |A User chosen Token for basic Authorization, when tls is disabled|
+| shardsPerCluster  | number/1 |The total amount of Shards per Cluster/Process|
+| totalShards  | number |The amount of Total Shards in all Machines|
+| totalMachines  | number |The amount of Total Machines in order to chunk the ShardList|
+| token  | string |The Discord Bot Token in order to fetch the recommanded ShardCount|
+| shardList | array |A array of ShardIds to host on the connected Machines|
+
+### 6.1.2 Bridge `Events`:
+| Event |  Description |
+| ------------- | -------------- |
+| ready(url)  | Event fired when the Bridge is ready|
+| error(error)  | Bridge Error|
+| connect(client, initialdata) | Client, which connected to the bridge with their Initial Data|
+| disconnect(client, reason)  |Client, which disconnected from the bridge with a providable reason|
+| clientMessage (message, client)  | A Message, which is sent from a connected Client|
+| clientRequest (message, client)  | A Request, which is sent from a connected Client and can be replied to with `message.reply()`|
+
+### 6.1.3 Bridge `Functions`:
+
+
+
+
+
+
+## 7.Example:
 As an example, We will show you how to use the Package with a Bot, Dashboard...
 Bridge:
 ```js
@@ -174,8 +277,19 @@ server.start();
 
 server.on('ready', (url) => {
     console.log('Server is ready' + url);
-
     setInterval(() => {server.broadcastEval('this.guilds.cache.size').then(e => console.log(e))}, 10000)
+})
+
+server.on('clientMessage', (message)=>{
+    if(!message._sCustom) return; //If message is a Internal Message
+    console.log(message)
+})
+
+server.on('clientRequest', (message)=>{
+    if(!message._sCustom && !message._sRequest) return; //If message is a Internal Message
+    if(message.ack) return message.reply({message: 'I am alive!'})
+    console.log(message)
+    message.reply({data: 'Hello World'});
 })
 ```
 
@@ -188,7 +302,6 @@ const client = new Client({
     port: 4423,
     authToken: 'xxx-auth-token', 
     retries: 360 ,
-
 });
 client.on('debug', console.log)
 client.connect();
@@ -218,6 +331,18 @@ client.requestShardData().then(e => {
 
 //Listen to the Manager Events
 client.listen(manager);
+
+client.on('bridgeMessage', (message)=>{
+    if(!message._sCustom) return; //If message is a Internal Message
+    console.log(message)
+})
+
+client.on('bridgeRequest', (message)=>{
+    if(!message._sCustom && !message._sRequest) return; //If message is a Internal Message
+    console.log(message)
+    if(message.ack) return message.reply({message: 'I am alive!'})
+    message.reply({data: 'Hello World'});
+})
 ```
 
 Bot:
@@ -231,13 +356,16 @@ const client = new Discord.Client({
 });
 
 
-client.cluster = new Cluster.Client(client); .
+client.cluster = new Cluster.Client(client); 
 
 ////Initalize ClientMachine
 const Shard = require('../Managers/Shard.js');
 client.machine = new Shard(client.cluster);
 
-client.on('ready', () =>console.log('Client is ready'));
+client.on('ready', () =>{
+    console.log('Client is ready')
+    setInterval(() => {client.machine.request({ack: true, message: 'Are you alive?'}).then(e => console.log(e))}, 10000)
+});
 
 client.cluster.on('message', (message) => {
 	if(!message._sRequest) return;
@@ -254,14 +382,13 @@ client.cluster.on('message', (message) => {
 	}
 })
 
-
 client.login(process.env.token);
 ```
 
 Dashboard:
 ```js
 const {Client} = require('discord-cross-hosting');
-const client = new Client({agent: 'dashboard', url: "localhost:3333", authToken: 'xxx-auth-token'});
+const client = new Client({agent: 'dashboard', host: "localhost", port: 4423, authToken: 'xxx-auth-token'});
 
 client.on('debug', console.log)
 client.connect();
@@ -271,15 +398,15 @@ client.on('ready', ( ) => {
 
 ///My Express stuff- custom code
 /* Pseodo Code*/
+const express = require('express');
+const app = express();
+app.listen(3000, () => {console.log('Listening on port 3000')});
 ///listen to express event:
 app.get('/guild/:id', async function (req, res) {
     const guildId = req.params.id; 
     client.requestToGuild({ guildId: '734707332163829780' }).then(e => res.send(e)).catch(e => res.send(e));
 })
-
 ```
-
-
 
 **Have fun and feel free to Contribute/Suggest or Contact me on my Discord server or per DM on Meister#9667**
 

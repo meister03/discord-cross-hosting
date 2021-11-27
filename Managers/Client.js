@@ -1,5 +1,6 @@
 const { Client } = require("net-ipc");
 const { messageType } = require("../Utils/Constants.js");
+const {IPCMessage, BaseMessage} = require("../Structures/IPCMessage.js");
 class BridgeClient extends Client {
     constructor(options = {}) {
         super(options)
@@ -62,6 +63,7 @@ class BridgeClient extends Client {
     * @private
     */
     _handleMessage(message, client) {
+        if(typeof message === 'string') message = JSON.parse(message);
         if (message?.type === undefined) return;
 
         if (message.type === messageType.SHARDLIST_DATA_UPDATE) {
@@ -80,11 +82,15 @@ class BridgeClient extends Client {
                     this.rollingRestart();
                 }, 5000);
             } else {
-                this.send({ type: messageType.CLIENT_SHARDLIST_DATA_CURRENT, shardList: this.shardList }) ///removes this shardList from the queue
+                super.send({ type: messageType.CLIENT_SHARDLIST_DATA_CURRENT, shardList: this.shardList }) ///removes this shardList from the queue
                 this._debug(`[SHARDLIST_DATA_UPDATE] ShardData did not changed!`, {bridge: true});
                 return;
             }
         }
+        let emitmessage;
+        if(typeof message === 'object') emitmessage = new IPCMessage(client, message)
+        else emitmessage = message;
+        this.emit('bridgeMessage', emitmessage, client);
     }
 
     /**
@@ -93,6 +99,7 @@ class BridgeClient extends Client {
     * @private
     */
     _handleRequest(message, res, client) {
+        if(typeof message === 'string') message = JSON.parse(message);
         if (message?.type === undefined) return;
         ///BroadcastEval
         if (message.type === messageType.SERVER_BROADCAST_REQUEST) {
@@ -105,15 +112,14 @@ class BridgeClient extends Client {
         if(message.type === messageType.GUILD_DATA_REQUEST){
             if (!this.manager) throw new Error(`A Cluster/Shard Manager has not been loaded to net-ipc`);
             message.type = messageType.GUILD_DATA_RESPONSE;
-            console.log(message)
             ///Find Shard
             if(message.options.hasOwnProperty('shard')){
                 const findcluster = [...this.manager.clusters.values()].find(i => i.shardlist.includes(message.options.shard));
                 message.options.cluster = findcluster ? findcluster.id : 0;
-                console.log(`Cluster Request: ${message.options.cluster}`)
+               // console.log(`Cluster Request: ${message.options.cluster}`)
             }else return res({error: 'No Shard has been provided!', ...message});
             const cluster = this.manager.clusters.get(message.options.cluster);
-            console.log(`Cluster Request: ${cluster?.id}`)
+            //console.log(`Cluster Request: ${cluster?.id}`)
             if(cluster === undefined) return res({...message, error: `Cluster ${message.options.cluster} not found!`});
             cluster.request(message).then(e => res(e)).catch(e => res(e));
             return;
@@ -124,6 +130,10 @@ class BridgeClient extends Client {
             this.manager.evalOnCluster(message.script, message.options).then(e => res(e)).catch(e => res(e));
             return;
         }
+        let emitmessage;
+        if(typeof message === 'object') emitmessage = new IPCMessage(client, message, res)
+        else emitmessage = message;
+        this.emit('bridgeRequest', emitmessage, client);
     }
 
 
@@ -134,7 +144,7 @@ class BridgeClient extends Client {
     async requestShardData() {
         const message = {}
         message.type = messageType.SHARDLIST_DATA_REQUEST;
-        const response = await this.request(message);
+        const response = await super.request(message);
         this._debug(`Given Shard Data: ${JSON.stringify(response)}`, {bridge: true});
         if (!response) throw new Error(`No Response from Server`);
         this.shardList = response.shardList;
@@ -175,9 +185,58 @@ class BridgeClient extends Client {
         script = typeof script === 'function' ? `(${script})(this)` : script;
         const message = { script, options }
         message.type = messageType.CLIENT_BROADCAST_REQUEST;
-        return this.request(message)
+        return super.request(message)
     }
 
+
+    /**
+    * Sends a Message to the Bridge
+    * @param {BaseMessage} message Message, which should be sent to Bridge
+    * @returns {Promise<*>} Message
+    * @example
+    * client.send({content: 'hello'})
+    *   .then(result => console.log(result)) //hi
+    *   .catch(console.error);
+    * @see {@link IPCMessage#reply}
+    */
+    async send(message ={}, options ={}) {
+        if (!message) throw new Error('Request has not been provided!');
+        if(typeof message === 'string' && !options.internal) message = JSON.parse(message)
+        if(typeof message !== 'object' && !options.internal) throw new TypeError('The Request has to be an object')
+        if (!options) options = {};
+        message.options = options;
+        if(!options.internal){
+            message._sRequest = false;
+            message._sReply = false;
+            message = new BaseMessage(message).toJSON()
+        }
+        return super.send(JSON.stringify(message));
+    }
+
+    /**
+    * Sends a Request to the Bridge and returns the reply
+    * @param {BaseMessage} message Message, which should be sent as request
+    * @returns {Promise<*>} Reply of the Message
+    * @example
+    * client.request({content: 'hello'})
+    *   .then(result => console.log(result)) //hi
+    *   .catch(console.error);
+    * @see {@link IPCMessage#reply}
+    */
+    async request(message ={}, options ={}) {
+        if (!message) throw new Error('Request has not been provided!');
+        if(typeof message === 'string' && !options.internal) message = JSON.parse(message)
+        if(typeof message !== 'object' && !options.internal) throw new TypeError('The Request has to be an object')
+        //console.log(message)
+        if (!options) options = {};
+        message.options = options;
+        if(!options.internal){
+            message._sRequest = true;
+            message._sReply = false;
+            message = new BaseMessage(message).toJSON()
+        }
+        return super.request(JSON.stringify(message)).catch(e => console.log(e));
+    }
     /**
     * Sends a Request to the Guild and returns the reply
     * @param {BaseMessage} message Message, which should be sent as request and handled by the User
@@ -191,7 +250,7 @@ class BridgeClient extends Client {
         if (!message.guildId) throw new Error('GuildID has not been provided!');
         if(!message.eval) message.type = messageType.GUILD_DATA_REQUEST;
         else message.type = messageType.GUILD_EVAL_REQUEST;
-        return this.request(message);
+        return super.request(message);
     }
 
 
