@@ -19,7 +19,11 @@ You can download it from npm:
 npm i discord-cross-hosting
 ```
 
-This package had a massive rewrite and breaking changes, follow the Guide for adapting your code.
+| :warning: WARNING          |
+|:---------------------------|
+| This package had a massive rewrite and breaking changes, follow the Guide for adapting your code. Support under `^2.0.0` has been dropped.   |
+
+
 
 # Guide:
 1. **How it works**
@@ -232,7 +236,7 @@ const client = new Client({
 ## 5|6 Standalone Mode and Api-References is on work.
 
 ## 6. Temporary Api References:
-* Check [`net-ipc`](https://npmjs.com/net-ipc) for all Brige/Client related functions
+* Check [`net-ipc`](https://npmjs.com/net-ipc) for all Bridge/Client related functions
 ### 6.1.1 Bridge `Options`:
 | Option | Type | Description |
 | ------------- | ------------- | ------------------------------------------------------ |
