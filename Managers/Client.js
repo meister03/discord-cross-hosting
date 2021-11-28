@@ -44,7 +44,7 @@ class BridgeClient extends Client {
     * Connect your MachineClient to the Bridge with your Custom Data.
     * @param {Object} args - Custom Data, which can be sent to the Bridge when connecting.
     */
-    connect(args) {
+    connect(args={}) {
         this._debug(`[Connect] Connecting to Bridge with the given Data`);
         return super.connect({ ...args, authToken: this.authToken, agent: this.agent })
     }

@@ -87,7 +87,7 @@ Bridge | Server.js
     })
 ```
 ### 3.3 Cluster:
-* The Cluster is the file, where the ShardingManager/ClusterManager is.
+* The Cluster is the file, where the ShardingManager/ClusterManager is created.
 * The ClusterManager connects to the Bridge and requests the Sharddata and it also proceeds the requests from the Bridge.
 * The ClusterManager spawns Processes (aka Shard in Djs)(aka Cluster here), which contains Internal Shards
 * For having 1 InternalShard per Process, the `shardsPerCluster` has to be `1` on the Bridge Options.
@@ -162,7 +162,7 @@ client.login(process.env.token);
 * This is done by using the `TLS` Option, which will be set to `true` on the Bridge & Client Options.
 * The TLS Option can be used with:
   - [`PSK`](https://nodejs.org/api/tls.html#pre-shared-keys), which allows basic securtiy.
-  - [`Certificate`](https://nodejs.org/api/tls.html#tlscreatesecurecontextoptions) which requires a generated Certificate and Private Key, but allows a high Security level.
+  - [`Certificate`](https://nodejs.org/api/tls.html#tlscreatesecurecontextoptions) which requires a generated Certificate and a Private Key, but allows a high Security level.
 * For futher Info and Control over the Options check the official [`TLS`](https://nodejs.org/api/tls.html) Documentation
 
 ### 4.1. `PSK` Mode:
@@ -236,7 +236,7 @@ const client = new Client({
 ### 6.1.1 Bridge `Options`:
 | Option | Type | Description |
 | ------------- | ------------- | ------------------------------------------------------ |
-| authToken  | string |A User chosen Token for basic Authorization, when tls is disabled|
+| authToken  | string |A User chosen Token for basic Authorization, when `tls` is disabled|
 | shardsPerCluster  | number/1 |The total amount of Shards per Cluster/Process|
 | totalShards  | number |The amount of Total Shards in all Machines|
 | totalMachines  | number |The amount of Total Machines in order to chunk the ShardList|
@@ -246,18 +246,55 @@ const client = new Client({
 ### 6.1.2 Bridge `Events`:
 | Event |  Description |
 | ------------- | -------------- |
-| ready(url)  | Event fired when the Bridge is ready|
-| error(error)  | Bridge Error|
-| connect(client, initialdata) | Client, which connected to the bridge with their Initial Data|
-| disconnect(client, reason)  |Client, which disconnected from the bridge with a providable reason|
-| clientMessage (message, client)  | A Message, which is sent from a connected Client|
-| clientRequest (message, client)  | A Request, which is sent from a connected Client and can be replied to with `message.reply()`|
+| `ready`(url)  | Event fired when the Bridge is ready|
+| `error`(error)  | Bridge Error|
+| `connect`(client, initialdata) | Client, which connected to the bridge with their Initial Data|
+| `disconnect`(client, reason)  |Client, which disconnected from the bridge with a providable reason|
+| `clientMessage`(message, client)  | A Message, which is sent from a connected Client|
+| `clientRequest`(message, client)  | A Request, which is sent from a connected Client and can be replied to with `message.reply()`|
 
 ### 6.1.3 Bridge `Functions`:
+| Function |  Description |
+| ------------- | -------------- |
+| `start()`  | Starts the Bridge |
+| `broadcastEval(script=string, options={filter: (c => c.agent === 'bot')})` | Evaluates a script or function on all clusters, or a given cluster, in the context of the Client |
+| `requestToGuild(message = {})` | Sends a Request to the Guild and returns the reply, which can be answered with .reply |
 
+### 6.2.1 Client (Machine) `Options`:
+| Option | Type | Description |
+| ------------- | ------------- | ------------------------------------------------------ |
+| `authToken`  | string |A User chosen Token for basic Authorization, when `tls` is disabled|
+| `agent`  | string | The service name in order to identify the Clients|
 
+### 6.2.2 Client `Events`:
+| Event |  Description |
+| ------------- | -------------- |
+| `ready`(data)  | Event fired when the Client is ready|
+| `error`(error)  | Client Error|
+| `bridgeMessage`(message, client)  | A Message, which is sent from the Bridge |
+| `bridgeRequest`(message, client)  | A Request, which is sent from the Bridge and can be replied to with `message.reply()`|
 
+### 6.2.3 Client `Functions`:
+| Function |  Description |
+| ------------- | -------------- |
+| `connect(initialdata= {})`  | Connect to the Bridge with some Initial Data|
+| `requestShardData()`  | Request some Shard and Important Data from the Bridge. |
+| `listen(manager=HYBRID_SHARDING_MANAGER)` | Listens to the Hybrid-Sharding-Manager |
+| `broadcastEval(script=string, options={filter: (c => c.agent === 'bot')})` | Evaluates a script or function on all clusters, or a given cluster, in the context of the Client |
+|`send(message ={}, options ={})`| Sends a Message to the Bridge|
+|`request(message ={}, options ={})`| Sends a Request to the Bridge and returns the reply|
+| `requestToGuild(message = {})` | Sends a Request to the Guild and returns the reply, which can be answered with .reply |
 
+### 6.3.1 Bot (Shard) `Options`: No Options are needed.
+### 6.3.2 Bot (Shard) `Events`: Listen to [Hybrid-Sharding-Events](https://npmjs.com/discord-hybrid-sharding)
+
+### 6.3.3 Bot (Shard) `Functions`:
+| Function |  Description |
+| ------------- | -------------- |
+| `broadcastEval(script=string, options={filter: (c => c.agent === 'bot')})` | Evaluates a script or function on all clusters, or a given cluster, in the context of the Client |
+|`send(message ={}, options ={})`| Sends a Message to the Bridge|
+|`request(message ={}, options ={})`| Sends a Request to the Bridge and returns the reply|
+|`requestToGuild(message = {})` | Sends a Request to the Guild and returns the reply, which can be answered with .reply |
 
 
 ## 7.Example:
@@ -408,7 +445,7 @@ app.get('/guild/:id', async function (req, res) {
 })
 ```
 
-**Have fun and feel free to Contribute/Suggest or Contact me on my Discord server or per DM on Meister#9667**
+**Have fun and feel free to Contribute/Suggest or Contact me on my [Discord server](https://discord.gg/QMTwmMZ) or per DM on Meister#9667**
 
 ## Bugs, Glitches and Issues
-If you encounter any problems feel free to open an issue in our <a href="https://github.com/meister03/discord-hybrid-sharding/issues">github repository or join the discord server.</a>
+If you encounter any problems feel free to open an issue in our <a href="https://github.com/meister03/discord-cross-hosting/issues">github repository or join the discord server.</a>
