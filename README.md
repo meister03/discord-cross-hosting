@@ -400,7 +400,7 @@ const client = new Discord.Client({
 client.cluster = new Cluster.Client(client); 
 
 ////Initalize ClientMachine
-const Shard = require('../Managers/Shard.js');
+const {Shard} = require('discord-cross-hosting');
 client.machine = new Shard(client.cluster);
 
 client.on('ready', () =>{

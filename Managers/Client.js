@@ -131,9 +131,9 @@ class BridgeClient extends Client {
             return;
         }
         let emitmessage;
-        if(typeof message === 'object') emitmessage = new IPCMessage(client, message, res)
+        if(typeof message === 'object') emitmessage = new IPCMessage((client||this), message, res)
         else emitmessage = message;
-        this.emit('bridgeRequest', emitmessage, client);
+        this.emit('bridgeRequest', emitmessage, (client||this));
     }
 
 

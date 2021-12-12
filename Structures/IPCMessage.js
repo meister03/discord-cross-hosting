@@ -33,9 +33,9 @@ class BaseMessage{
         }
         this._sCustom = true;
         if(this._sRequest){
-            this.type = messageType.CUSTOM_REQUEST;
+            if(!this.type) this.type = messageType.CUSTOM_REQUEST;
         }else{
-            this.type = messageType.CUSTOM_MESSAGE;
+            if(!this.type) this.type = messageType.CUSTOM_MESSAGE;
         }
         this.nonce = message.nonce;
         return message;

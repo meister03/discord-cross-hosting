@@ -1,4 +1,5 @@
 const {IPCMessage, BaseMessage} = require("../Structures/IPCMessage.js");
+const { messageType } = require("../Utils/Constants.js");
 class ShardClient {
     constructor(shard) {
         this.shard = shard;
@@ -71,6 +72,7 @@ class ShardClient {
         if (!message.guildId) throw new Error('GuildID has not been provided!');
         if(!message.eval) message.type = messageType.GUILD_DATA_REQUEST;
         else message.type = messageType.GUILD_EVAL_REQUEST;
+        console.log(message)
         return this.request(message,  {internal: true});
     }
 }

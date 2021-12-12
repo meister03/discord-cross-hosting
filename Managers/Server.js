@@ -311,6 +311,7 @@ class BridgeServer extends Server {
     *   .catch(console.error);
     */
     async requestToGuild(message = {}) {
+        //console.log(message)
         if (!message?.guildId) throw new Error('GuildID has not been provided!');
         const internalShard = Util.shardIdForGuildId(message.guildId, this.totalShards);
         //console.log(internalShard)
