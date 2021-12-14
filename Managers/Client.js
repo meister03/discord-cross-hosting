@@ -267,7 +267,7 @@ class BridgeClient extends Client {
     * @param {BaseMessage} message Message, which should be sent as request and handled by the User
     * @returns {Promise<*>} Reply of the Message
     * @example
-    * client.crosshost.requestToClient({content: 'hello', agent: 'dashboard', clientId: 'CLient_id_provided_by_machine'})
+    * client.requestToClient({content: 'hello', agent: 'dashboard', clientId: 'CLient_id_provided_by_machine'})
     *   .then(result => console.log(result)) //hi
     *   .catch(console.error);
     */

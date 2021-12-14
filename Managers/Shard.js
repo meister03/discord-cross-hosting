@@ -72,7 +72,21 @@ class ShardClient {
         if (!message.guildId) throw new Error('GuildID has not been provided!');
         if(!message.eval) message.type = messageType.GUILD_DATA_REQUEST;
         else message.type = messageType.GUILD_EVAL_REQUEST;
-        console.log(message)
+        return this.request(message,  {internal: true});
+    }
+
+    /**
+    * Sends a Request to the Client and returns the reply
+    * @param {BaseMessage} message Message, which should be sent as request and handled by the User
+    * @returns {Promise<*>} Reply of the Message
+    * @example
+    * client.crosshost.requestToClient({content: 'hello', agent: 'dashboard', clientId: 'CLient_id_provided_by_machine'})
+    *   .then(result => console.log(result)) //hi
+    *   .catch(console.error);
+    */
+    async requestToClient(message ={}){
+        if (!message.agent && !message.clientId) throw new Error('Agent has not been provided!');
+        message.type = messageType.CLIENT_DATA_REQUEST;
         return this.request(message,  {internal: true});
     }
 }
