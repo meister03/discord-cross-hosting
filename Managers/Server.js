@@ -219,6 +219,20 @@ class BridgeServer extends Server {
             return;
         }
 
+        if(message.type === messageType.CLIENT_DATA_REQUEST){
+            if(!message.agent && !message.clientId) return res({...message, error: 'AGENT MISSING OR CLIENTID MISSING FOR FINDING TARGET CLIENT'});
+            if(message.clientId){
+                const targetclient = this.clients.get(message.clientId);
+                if(!targetclient) return res({...message, error: 'CLIENT NOT FOUND WITH PROVIDED CLIENT ID'});
+                return targetclient.request(message).then(e => res(e)).catch(e => res({...message, error: e}));
+            }
+            const clients = [...this.clients.values()].filter(c => c.agent === String(message.agent));
+            message.type = messageType.CLIENT_DATA_REQUEST;
+            const promises = [];
+            for (const client of clients) promises.push(client.request(message));
+            return Promise.all(promises).then(e => res(e)).catch(e => res({...message, error: e}));
+        }
+
         let emitmessage;
         if(typeof message === 'object') emitmessage = new IPCMessage(client, message, res)
         else emitmessage = message;

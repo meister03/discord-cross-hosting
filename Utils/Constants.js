@@ -14,6 +14,8 @@ exports.messageType = createEnum([
     'GUILD_DATA_RESPONSE',
     'GUILD_EVAL_REQUEST',
     'GUILD_EVAL_RESPONSE',
+    'CLIENT_DATA_REQUEST',
+    'CLIENT_DATA_RESPONSE',
 ]);
 
 
