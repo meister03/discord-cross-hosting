@@ -215,7 +215,7 @@ class BridgeServer extends Server {
 
         ///Guild Data Request
         if (message.type === messageType.GUILD_DATA_REQUEST) {
-            this.requestToGuild(message).then(e => res(e)).catch(e => res(e));
+            this.requestToGuild(message).then(e => res(e)).catch(e => res({...message, error: e}));
             return;
         }
 
