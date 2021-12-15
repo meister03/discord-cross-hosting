@@ -328,9 +328,10 @@ class BridgeServer extends Server {
         //console.log(message)
         if (!message?.guildId) throw new Error('GuildID has not been provided!');
         const internalShard = Util.shardIdForGuildId(message.guildId, this.totalShards);
-        //console.log(internalShard)
+        console.log(`RequestToGuild: ` + internalShard)
 
         const targetclient = [...this.clients.values()].find(x => x?.shardList?.flat()?.includes(internalShard));
+        console.log(`RequestToGuild Client: ` + targetclient.id)
 
         if (!targetclient) throw new Error('Internal Shard not found!');
         if (!message.options) message.options = {};
