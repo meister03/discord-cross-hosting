@@ -119,18 +119,19 @@ class BridgeClient extends Client {
         }
 
         if (message.type === messageType.GUILD_DATA_REQUEST) {
+            console.log(message)
             if (!this.manager) throw new Error(`A Cluster/Shard Manager has not been loaded to net-ipc`);
             message.type = messageType.GUILD_DATA_RESPONSE;
             ///Find Shard
             if (message.options.hasOwnProperty('shard')) {
                 const findcluster = [...this.manager.clusters.values()].find(i => i.shardlist.includes(message.options.shard));
                 message.options.cluster = findcluster ? findcluster.id : 0;
-                // console.log(`Cluster Request: ${message.options.cluster}`)
+                console.log(`Guild Data Cluster Request: ${message.options.cluster}`)
             } else return res({ error: 'No Shard has been provided!', ...message });
             const cluster = this.manager.clusters.get(message.options.cluster);
-            //console.log(`Cluster Request: ${cluster?.id}`)
+            console.log(`Found Cluster to send request: ${cluster?.id}`)
             if (cluster === undefined) return res({ ...message, error: `Cluster ${message.options.cluster} not found!` });
-            cluster.request(message).then(e => res(e)).catch(e => res(e));
+            cluster.request(message).then(e => res(e)).catch(e => res({...message, error: e}));
             return;
         }
         if (message.type === messageType.GUILD_EVAL_REQUEST) {
