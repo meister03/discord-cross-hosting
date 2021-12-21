@@ -445,7 +445,7 @@ app.listen(3000, () => {console.log('Listening on port 3000')});
 ///listen to express event:
 app.get('/guild/:id', async function (req, res) {
     const guildId = req.params.id; 
-    client.requestToGuild({ guildId: '734707332163829780' }).then(e => res.send(e)).catch(e => res.send(e));
+    client.requestToGuild({ guildId: guildId }).then(e => res.send(e)).catch(e => res.send(e));
 })
 ```
 
