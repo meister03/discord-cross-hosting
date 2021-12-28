@@ -49,8 +49,7 @@ class ShardClient {
     async request(message ={}, options = {}) {
         if (!message) throw new Error('Request has not been provided!');
         if(typeof message !== 'object' && !options.internal) throw new TypeError('The Request has to be an object')
-        if (!options) options = {};
-        message.options = options;
+        if(!message.options) message.options = options;
         if(!options.internal){
             message._sRequest = true;
             message._sReply = false;
@@ -68,10 +67,11 @@ class ShardClient {
     *   .then(result => console.log(result)) //hi
     *   .catch(console.error);
     */
-    async requestToGuild(message ={}){
+    async requestToGuild(message ={} ,  options = {}){
         if (!message.guildId) throw new Error('GuildID has not been provided!');
         if(!message.eval) message.type = messageType.GUILD_DATA_REQUEST;
         else message.type = messageType.GUILD_EVAL_REQUEST;
+        if(!message.options) message.options = options;
         return this.request(message,  {internal: true});
     }
 
@@ -84,9 +84,10 @@ class ShardClient {
     *   .then(result => console.log(result)) //hi
     *   .catch(console.error);
     */
-    async requestToClient(message ={}){
+    async requestToClient(message ={},  options = {}){
         if (!message.agent && !message.clientId) throw new Error('Agent has not been provided!');
         message.type = messageType.CLIENT_DATA_REQUEST;
+        if(!message.options) message.options = options;
         return this.request(message,  {internal: true});
     }
 }

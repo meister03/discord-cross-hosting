@@ -151,10 +151,10 @@ class BridgeClient extends Client {
     * Request some Shard and Important Data from the Bridge.
     * @return {Object} response - The ShardList, TotalShards and other Data requested from the Bridge
     */
-    async requestShardData() {
+    async requestShardData(options = {}) {
         const message = {}
         message.type = messageType.SHARDLIST_DATA_REQUEST;
-        const response = await super.request(message);
+        const response = await super.request(message, options.timeout);
         this._debug(`Given Shard Data: ${JSON.stringify(response)}`, { bridge: true });
         if (!response) throw new Error(`No Response from Server`);
         this.shardList = response.shardList;
@@ -190,12 +190,12 @@ class BridgeClient extends Client {
     *   .catch(console.error);
     * @see {@link Server#broadcastEval}
     */
-    async broadcastEval(script, options) {
+    async broadcastEval(script, options = {}) {
         if (!script) throw new Error('Script for BroadcastEvaling has not been provided!');
         script = typeof script === 'function' ? `(${script})(this)` : script;
         const message = { script, options }
         message.type = messageType.CLIENT_BROADCAST_REQUEST;
-        return super.request(message)
+        return super.request(message, message.options.timeout)
     }
 
 
@@ -228,7 +228,7 @@ class BridgeClient extends Client {
     * @param {BaseMessage} message Message, which should be sent as request
     * @returns {Promise<*>} Reply of the Message
     * @example
-    * client.request({content: 'hello'})
+    * client.request({content: 'hello'}, {timeout: 1000})
     *   .then(result => console.log(result)) //hi
     *   .catch(console.error);
     * @see {@link IPCMessage#reply}
@@ -238,14 +238,13 @@ class BridgeClient extends Client {
         if (typeof message === 'string' && !options.internal) message = JSON.parse(message)
         if (typeof message !== 'object' && !options.internal) throw new TypeError('The Request has to be an object')
         //console.log(message)
-        if (!options) options = {};
-        message.options = options;
+        if (!message.options) message.options = options;
         if (!options.internal) {
             message._sRequest = true;
             message._sReply = false;
             message = new BaseMessage(message).toJSON()
         }
-        return super.request(JSON.stringify(message)).catch(e => console.log(e));
+        return super.request(JSON.stringify(message), message.options.timeout).catch(e => console.log(e));
     }
     /**
     * Sends a Request to the Guild and returns the reply
@@ -256,11 +255,12 @@ class BridgeClient extends Client {
     *   .then(result => console.log(result)) //hi
     *   .catch(console.error);
     */
-    async requestToGuild(message = {}) {
+    async requestToGuild(message = {}, options = {}) {
         if (!message.guildId) throw new Error('GuildID has not been provided!');
         if (!message.eval) message.type = messageType.GUILD_DATA_REQUEST;
         else message.type = messageType.GUILD_EVAL_REQUEST;
-        return super.request(message);
+        if(!message.options) message.options = options;
+        return super.request(message, message.options.timeout);
     }
 
     /**
@@ -272,10 +272,11 @@ class BridgeClient extends Client {
     *   .then(result => console.log(result)) //hi
     *   .catch(console.error);
     */
-    async requestToClient(message = {}) {
+    async requestToClient(message = {} , options = {}) {
         if (!message.agent && !message.clientId) throw new Error('Agent has not been provided!');
         message.type = messageType.CLIENT_DATA_REQUEST;
-        return super.request(message);
+        if(!message.options) message.options = options;
+        return super.request(message, message.options.timeout);
     }
 
 

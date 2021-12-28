@@ -192,11 +192,11 @@ class BridgeServer extends Server {
         if (!this.clients.has(client.id)) return;
         ///BroadcastEval
         if (message.type === messageType.CLIENT_BROADCAST_REQUEST) {
-            const clients = [...this.clients.values()].filter(c => c.agent === 'bot');
+            const clients = [...this.clients.values()].filter((message.options?.agent ? (c=> message.options.agent.includes(c.agent)) : (c => c.agent === 'bot')));
 
             message.type = messageType.SERVER_BROADCAST_REQUEST;
             const promises = [];
-            for (const client of clients) promises.push(client.request(message));
+            for (const client of clients) promises.push(client.request(message, message.options?.timeout));
             Promise.all(promises).then(e => res(e).catch(e => null));
             //return res.send(responses);
         }
@@ -224,12 +224,12 @@ class BridgeServer extends Server {
             if(message.clientId){
                 const targetclient = this.clients.get(message.clientId);
                 if(!targetclient) return res({...message, error: 'CLIENT NOT FOUND WITH PROVIDED CLIENT ID'});
-                return targetclient.request(message).then(e => res(e)).catch(e => res({...message, error: e}));
+                return targetclient.request(message, message.options?.timeout).then(e => res(e)).catch(e => res({...message, error: e}));
             }
             const clients = [...this.clients.values()].filter(c => c.agent === String(message.agent));
             message.type = messageType.CLIENT_DATA_REQUEST;
             const promises = [];
-            for (const client of clients) promises.push(client.request(message));
+            for (const client of clients) promises.push(client.request(message, message.options?.timeout));
             return Promise.all(promises).then(e => res(e)).catch(e => res({...message, error: e}));
         }
 
@@ -310,7 +310,7 @@ class BridgeServer extends Server {
         const clients = [...this.clients.values()].filter((options.filter || (c => c.agent === 'bot')));
         message.type = messageType.SERVER_BROADCAST_REQUEST;
         const promises = [];
-        for (const client of clients) promises.push(client.request(message));
+        for (const client of clients) promises.push(client.request(message, options.timeout));
         return Promise.all(promises);
     }
 
@@ -324,7 +324,7 @@ class BridgeServer extends Server {
     *   .then(result => console.log(result)) //hi
     *   .catch(console.error);
     */
-    async requestToGuild(message = {}) {
+    async requestToGuild(message = {}, options = {}) {
         //console.log(message)
         if (!message?.guildId) throw new Error('GuildID has not been provided!');
         const internalShard = Util.shardIdForGuildId(message.guildId, this.totalShards);
@@ -334,14 +334,14 @@ class BridgeServer extends Server {
         console.log(`RequestToGuild Client: ` + targetclient.id)
 
         if (!targetclient) throw new Error('Internal Shard not found!');
-        if (!message.options) message.options = {};
+        if (!message.options) message.options = opitons;
 
         if (message.eval) message.type = messageType.GUILD_EVAL_REQUEST;
         else message.type = messageType.GUILD_DATA_REQUEST;
 
         message.options.shard = internalShard;
 
-        return targetclient.request(message);
+        return targetclient.request(message, message.options.timeout);
     }
 
     /**
