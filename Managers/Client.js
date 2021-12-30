@@ -157,6 +157,7 @@ class BridgeClient extends Client {
         const response = await super.request(message, options.timeout);
         this._debug(`Given Shard Data: ${JSON.stringify(response)}`, { bridge: true });
         if (!response) throw new Error(`No Response from Server`);
+        this.clusterList =  response.clusterList;
         this.shardList = response.shardList;
         this.totalShards = response.totalShards;
         return response;
@@ -191,9 +192,10 @@ class BridgeClient extends Client {
     * @see {@link Server#broadcastEval}
     */
     async broadcastEval(script, options = {}) {
-        if (!script) throw new Error('Script for BroadcastEvaling has not been provided!');
+        if (!script || typeof string !== 'string') throw new Error('Script for BroadcastEvaling has not been provided or must be a valid String!');
         script = typeof script === 'function' ? `(${script})(this)` : script;
-        const message = { script, options }
+        options.usev13 = false;
+        const message = { script, options };
         message.type = messageType.CLIENT_BROADCAST_REQUEST;
         return super.request(message, message.options.timeout)
     }

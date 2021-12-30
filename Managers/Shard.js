@@ -16,8 +16,9 @@ class ShardClient {
     *   .catch(console.error);
     * @see {@link CrosshostManager#broadcastEval}
     */
-    async broadcastEval(script, options){
-        if (!script) throw new Error('Script for BroadcastEvaling has not been provided!');
+    async broadcastEval(script, options = {}){
+        if (!script || typeof script !== 'string') throw new Error('Script for BroadcastEvaling must be a valid String!');
+        options.usev13 = false;
         script = typeof script === 'function' ? `(${script})(this)` : script;
         return this.shard.evalOnManager(`this.netipc.broadcastEval('${script}', ${options})`);
     }
