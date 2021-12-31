@@ -6,13 +6,14 @@ The first package, which allows broadcastEvaling over Cross Hosted Machines and 
 
 # Features:
 - BroadcastEval over cross-hosted Machines 
-- Sending Messages to cross-hosted Machines
+- Sending Messages and custom Requests to cross-hosted Machines
 - Machine & Shard Count/List Managing -> RollingRestart on Update
-- Connect Services such as a Dashboard...
+- Connected Services such as a Dashboard...
+- Super Fast IPC with `.reply`, `.send`, `.request` options...
 
 ### See below for the Guide
 
-**If you need help feel free to join our <a href="https://discord.gg/YTdNBHh">discord server</a>. We will provied you all help ☺**
+**If you need help feel free to join our <a href="https://discord.gg/YTdNBHh">discord server</a>. We will provide you all help ☺**
 # Download
 You can download it from npm:
 ```cli
@@ -35,13 +36,13 @@ npm i discord-cross-hosting
 7. **Example**
 
 ## 1.How does it works?
-For ensuring a fast, reliable and secure Connection, where you can also sent a ton of Data, followed to our Decision that we changed to a TCP-Server. This opens up the opportunity to connect all your services to the same Server.
+For ensuring a fast, reliable and secure Connection, where you can also sent a ton of Data, followed to our decision that we changed to a TCP-Server. This opens up the opportunity to connect all your services to the same Server.
 The TCP-Server is used as Bridge and as Control Unit for managing the Machine & Shard Count.
 
 ## 2.Test | Response Time & Results:
 The following Test has been accomplished on 4 different hosted Machines with different Locations.
 Each of the Machines had 2 Clusters (Process), which contained 2 internal Shards.
-The test Object was a 20k Server Discord Bot.
+The test Object was a 20k Server Discord Bot. (Also has been tested with bots bigger than 70k)
 - Total Machines: 4
 - Total Clusters: 8
 - Total Shards: 16
@@ -87,7 +88,7 @@ Bridge | Server.js
     server.start();
     server.on('ready', (url) => {
         console.log('Server is ready' + url);   
-        setInterval(() => {server.broadcastEval('this.guilds.cache.size').then(e => console.log(e))}, 10000)
+        setInterval(() => {server.broadcastEval('this.guilds.cache.size').then(console.log).catch(console.log)}, 10000)
     })
 ```
 ### 3.3 Cluster:
@@ -107,7 +108,8 @@ const client = new Client({
     host: "localhost", ///Domain without https
     port: 4444, ///Proxy Connection (Replit) needs Port 443
     //handshake: true, When Replit or any other Proxy is used
-    authToken: 'theauthtoken'
+    authToken: 'theauthtoken',
+    rollingRestarts: false, //Enable, when bot should respawn when cluster list changes.
 });
 client.on('debug', console.log)
 client.connect();
@@ -124,6 +126,7 @@ client.requestShardData().then(e => {
     manager.totalShards = e.totalShards;
     manager.totalClusters = e.shardList.length;
     manager.shardList = e.shardList;
+    manager.clusterList = e.clusterList;
     manager.spawn(undefined,undefined,-1)
 }).catch(e => console.log(e));
 ```
@@ -268,7 +271,8 @@ const client = new Client({
 | Option | Type | Description |
 | ------------- | ------------- | ------------------------------------------------------ |
 | `authToken`  | string |A User chosen Token for basic Authorization, when `tls` is disabled|
-| `agent`  | string | The service name in order to identify the Clients|
+| `agent`  | string=`bot` | The service name in order to identify the Clients|
+| `rollingRestarts`| boolean=false | If the Clusters should be updated, when the Bridge updates the ShardList|
 
 ### 6.2.2 Client `Events`:
 | Event |  Description |
@@ -343,6 +347,7 @@ const client = new Client({
     port: 4423,
     authToken: 'xxx-auth-token', 
     retries: 360 ,
+    rollingRestarts: false,
 });
 client.on('debug', console.log)
 client.connect();
@@ -367,6 +372,7 @@ client.requestShardData().then(e => {
     manager.totalShards = e.totalShards;
     manager.totalClusters = e.shardList.length;
     manager.shardList = e.shardList;
+    manager.clusterList = e.clusterList;
     manager.spawn(undefined, undefined, -1)
 }).catch(e => console.log(e));
 

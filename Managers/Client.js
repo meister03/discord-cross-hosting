@@ -26,7 +26,7 @@ class BridgeClient extends Client {
         * If Rolling Restart should be disabled.
         * @type {Boolean}
         */
-        this.rollingRestarts = options?.rollingRestarts ?? true;
+        this.rollingRestarts = options?.rollingRestarts ?? false;
 
 
         /**
@@ -76,17 +76,19 @@ class BridgeClient extends Client {
         if (message?.type === undefined) return;
 
         if (message.type === messageType.SHARDLIST_DATA_UPDATE) {
+            if (!this.rollingRestarts) return;
             const checkifclusterlistisuptodate = message.shardClusterList.find(x => JSON.stringify(x) === JSON.stringify(this.shardList))
 
             if (!checkifclusterlistisuptodate || this.totalShards !== message.totalShards) {
                 this._debug(`[SHARDLIST_DATA_UPDATE] ShardData changed, waiting 5s until RollingRestart...`, { bridge: true });
                 setTimeout(async () => {
                     const response = await this.requestShardData();
-                    if (!response?.shardList) return;
+                    //if (!response?.shardList) return; -> Kill Old Clusters
                     this.manager.totalShards = response.totalShards;
-                    this.manager.shardList = response.shardList;
-                    this.manager.totalClusters = response.shardList.length;
-                    this.manager.shardclusterlist = response.shardList;
+                    this.manager.shardList = response.shardList || [];
+                    this.manager.totalClusters = response.shardList?.length;
+                    this.manager.shardclusterlist = response.shardList || [];
+                    this.manager.clusterList = response.clusterList || [];
                     this._debug(`[Start] RollingRestart`);
                     this.rollingRestart();
                 }, 5000);
@@ -291,30 +293,51 @@ class BridgeClient extends Client {
         const clusters = [...this.manager.clusters.values()];
         const length = clusters.length < this.manager.shardclusterlist.length ? this.manager.shardclusterlist.length : clusters.length;
         this._debug(`[RollingRestart] ShardClusterList: ${JSON.stringify(this.manager.shardclusterlist)}`);
+        console.log(length);
+        console.log(this.manager.shardclusterlist)
         if (!this.rollingRestarts) return;
-        for (let i = 0; i < length; i++) {
+        if(this.manager.shardclusterlist.length === 0) {
+            clusters.map(x => {
+                    try{ 
+                        x?.kill({ force: true })
+                    }catch(error){console.log(error)}
+                    
+                    this.manager.clusters.delete(x.id);
+                    this._debug(`[RollingRestart][Kill] Old Cluster ${x.id}`);
+            })
+            return;
+        }
+        for (let i = 0; i < (length + 1); i++) {
             if (this.manager.shardclusterlist[i]) {
                 setTimeout(async () => {
-                    const cluster = this.manager.createCluster(i, this.manager.shardclusterlist[i], this.manager.totalShards);
+                    const cluster = this.manager.createCluster((this.manager.clusterList[i] || i) , this.manager.shardclusterlist[i], this.manager.totalShards);
                     this._debug(`[RollingRestart][Spawn] Cluster ${cluster.id}`);
                     cluster.spawn(-1);
                     cluster.on('ready', () => {
                         const clusterposition = clusters.findIndex(x => x.id === cluster.id)
                         if (clusterposition === undefined || clusterposition === -1) return;
-                        clusters.find(x => x.id === cluster.id)?.kill({ force: true });
+                        try{ 
+                            clusters.find(x => x.id === cluster.id)?.kill({ force: true }).catch(e => null);
+                        }catch(error){console.log(error)}
                         this._debug(`[RollingRestart][Kill] Old Cluster ${cluster.id}`);
                         clusters.splice(clusterposition, 1);
                     })
                 }, i * 7000 * this.manager.shardclusterlist[i].length);
             } else {
-                const clusterposition = clusters.findIndex(x => x.id === i)
-                if (clusterposition === undefined || clusterposition === -1) return;
-                this._debug(`[RollingRestart][Kill] Old Cluster ${i}`);
-                clusters.find(x => x.id === i)?.kill({ force: true });
-                clusters.splice(clusterposition, 1);
+                if(!clusters.length) continue;
+                clusters.map(x => {
+                    if(!this.manager.clusterList.includes(x.id)){
+                        try{ 
+                            x?.kill({ force: true })
+                        }catch(error){console.log(error)}
+                        
+                        this.manager.clusters.delete(x.id);
+                        this._debug(`[RollingRestart][Kill] Old Cluster ${i}`);
+                    }
+                })
             }
         }
-
+        
     }
 
 

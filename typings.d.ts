@@ -63,6 +63,7 @@ declare module "discord-cross-hosting" {
 		public broadcastEval(
 			script: string | Function,
 			options?: {
+				timeout?: number;
 				filter?: (client: BridgeConnection) => boolean;
 			}
 		): Promise<any[]>;
@@ -119,7 +120,8 @@ declare module "discord-cross-hosting" {
 		 */
 		public requestShardData(options?: { timeout?: number }): Promise<{
 			totalShards: number;
-			shardList: any[];
+			shardList: number[];
+			clusterList: number[];
 		}>;
 
 		/**
@@ -147,7 +149,7 @@ declare module "discord-cross-hosting" {
 		 * Sends a Message to the Bridge
 		 * @example
 		 * client.send({content: 'hello'})
-		 *   .then(result => console.log(result)) //hi
+		 *   .then(result => console.log(result)) 
 		 *   .catch(console.error);
 		 */
 		public send<M extends string | { [key: string]: any }>(
@@ -196,8 +198,8 @@ declare module "discord-cross-hosting" {
 		 */
 		public requestToClient(
 			message:
-				| { agent: string; clientId?: string; [ket: string]: any }
-				| { agent?: string; clientId: string; [ket: string]: any },
+				| { agent: string; clientId?: string; [key: string]: any }
+				| { agent?: string; clientId: string; [key: string]: any },
 			options?: { timeout?: number }
 		);
 	}
@@ -269,8 +271,8 @@ declare module "discord-cross-hosting" {
 		 */
 		public requestToClient(
 			message:
-				| { agent: string; clientId?: string; [ket: string]: any }
-				| { agent?: string; clientId: string; [ket: string]: any },
+				| { agent: string; clientId?: string; [key: string]: any }
+				| { agent?: string; clientId: string; [key: string]: any },
 			options?: { [key: string]: any }
 		): Promise<any>;
 	}
@@ -294,6 +296,9 @@ declare module "discord-cross-hosting" {
 		public nonce: string;
 	}
 	export class IPCMessage extends BaseMessage {
+
+		public raw: BaseMessage;
+
 		/**
 		 * Sends a message to the cluster's process/worker or to the ParentCluster.
 		 */

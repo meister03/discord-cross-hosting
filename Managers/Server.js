@@ -204,11 +204,25 @@ class BridgeServer extends Server {
         ///Shard Data Request
         if (message.type === messageType.SHARDLIST_DATA_REQUEST) {
             client = this.clients.get(client.id);
+            
             if (!this.shardClusterListQueue[0]) return res([]);
             client.shardList = this.shardClusterListQueue[0];
             this._debug(`[SHARDLIST_DATA_RESPONSE][${client.id}] ShardList: ${JSON.stringify(client.shardList)}`, { cm: true })
             this.shardClusterListQueue.shift();
-            res({ shardList: client.shardList, totalShards: this.totalShards });
+            
+            ///Map clusterList:
+         
+            const clusterIds = this.shardClusterList.map(x => x.length);
+            const shardListPosition = this.shardClusterList.findIndex(x => JSON.stringify(x) === JSON.stringify(client.shardList))
+            const clusterId = clusterIds.splice(0, shardListPosition);
+            let r = 0;
+            r = clusterId.reduce((a, b) => a + b,0);
+            const clusterList = []; 
+            for(let i = 0; i < client.shardList.length; i++) {
+                clusterList.push(r);
+                r++
+            }
+            res({ shardList: client.shardList, totalShards: this.totalShards, clusterList: clusterList });
             this.clients.set(client.id, client);
             return;
         }
@@ -275,7 +289,8 @@ class BridgeServer extends Server {
         const clusterAmount = Math.ceil(this.shardList.length / this.shardsPerCluster);
         const ClusterList = this.shardList.chunkList(Math.ceil(this.shardList.length / clusterAmount));
         this.shardClusterList = ClusterList.chunkList(Math.ceil(ClusterList.length / this.totalMachines));
-        this.shardClusterListQueue = this.shardClusterList;
+ 
+        this.shardClusterListQueue = this.shardClusterList.slice(0);
         this._debug(`Created shardClusterList: ${JSON.stringify(this.shardClusterList)}`)
 
         //Update Shard Data:
