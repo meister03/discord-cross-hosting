@@ -18,7 +18,7 @@ class BridgeClient extends Client {
         * @type {String}
         */
         this.agent = options?.agent;
-        if (!this.authToken) throw new Error('ClIENT_MISSING_OPTION', 'agent must be provided', 'Default: bot');
+        if (!this.agent) throw new Error('ClIENT_MISSING_OPTION', 'agent must be provided', 'Default: bot');
 
 
 
