@@ -3,6 +3,7 @@
   "version": "2.0.7",
   "description": "The first package, which allows broadcastEvaling over Cross Hosted Machines and effecient Machine & Shard Managing.",
   "main": "index.js",
+  "types": "./typings.d.ts",
   "dependencies": {
     "net-ipc": "github:timotejroiko/net-ipc",
     "node-fetch": "^2.6.1"
