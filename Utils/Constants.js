@@ -1,3 +1,5 @@
+const {Options, Constants} = require('discord.js')
+
 exports.messageType = createEnum([
     'CUSTOM_REQUEST',
     'CUSTOM_MESSAGE',
@@ -18,7 +20,9 @@ exports.messageType = createEnum([
     'CLIENT_DATA_RESPONSE',
 ]);
 
-
+// Actually just move this thing to here instead of inside Util (from Discord V13)
+exports.DefaultOptions = Options.createDefault()
+exports.Endpoints = Constants.Endpoints
 
 
 
