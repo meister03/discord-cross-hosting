@@ -194,8 +194,8 @@ class BridgeClient extends Client {
     * @see {@link Server#broadcastEval}
     */
     async broadcastEval(script, options = {}) {
-        if (!script || typeof string !== 'string') throw new Error('Script for BroadcastEvaling has not been provided or must be a valid String!');
-        script = typeof script === 'function' ? `(${script})(this)` : script;
+        if (!script || (typeof script !== 'string' && typeof script !== 'function'))  throw new Error('Script for BroadcastEvaling has not been provided or must be a valid String!');
+        script = typeof script === 'function' ? `(${script})(this, ${JSON.stringify(options.context)})` : script;
         options.usev13 = false;
         const message = { script, options };
         message.type = messageType.CLIENT_BROADCAST_REQUEST;

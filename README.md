@@ -5,7 +5,7 @@
 The first package, which allows broadcastEvaling over Cross Hosted Machines and effecient Machine & Shard Managing.
 
 # Features:
-- BroadcastEval over cross-hosted Machines 
+- BroadcastEval over cross-hosted Machines (`functions with context` or `strings`)
 - Sending Messages and custom Requests to cross-hosted Machines
 - Machine & Shard Count/List Managing -> RollingRestart on Update
 - Connected Services such as a Dashboard...

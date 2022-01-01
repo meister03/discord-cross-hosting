@@ -319,8 +319,8 @@ class BridgeServer extends Server {
     * @see {@link Server#broadcastEval}
     */
     async broadcastEval(script, options = {}) {
-        if (!script || typeof script !== 'string') throw new Error('Script for BroadcastEvaling has not been provided or must be a valid String!');
-        script = typeof script === 'function' ? `(${script})(this)` : script;
+        if (!script || (typeof script !== 'string' && typeof script !== 'function')) throw new Error('Script for BroadcastEvaling has not been provided or must be a valid String!');
+        script = typeof script === 'function' ? `(${script})(this, ${JSON.stringify(options.context)})` : script;
         options.usev13 = false;
         const message = { script, options }
         const clients = [...this.clients.values()].filter((options.filter || (c => c.agent === 'bot')));

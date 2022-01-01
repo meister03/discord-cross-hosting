@@ -76,6 +76,7 @@ declare module "discord-cross-hosting" {
 		public broadcastEval(
 			script: string | Function,
 			options?: {
+				context?: any;
 				timeout?: number;
 				filter?: (client: BridgeConnection) => boolean;
 			}
@@ -167,6 +168,7 @@ declare module "discord-cross-hosting" {
 		public broadcastEval(
 			script: string | Function,
 			options?: {
+				context?: any;
 				filter?: (client: BridgeConnection) => boolean;
 				[key: string]: any;
 			}
@@ -246,6 +248,7 @@ declare module "discord-cross-hosting" {
 		public broadcastEval(
 			script: string | Function,
 			options?: {
+				context?: any;
 				usev13?: boolean;
 				filter?: (client: BridgeConnection) => boolean;
 				[key: string]: any;
