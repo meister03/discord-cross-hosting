@@ -18,9 +18,17 @@ exports.messageType = createEnum([
     'CLIENT_DATA_RESPONSE',
 ]);
 
+// Actually just move this thing to here instead of inside Util (from Discord V13)
+exports.DefaultOptions = {
+    http: {
+        api: 'https://discord.com/api',
+        version: '9',
+    }
+}
 
-
-
+exports.Endpoints = {
+    botGateway: '/gateway/bot'
+}
 
 function createEnum(keys) {
     const obj = {};
