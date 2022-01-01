@@ -1,5 +1,3 @@
-const {Options, Constants} = require('discord.js')
-
 exports.messageType = createEnum([
     'CUSTOM_REQUEST',
     'CUSTOM_MESSAGE',
@@ -21,10 +19,16 @@ exports.messageType = createEnum([
 ]);
 
 // Actually just move this thing to here instead of inside Util (from Discord V13)
-exports.DefaultOptions = Options.createDefault()
-exports.Endpoints = Constants.Endpoints
+exports.DefaultOptions = {
+    http: {
+        api: 'https://discord.com/api',
+        version: '9',
+    }
+}
 
-
+exports.Endpoints = {
+    botGateway: '/gateway/bot'
+}
 
 function createEnum(keys) {
     const obj = {};
