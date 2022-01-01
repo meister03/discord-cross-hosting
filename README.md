@@ -145,7 +145,7 @@ const client = new Discord.Client({
 	shardCount: Cluster.data.TOTAL_SHARDS, // The Number of Total Shards
 });
 
-client.cluster = new Cluster.Client(client); .
+client.cluster = new Cluster.Client(client); 
 
 const {Shard}= require('discord-cross-hosting');
 client.machine = new Shard(client.cluster); //Initalize Cluster
