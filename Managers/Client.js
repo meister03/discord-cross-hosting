@@ -88,6 +88,7 @@ class BridgeClient extends Client {
                     this.manager.shardList = response.shardList || [];
                     this.manager.totalClusters = response.shardList?.length;
                     this.manager.shardclusterlist = response.shardList || [];
+                    this.manager.shardClusterList = response.shardList || []; //Support Old and New version of hybrid-sharding
                     this.manager.clusterList = response.clusterList || [];
                     this._debug(`[Start] RollingRestart`);
                     this.rollingRestart();
@@ -293,8 +294,7 @@ class BridgeClient extends Client {
         const clusters = [...this.manager.clusters.values()];
         const length = clusters.length < this.manager.shardclusterlist.length ? this.manager.shardclusterlist.length : clusters.length;
         this._debug(`[RollingRestart] ShardClusterList: ${JSON.stringify(this.manager.shardclusterlist)}`);
-        console.log(length);
-        console.log(this.manager.shardclusterlist)
+
         if (!this.rollingRestarts) return;
         if(this.manager.shardclusterlist.length === 0) {
             clusters.map(x => {

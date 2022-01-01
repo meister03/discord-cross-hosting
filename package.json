@@ -1,6 +1,6 @@
 {
   "name": "discord-cross-hosting",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "The first package, which allows broadcastEvaling over Cross Hosted Machines and effecient Machine & Shard Managing.",
   "main": "index.js",
   "types": "./typings.d.ts",

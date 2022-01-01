@@ -127,7 +127,7 @@ client.requestShardData().then(e => {
     manager.totalClusters = e.shardList.length;
     manager.shardList = e.shardList;
     manager.clusterList = e.clusterList;
-    manager.spawn(undefined,undefined,-1)
+    manager.spawn({timeout: -1})
 }).catch(e => console.log(e));
 ```
 
@@ -373,7 +373,7 @@ client.requestShardData().then(e => {
     manager.totalClusters = e.shardList.length;
     manager.shardList = e.shardList;
     manager.clusterList = e.clusterList;
-    manager.spawn(undefined, undefined, -1)
+    manager.spawn({timeout:  -1})
 }).catch(e => console.log(e));
 
 //Listen to the Manager Events
