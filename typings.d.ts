@@ -1,10 +1,14 @@
 declare module "discord-cross-hosting" {
 	import { EventEmitter } from "events";
+	import { TlsOptions, ConnectionOptions } from "tls";
+	import { ServerOpts, ConnectOpts } from "net";
 	import {
 		Server,
 		Connection,
 		Client as BridgeClient,
 		ClientReadyEvent,
+		ServerOptions as NetIPCServerOptions,
+		ClientOptions as NetIPCClientOptions,
 	} from "net-ipc";
 
 	// Bridge
@@ -16,6 +20,10 @@ declare module "discord-cross-hosting" {
 		totalMachines: number;
 		token: string;
 		shardList?: number[];
+		port: number;
+		path?: string;
+		tls?: boolean;
+		options?: TlsOptions | ServerOpts;
 	};
 	interface BridgeEvent {
 		debug: [message: string];
@@ -38,6 +46,11 @@ declare module "discord-cross-hosting" {
 		 * @param options.totalMachines The amount of Total Machines in order to chunk the ShardList
 		 * @param options.token The Discord Bot Token in order to fetch the recommended ShardCount
 		 * @param options.shardList A array of ShardIds to host on the connected Machines (default - `[]`)
+		 * @param options.port The port of the bridge listen to
+		 * @param options.path The path of the bridge listen to (default - `/net-ipc`)
+		 * @param options.tls Whether to use TLS (default - `false`)
+		 * @param options.options The options of net-ipc
+		 *
 		 */
 		constructor(options: BridgeOptions);
 
@@ -88,12 +101,19 @@ declare module "discord-cross-hosting" {
 		authToken: string;
 		agent: string;
 		rollingRestarts?: boolean;
+		port: number;
+		host: string;
+		handshake?: boolean;
+		retries?: number
+		tls?: boolean;
+		options?: ConnectOpts | ConnectionOptions
 	};
 	interface ClientEvent {
 		ready: [data: ClientReadyEvent];
 		error: [error: any];
 		bridgeMessage: [message: IPCMessage, client: BridgeConnection];
 		bridgeRequest: [message: IPCMessage, client: BridgeConnection | this];
+		debug: [message: string];
 	}
 	export class Client extends BridgeClient {
 		/**
@@ -101,6 +121,13 @@ declare module "discord-cross-hosting" {
 		 * @param options.authToken A User chosen Token for basic Authorization, when `tls` is disabled
 		 * @param options.agent The service name in order to identify the Clients
 		 * @param options.rollingRestarts Whether the cluster should be restarted (default - `true`)
+		 * @param options.port The port of the bridge listen to
+		 * @param options.path The path of the bridge listen to (default - `/net-ipc`)
+		 * @param options.handshake Use it when you host with Replit (default - `false`)
+		 * @param options.retries Interval of connect retry
+		 * @param options.tls Whether to use TLS (default - `false`)
+		 * @param options.options The options of net-ipc
+		 * 
 		 */
 		constructor(options: ClientOptions);
 
@@ -113,7 +140,7 @@ declare module "discord-cross-hosting" {
 		 * Connect your MachineClient to the Bridge with your Custom Data.
 		 * @param args - Custom Data, which can be sent to the Bridge when connecting.
 		 */
-		public connect(args: {[key: string]: any}): Promise<this>;
+		public connect(args?: { [key: string]: any }): Promise<this>;
 
 		/**
 		 * Request some Shard and Important Data from the Bridge.
@@ -149,7 +176,7 @@ declare module "discord-cross-hosting" {
 		 * Sends a Message to the Bridge
 		 * @example
 		 * client.send({content: 'hello'})
-		 *   .then(result => console.log(result)) 
+		 *   .then(result => console.log(result))
 		 *   .catch(console.error);
 		 */
 		public send<M extends string | { [key: string]: any }>(
@@ -164,7 +191,7 @@ declare module "discord-cross-hosting" {
 		 *   .then(result => console.log(result)) //hi
 		 *   .catch(console.error);
 		 */
-        // @ts-ignore
+		// @ts-ignore
 		override request<M extends string | { [key: string]: any }>(
 			message: M,
 			options?: {
@@ -207,7 +234,7 @@ declare module "discord-cross-hosting" {
 	// Shard
 
 	export class Shard {
-		constructor(shard: Client);
+		constructor(shard: EventEmitter);
 
 		/**
 		 * Evaluates a script or function on all machine, or a given shard, in the context of the {@link Client}s
@@ -296,7 +323,6 @@ declare module "discord-cross-hosting" {
 		public nonce: string;
 	}
 	export class IPCMessage extends BaseMessage {
-
 		public raw: BaseMessage;
 
 		/**
