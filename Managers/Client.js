@@ -157,9 +157,12 @@ class BridgeClient extends Client {
     async requestShardData(options = {}) {
         const message = {}
         message.type = messageType.SHARDLIST_DATA_REQUEST;
+        if(options.maxClusters) this.maxClusters = options.maxClusters;
+        message.maxClusters = options.maxClusters || this.maxClusters;
         const response = await super.request(message, options.timeout);
         this._debug(`Given Shard Data: ${JSON.stringify(response)}`, { bridge: true });
         if (!response) throw new Error(`No Response from Server`);
+        if(response.error) throw new Error(response.error);
         this.clusterList =  response.clusterList;
         this.shardList = response.shardList;
         this.totalShards = response.totalShards;

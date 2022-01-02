@@ -32,8 +32,9 @@ npm i discord-cross-hosting
 3. **Using the Package with Hybrid-Sharding & Machine, Shard Count Managing** 
 4. **Use TLS for a secure Connection**
 5. **Standalone Mode**
-6. **Api References**
-7. **Example**
+6. **Custom Cluster List Parsing with `.parseClusterList`**
+7. **Api References**
+8. **Example**
 
 ## 1.How does it works?
 For ensuring a fast, reliable and secure Connection, where you can also sent a ton of Data, followed to our decision that we changed to a TCP-Server. This opens up the opportunity to connect all your services to the same Server.
@@ -236,11 +237,47 @@ const client = new Client({
 ```
 
 
-## 5|6 Standalone Mode and Api-References is on work.
+## 5. Standalone Mode is on work, add the `standalone: true` in the Bridge Options
 
-## 6. Temporary Api References:
+## 6. Custom Cluster List Parsing with `.parseClusterList`
+* This allows to cross-host your bot on multiple machines, which are limited on resources, which causes that it can only spawn a limited cluster amount
+* The average resource usage (`ram`, `cpu`) for one cluster has to be measured in order to define the maxClusters per Machine and a reliable Cluster Strategy...
+
+### Bridge:
+* You can override the function `.parseClusterList` with your own function inorder to parse a custom ShardList/ClusterList
+```js
+/// Bridge Options
+const server = new Bridge({...})
+///See above for the Bridge Code | Has been removed for a better overview
+server.parseClusterList = (clusterList) =>{
+    let strategy = [2,Infinity]; //How many Clusters per Machines: 1.Machine: 2, 2.Machine: Rest of the Clusters
+    let parsedList = [];
+    for(let i = 0; i < strategy.length; i++){
+        parsedList.push(clusterList.splice(0, strategy[i]))
+    }
+    parsedList = parsedList.filter(c => c.length > 0);
+    console.log(parsedList);
+    return parsedList;
+}
+```
+
+Client:
+* By providing `maxClusters` as options, the Bridge will provide the ClusterList with the similar/same length
+```js
+///See above for the Client Code | Has been removed for a better overview
+client.requestShardData({maxClusters: 2}).then(e => {
+    if (!e) return;
+    manager.totalShards = e.totalShards;
+    manager.totalClusters = e.shardList.length;
+    manager.shardList = e.shardList;
+    manager.clusterList = e.clusterList;
+    manager.spawn(undefined, undefined, -1)
+}).catch(e => console.log(e));
+```
+
+## 7. Temporary Api References:
 * Check [`net-ipc`](https://npmjs.com/net-ipc) for all Bridge/Client related functions
-### 6.1.1 Bridge `Options`:
+### 7.1.1 Bridge `Options`:
 | Option | Type | Description |
 | ------------- | ------------- | ------------------------------------------------------ |
 | authToken  | string |A User chosen Token for basic Authorization, when `tls` is disabled|
@@ -250,7 +287,7 @@ const client = new Client({
 | token  | string |The Discord Bot Token in order to fetch the recommanded ShardCount|
 | shardList | array |A array of ShardIds to host on the connected Machines|
 
-### 6.1.2 Bridge `Events`:
+### 7.1.2 Bridge `Events`:
 | Event |  Description |
 | ------------- | -------------- |
 | `ready`(url)  | Event fired when the Bridge is ready|
@@ -260,21 +297,21 @@ const client = new Client({
 | `clientMessage`(message, client)  | A Message, which is sent from a connected Client|
 | `clientRequest`(message, client)  | A Request, which is sent from a connected Client and can be replied to with `message.reply()`|
 
-### 6.1.3 Bridge `Functions`:
+### 7.1.3 Bridge `Functions`:
 | Function |  Description |
 | ------------- | -------------- |
 | `start()`  | Starts the Bridge |
 | `broadcastEval(script=string, options={filter: (c => c.agent === 'bot')})` | Evaluates a script or function on all clusters, or a given cluster, in the context of the Client |
 | `requestToGuild(message = {})` | Sends a Request to the Guild and returns the reply, which can be answered with .reply |
 
-### 6.2.1 Client (Machine) `Options`:
+### 7.2.1 Client (Machine) `Options`:
 | Option | Type | Description |
 | ------------- | ------------- | ------------------------------------------------------ |
 | `authToken`  | string |A User chosen Token for basic Authorization, when `tls` is disabled|
 | `agent`  | string=`bot` | The service name in order to identify the Clients|
 | `rollingRestarts`| boolean=false | If the Clusters should be updated, when the Bridge updates the ShardList|
 
-### 6.2.2 Client `Events`:
+### 7.2.2 Client `Events`:
 | Event |  Description |
 | ------------- | -------------- |
 | `ready`(data)  | Event fired when the Client is ready|
@@ -282,7 +319,7 @@ const client = new Client({
 | `bridgeMessage`(message, client)  | A Message, which is sent from the Bridge |
 | `bridgeRequest`(message, client)  | A Request, which is sent from the Bridge and can be replied to with `message.reply()`|
 
-### 6.2.3 Client `Functions`:
+### 7.2.3 Client `Functions`:
 | Function |  Description |
 | ------------- | -------------- |
 | `connect(initialdata= {})`  | Connect to the Bridge with some Initial Data|
@@ -293,10 +330,10 @@ const client = new Client({
 |`request(message ={}, options ={})`| Sends a Request to the Bridge and returns the reply|
 | `requestToGuild(message = {})` | Sends a Request to the Guild and returns the reply, which can be answered with .reply |
 
-### 6.3.1 Bot (Shard) `Options`: No Options are needed.
-### 6.3.2 Bot (Shard) `Events`: Listen to [Hybrid-Sharding-Events](https://npmjs.com/discord-hybrid-sharding)
+### 7.3.1 Bot (Shard) `Options`: No Options are needed.
+### 7.3.2 Bot (Shard) `Events`: Listen to [Hybrid-Sharding-Events](https://npmjs.com/discord-hybrid-sharding)
 
-### 6.3.3 Bot (Shard) `Functions`:
+### 7.3.3 Bot (Shard) `Functions`:
 | Function |  Description |
 | ------------- | -------------- |
 | `broadcastEval(script=string, options={filter: (c => c.agent === 'bot')})` | Evaluates a script or function on all clusters, or a given cluster, in the context of the Client |
@@ -305,7 +342,7 @@ const client = new Client({
 |`requestToGuild(message = {})` | Sends a Request to the Guild and returns the reply, which can be answered with .reply |
 
 
-## 7.Example:
+## 8.Example:
 As an example, We will show you how to use the Package with a Bot, Dashboard...
 Bridge:
 ```js

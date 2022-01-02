@@ -94,6 +94,9 @@ declare module "discord-cross-hosting" {
 			guildId: string;
 			[key: string]: any;
 		}): Promise<any>;
+
+		public parseClusterList(clusterList: number[]): number[];
+
 	}
 
 	// Client
@@ -146,7 +149,7 @@ declare module "discord-cross-hosting" {
 		/**
 		 * Request some Shard and Important Data from the Bridge.
 		 */
-		public requestShardData(options?: { timeout?: number }): Promise<{
+		public requestShardData(options?: { timeout?: number, maxClusters?: number }): Promise<{
 			totalShards: number;
 			shardList: number[];
 			clusterList: number[];

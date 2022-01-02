@@ -116,7 +116,7 @@ class BridgeServer extends Server {
         this._debug(`[READY] Bridge operational on ${url}`)
         setTimeout(() => {
             if (!this.standAlone) this.initalizeShardData();
-        }, 5000)
+        }, 5000) 
     }
 
     /**
@@ -206,9 +206,24 @@ class BridgeServer extends Server {
             client = this.clients.get(client.id);
             
             if (!this.shardClusterListQueue[0]) return res([]);
-            client.shardList = this.shardClusterListQueue[0];
+
+            //Check if Client has a Custom Cluster Strategy     
+            if(!message.maxClusters){
+                client.shardList = this.shardClusterListQueue[0];
+                this.shardClusterListQueue.shift();
+            }else{
+                this.shardClusterListQueue.sort((a, b) => b.length - a.length); ///Sort by length: descending
+                console.log(this.shardClusterListQueue)
+                const position = this.shardClusterListQueue.findIndex(x => x.length < (message.maxClusters + 1));
+                if(position === -1){
+                    return res({error: 'No Cluster List with less than ' + (message.maxClusters + 1) + ' found!'});
+                }else{
+                    client.shardList = this.shardClusterListQueue[position];
+                    this.shardClusterListQueue.splice(position, 1);
+                }
+            }                
+           
             this._debug(`[SHARDLIST_DATA_RESPONSE][${client.id}] ShardList: ${JSON.stringify(client.shardList)}`, { cm: true })
-            this.shardClusterListQueue.shift();
             
             ///Map clusterList:
          
@@ -288,7 +303,8 @@ class BridgeServer extends Server {
 
         const clusterAmount = Math.ceil(this.shardList.length / this.shardsPerCluster);
         const ClusterList = this.shardList.chunkList(Math.ceil(this.shardList.length / clusterAmount));
-        this.shardClusterList = ClusterList.chunkList(Math.ceil(ClusterList.length / this.totalMachines));
+
+        this.shardClusterList = this.parseClusterList(ClusterList);
  
         this.shardClusterListQueue = this.shardClusterList.slice(0);
         this._debug(`Created shardClusterList: ${JSON.stringify(this.shardClusterList)}`)
@@ -305,7 +321,9 @@ class BridgeServer extends Server {
         return this.shardClusterList;
     }
 
-
+    parseClusterList(ClusterList) {
+        return ClusterList.chunkList(Math.ceil(ClusterList.length / this.totalMachines));
+    }
 
     /**
     * Evaluates a script or function on all clusters, or a given cluster, in the context of the {@link Client}s.
