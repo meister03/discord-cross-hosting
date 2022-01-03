@@ -213,7 +213,7 @@ class BridgeServer extends Server {
                 this.shardClusterListQueue.shift();
             }else{
                 this.shardClusterListQueue.sort((a, b) => b.length - a.length); ///Sort by length: descending
-                console.log(this.shardClusterListQueue)
+                //console.log(this.shardClusterListQueue)
                 const position = this.shardClusterListQueue.findIndex(x => x.length < (message.maxClusters + 1));
                 if(position === -1){
                     return res({error: 'No Cluster List with less than ' + (message.maxClusters + 1) + ' found!'});
