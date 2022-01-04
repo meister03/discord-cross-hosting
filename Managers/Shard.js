@@ -28,7 +28,7 @@ class ShardClient {
     * @param {*} message The message, which should be sent.
     * @returns {Promise<request>}
     */
-    async send(message) {
+    async send(message, options = {}) {
         if (!message) throw new Error('Request has not been provided!');
         if(typeof message !== 'object') throw new TypeError('The Request has to be an object')
         if (!options) options = {};
@@ -36,7 +36,7 @@ class ShardClient {
         message._sRequest = false;
         message._sReply = false;
         message = new BaseMessage(message).toJSON()
-        return this.shard.evalOnManager(`this.netipc.send('${JSON.stringify(message)}')`);
+        return this.shard.evalOnManager(`this.netipc.send('${JSON.stringify(message)}', {resolve: false})`);
     }
 
     /**

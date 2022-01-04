@@ -221,12 +221,16 @@ class BridgeClient extends Client {
         if (!message) throw new Error('Request has not been provided!');
         if (typeof message === 'string' && !options.internal) message = JSON.parse(message)
         if (typeof message !== 'object' && !options.internal) throw new TypeError('The Request has to be an object')
-        if (!options) options = {};
-        message.options = options;
+        if (!message.options) message.options = options;
         if (!options.internal) {
             message._sRequest = false;
             message._sReply = false;
             message = new BaseMessage(message).toJSON()
+        }
+        //Message sent by ClusterClient, which should not be resolved to avoid memory leaks
+        if(options.resolve === false){
+            super.send(JSON.stringify(message));
+            return true;
         }
         return super.send(JSON.stringify(message));
     }
@@ -315,12 +319,12 @@ class BridgeClient extends Client {
                 setTimeout(async () => {
                     const cluster = this.manager.createCluster((this.manager.clusterList[i] || i) , this.manager.shardclusterlist[i], this.manager.totalShards);
                     this._debug(`[RollingRestart][Spawn] Cluster ${cluster.id}`);
-                    cluster.spawn(-1);
+                    cluster.spawn({timeout: (this.manager.shardclusterlist[i].length *10000)}).catch(e => e);
                     cluster.on('ready', () => {
                         const clusterposition = clusters.findIndex(x => x.id === cluster.id)
                         if (clusterposition === undefined || clusterposition === -1) return;
                         try{ 
-                            clusters.find(x => x.id === cluster.id)?.kill({ force: true }).catch(e => null);
+                            clusters.find(x => x.id === cluster.id)?.kill({ force: true })
                         }catch(error){console.log(error)}
                         this._debug(`[RollingRestart][Kill] Old Cluster ${cluster.id}`);
                         clusters.splice(clusterposition, 1);
