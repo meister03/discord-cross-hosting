@@ -299,11 +299,11 @@ class BridgeClient extends Client {
     */
     rollingRestart() {
         const clusters = [...this.manager.clusters.values()];
-        const length = clusters.length < this.manager.shardclusterlist.length ? this.manager.shardclusterlist.length : clusters.length;
-        this._debug(`[RollingRestart] ShardClusterList: ${JSON.stringify(this.manager.shardclusterlist)}`);
+        const length = clusters.length < this.manager.shardClusterList.length ? this.manager.shardClusterList.length : clusters.length;
+        this._debug(`[RollingRestart] ShardClusterList: ${JSON.stringify(this.manager.shardClusterList)}`);
 
         if (!this.rollingRestarts) return;
-        if(this.manager.shardclusterlist.length === 0) {
+        if(this.manager.shardClusterList.length === 0) {
             clusters.map(x => {
                     try{ 
                         x?.kill({ force: true })
@@ -315,11 +315,11 @@ class BridgeClient extends Client {
             return;
         }
         for (let i = 0; i < (length + 1); i++) {
-            if (this.manager.shardclusterlist[i]) {
+            if (this.manager.shardClusterList[i]) {
                 setTimeout(async () => {
-                    const cluster = this.manager.createCluster((this.manager.clusterList[i] || i) , this.manager.shardclusterlist[i], this.manager.totalShards);
+                    const cluster = this.manager.createCluster((this.manager.clusterList[i] || i) , this.manager.shardClusterList[i], this.manager.totalShards);
                     this._debug(`[RollingRestart][Spawn] Cluster ${cluster.id}`);
-                    cluster.spawn({timeout: (this.manager.shardclusterlist[i].length *10000)}).catch(e => e);
+                    cluster.spawn({timeout: (this.manager.shardClusterList[i].length *10000)}).catch(e => e);
                     cluster.on('ready', () => {
                         const clusterposition = clusters.findIndex(x => x.id === cluster.id)
                         if (clusterposition === undefined || clusterposition === -1) return;
@@ -329,7 +329,7 @@ class BridgeClient extends Client {
                         this._debug(`[RollingRestart][Kill] Old Cluster ${cluster.id}`);
                         clusters.splice(clusterposition, 1);
                     })
-                }, i * 7000 * this.manager.shardclusterlist[i].length);
+                }, i * 7000 * this.manager.shardClusterList[i].length);
             } else {
                 if(!clusters.length) continue;
                 clusters.map(x => {
