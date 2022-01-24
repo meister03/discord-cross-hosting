@@ -17,13 +17,13 @@ The first package, which allows broadcastEvaling over Cross Hosted Machines and 
 # Download
 You can download it from npm:
 ```cli
-npm i discord-cross-hosting
+npm i discord-cross-hosting@latest
+npm i discord-hybrid-sharding@latest
 ```
 
 | :warning: WARNING          |
 |:---------------------------|
 | This package had a massive rewrite and breaking changes, follow the Guide for adapting your code. Support under `^2.0.0` has been dropped.   |
-
 
 
 # Guide:
