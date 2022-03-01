@@ -77,11 +77,11 @@ Bridge | Server.js
     const {Bridge} = require('discord-cross-hosting');
 
     const server = new Bridge({ 
-        port: 4444, //The Port of the Server | Proxy Connection (Replit) needs Port 443
+        port: 4444, // The Port of the Server | Proxy Connection (Replit) needs Port 443
         authToken: 'Your_auth_token_same_in_cluster.js', 
-        totalShards: 40, //The Total Shards of the Bot or 'auto'
-        totalMachines: 2, //The Total Machines, where the Clusters will run
-        shardsPerCluster: 10, //The amount of Internal Shards, which are in one Cluster
+        totalShards: 40, // The Total Shards of the Bot or 'auto'
+        totalMachines: 2, // The Total Machines, where the Clusters will run
+        shardsPerCluster: 10, // The amount of Internal Shards, which are in one Cluster
         token: 'Your_Bot_Token',
     });
 
@@ -106,17 +106,17 @@ const {Client} = require('discord-cross-hosting');
 
 const client = new Client({
     agent: 'bot', 
-    host: "localhost", ///Domain without https
-    port: 4444, ///Proxy Connection (Replit) needs Port 443
-    //handshake: true, When Replit or any other Proxy is used
+    host: "localhost", // Domain without https
+    port: 4444, // Proxy Connection (Replit) needs Port 443
+    // handshake: true, When Replit or any other Proxy is used
     authToken: 'theauthtoken',
-    rollingRestarts: false, //Enable, when bot should respawn when cluster list changes.
+    rollingRestarts: false, // Enable, when bot should respawn when cluster list changes.
 });
 client.on('debug', console.log)
 client.connect();
 
 const Cluster = require("discord-hybrid-sharding");
-const manager = new Cluster.Manager(`${__dirname}/bot.js`,{totalShards: 1 ,totalClusters: 'auto'}) //Some dummy Data
+const manager = new Cluster.Manager(`${__dirname}/bot.js`,{totalShards: 1 ,totalClusters: 'auto'}) // Some dummy Data
 manager.on('clusterCreate', cluster => console.log(`Launched Cluster ${cluster.id}`));
 manager.on('debug', console.log)
 
@@ -141,20 +141,20 @@ Bot | Bot.js
 const Cluster = require("discord-hybrid-sharding");
 const Discord = require("discord.js");
 const client = new Discord.Client({
-    intents: ['GUILDS'], //Your Intents
- 	shards: Cluster.data.SHARD_LIST,        //  A Array of Shard list, which will get spawned
+    intents: ['GUILDS'], // Your Intents
+ 	shards: Cluster.data.SHARD_LIST,        // A Array of Shard list, which will get spawned
 	shardCount: Cluster.data.TOTAL_SHARDS, // The Number of Total Shards
 });
 
 client.cluster = new Cluster.Client(client); 
 
 const {Shard}= require('discord-cross-hosting');
-client.machine = new Shard(client.cluster); //Initalize Cluster
+client.machine = new Shard(client.cluster); // Initalize Cluster
 
 client.on('ready', () => {
 	client.machine.broadcastEval(`this.guilds.cache.size`).then(results => {
 		console.log(results);
-	}).catch(e => console.log(e))  ///BroadcastEval over all Cross-hosted Clients
+	}).catch(e => console.log(e))  // BroadcastEval over all Cross-hosted Clients
 })
 
 client.login(process.env.token);
@@ -246,11 +246,11 @@ const client = new Client({
 ### Bridge:
 * You can override the function `.parseClusterList` with your own function in order to parse a custom ShardList/ClusterList
 ```js
-/// Bridge Options
+// Bridge Options
 const server = new Bridge({...})
-///See above for the Bridge Code | Has been removed for a better overview
+// See above for the Bridge Code | Has been removed for a better overview
 server.parseClusterList = (clusterList) =>{
-    let strategy = [2,Infinity]; //How many Clusters per Machines: 1.Machine: 2, 2.Machine: Rest of the Clusters
+    let strategy = [2,Infinity]; // How many Clusters per Machines: 1.Machine: 2, 2.Machine: Rest of the Clusters
     let parsedList = [];
     for(let i = 0; i < strategy.length; i++){
         parsedList.push(clusterList.splice(0, strategy[i]))
@@ -264,7 +264,7 @@ server.parseClusterList = (clusterList) =>{
 Client:
 * By providing `maxClusters` as options, the Bridge will provide the ClusterList with the similar/same length
 ```js
-///See above for the Client Code | Has been removed for a better overview
+// See above for the Client Code | Has been removed for a better overview
 client.requestShardData({maxClusters: 2}).then(e => {
     if (!e) return;
     manager.totalShards = e.totalShards;
@@ -363,12 +363,12 @@ server.on('ready', (url) => {
 })
 
 server.on('clientMessage', (message)=>{
-    if(!message._sCustom) return; //If message is a Internal Message
+    if(!message._sCustom) return; // If message is a Internal Message
     console.log(message)
 })
 
 server.on('clientRequest', (message)=>{
-    if(!message._sCustom && !message._sRequest) return; //If message is a Internal Message
+    if(!message._sCustom && !message._sRequest) return; // If message is a Internal Message
     if(message.ack) return message.reply({message: 'I am alive!'})
     console.log(message)
     message.reply({data: 'Hello World'});
@@ -403,7 +403,7 @@ const manager = new Cluster.Manager(`${__dirname}/bot.js`, {
 manager.on('clusterCreate', cluster => console.log(`Launched Cluster ${cluster.id}`));
 manager.on('debug', console.log)
 
-///Request ShardData from the Bridge
+// Request ShardData from the Bridge
 client.requestShardData().then(e => {
     if (!e) return;
     manager.totalShards = e.totalShards;
@@ -413,16 +413,16 @@ client.requestShardData().then(e => {
     manager.spawn({timeout:  -1})
 }).catch(e => console.log(e));
 
-//Listen to the Manager Events
+// Listen to the Manager Events
 client.listen(manager);
 
 client.on('bridgeMessage', (message)=>{
-    if(!message._sCustom) return; //If message is a Internal Message
+    if(!message._sCustom) return; // If message is a Internal Message
     console.log(message)
 })
 
 client.on('bridgeRequest', (message)=>{
-    if(!message._sCustom && !message._sRequest) return; //If message is a Internal Message
+    if(!message._sCustom && !message._sRequest) return; // If message is a Internal Message
     console.log(message)
     if(message.ack) return message.reply({message: 'I am alive!'})
     message.reply({data: 'Hello World'});
@@ -442,7 +442,7 @@ const client = new Discord.Client({
 
 client.cluster = new Cluster.Client(client); 
 
-////Initialize ClientMachine
+// Initialize ClientMachine
 const {Shard} = require('discord-cross-hosting');
 client.machine = new Shard(client.cluster);
 
@@ -480,12 +480,12 @@ client.on('ready', ( ) => {
     console.log('Client is ready');
 })
 
-///My Express stuff- custom code
+// My Express stuff- custom code
 /* Pseudo Code*/
 const express = require('express');
 const app = express();
 app.listen(3000, () => {console.log('Listening on port 3000')});
-///listen to express event:
+// listen to express event:
 app.get('/guild/:id', async function (req, res) {
     const guildId = req.params.id; 
     client.requestToGuild({ guildId: guildId }).then(e => res.send(e)).catch(e => res.send(e));
