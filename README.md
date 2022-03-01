@@ -37,7 +37,7 @@ npm i discord-hybrid-sharding@latest
 8. **Example**
 
 ## 1. How does it work?
-For ensuring a fast, reliable and secure Connection, where you can also sent a ton of Data, followed to our decision that we changed to a TCP-Server. This opens up the opportunity to connect all your services to the same Server.
+For ensuring a fast, reliable and secure Connection, where you can also send a ton of Data, followed to our decision that we changed to a TCP-Server. This opens up the opportunity to connect all your services to the same Server.
 The TCP-Server is used as Bridge and as Control Unit for managing the Machine & Shard Count.
 
 ## 2. Test | Response Time & Results:
@@ -97,7 +97,7 @@ Bridge | Server.js
 * The ClusterManager connects to the Bridge and requests the Sharddata and it also proceeds the requests from the Bridge.
 * The ClusterManager spawns Processes (aka Shard in Djs)(aka Cluster here), which contains Internal Shards
 * For having 1 InternalShard per Process, the `shardsPerCluster` has to be `1` on the Bridge Options.
-* The ClusterFile can be started at anytime with `node Cluster.js` and it will receive the appropriated Shardlist and finally spawn them
+* The ClusterFile can be started at any time with `node Cluster.js` and it will receive the appropriated Shardlist and finally spawn them
 * **This File will be hosted on your wished Machines with the bot.js file and your code**
 
 Cluster | Cluster.js
@@ -142,7 +142,7 @@ const Cluster = require("discord-hybrid-sharding");
 const Discord = require("discord.js");
 const client = new Discord.Client({
     intents: ['GUILDS'], // Your Intents
- 	shards: Cluster.data.SHARD_LIST,        // A Array of Shard list, which will get spawned
+ 	shards: Cluster.data.SHARD_LIST,        // An Array of Shard list, which will get spawned
 	shardCount: Cluster.data.TOTAL_SHARDS, // The Number of Total Shards
 });
 
@@ -285,7 +285,7 @@ client.requestShardData({maxClusters: 2}).then(e => {
 | totalShards  | number |The amount of Total Shards in all Machines|
 | totalMachines  | number |The amount of Total Machines in order to chunk the ShardList|
 | token  | string |The Discord Bot Token in order to fetch the recommended ShardCount|
-| shardList | array |A array of ShardIds to host on the connected Machines|
+| shardList | array |An array of ShardIds to host on the connected Machines|
 
 ### 7.1.2 Bridge `Events`:
 | Event |  Description |
@@ -343,7 +343,7 @@ client.requestShardData({maxClusters: 2}).then(e => {
 
 
 ## 8. Example:
-As an example, We will show you how to use the Package with a Bot, Dashboard...
+As an example, we will show you how to use the Package with a Bot, Dashboard...
 Bridge:
 ```js
 const {Bridge} = require('discord-cross-hosting');
