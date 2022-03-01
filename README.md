@@ -2,10 +2,10 @@
 <p align="center"><img src="https://img.shields.io/npm/v/discord-cross-hosting"> <img src="https://img.shields.io/npm/dm/discord-cross-hosting?label=downloads"> <img src="https://img.shields.io/npm/l/discord-cross-hosting"> <img src="https://img.shields.io/github/repo-size/meister03/discord-cross-hosting">  <a href="https://discord.gg/YTdNBHh"><img src="https://discordapp.com/api/guilds/697129454761410600/widget.png" alt="Discord server"/></a></p>
 
 # Discord-cross-hosting
-The first package, which allows broadcastEvaling over Cross Hosted Machines and efficient Machine & Shard Managing.
+The first package which allows `broadcastEval()` over cross-hosted machines and efficient machine & shard management.
 
 # Features:
-- BroadcastEval over cross-hosted Machines (`functions with context` or `strings`)
+- `boadcastEval()` over cross-hosted Machines (`functions with context` or `strings`)
 - Sending Messages and custom Requests to cross-hosted Machines
 - Machine & Shard Count/List Managing -> RollingRestart on Update
 - Connected Services such as a Dashboard...
@@ -49,11 +49,11 @@ The test Object was a 20k Server Discord Bot. (Also has been tested with bots bi
 - Total Shards: 16
 - Discord Bot: 20000 Servers
 - Test performed: 100 times
-### Test 1 | Sending Messages:
+### Test 1 | Sending Messages
 All Shards received a random long Message sent from a Machine in less than `7-18 milliseconds`
-### Test 2 | BroadcastEval:
+### Test 2 | broadcastEval()
 The amount of data does not influence the time so much. Overall the time shows a very good performance.
-| BroadcastEval:                | Response Time |
+| broadcastEval()               | Response Time |
 | ------------------------------| ------------- |
 | Math Evaluation               | `7-12 ms`     |
 |`this.guilds.cache.size`       | `19-24 ms`    |
@@ -69,7 +69,7 @@ Another Advantage is, that you are combining Internal Sharding and Normal Shardi
 ### 3.1. How many processes are needed?
 * There will be 3 important files: Bridge (`Server.js`), Cluster (`Cluster.js`), Bot (`Bot.js`)
 ### 3.2 Bridge:
-* The Bridge is the main unit, which calculates the ShardList, receives the requests and sends the responses (BroadcastEval).
+* The Bridge is the main unit, which calculates the ShardList, receives the requests and sends the responses (`broadcastEval()`).
 * The Bridge should run 24/7 as it is required for the communication between the Clusters and the Bot.
 * Start the Bridge with `node Server.js` and you will receive some Debug Messages in your Console
 Bridge | Server.js
@@ -154,7 +154,7 @@ client.machine = new Shard(client.cluster); // Initalize Cluster
 client.on('ready', () => {
 	client.machine.broadcastEval(`this.guilds.cache.size`).then(results => {
 		console.log(results);
-	}).catch(e => console.log(e))  // BroadcastEval over all Cross-hosted Clients
+	}).catch(e => console.log(e))  // broadcastEval() over all cross-hosted Clients
 })
 
 client.login(process.env.token);
@@ -163,7 +163,7 @@ client.login(process.env.token);
 ### 3.5 How can I use the Feature?
 * Start the Bridge at first and the Cluster (on all machines you want) with `node Server.js` and `node Cluster.js`
 * When you now change the ShardCount or the options of the Bridge and restart it, it will send a message to all connected Clusters, which will update the Shardlist and restart the Clusters, when the ShardList changed.
-* You can broadcastEval from the bridge, from the ClusterManager and from the Client
+* You can `broadcastEval()` from the bridge, from the ClusterManager and from the Client
 
 ## 4. Using the Package with the `TLS` Option
 * When using the package on a "open System" -> when you want to connect from different Machines on your IP/Domain, then a secure connection has to be ensured in order to prevent security flaws.
