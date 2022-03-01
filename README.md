@@ -1,7 +1,7 @@
 <p align="center"><a href="https://nodei.co/npm/discord-cross-hosting/"><img src="https://nodei.co/npm/discord-cross-hosting.png"></a></p>
 <p align="center"><img src="https://img.shields.io/npm/v/discord-cross-hosting"> <img src="https://img.shields.io/npm/dm/discord-cross-hosting?label=downloads"> <img src="https://img.shields.io/npm/l/discord-cross-hosting"> <img src="https://img.shields.io/github/repo-size/meister03/discord-cross-hosting">  <a href="https://discord.gg/YTdNBHh"><img src="https://discordapp.com/api/guilds/697129454761410600/widget.png" alt="Discord server"/></a></p>
 
-# Discord-cross-hosting
+# discord-cross-hosting
 The first package which allows `broadcastEval()` over cross-hosted machines and efficient machine & shard management.
 
 # Features:
