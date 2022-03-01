@@ -8,6 +8,10 @@
     "net-ipc": "github:timotejroiko/net-ipc",
     "node-fetch": "^2.6.1"
   },
+  "scripts": {
+    "format": "prettier --check .",
+    "format:fix": "prettier --write ."
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/meister03/discord-cross-hosting.git"
@@ -37,6 +41,7 @@
   "devDependencies": {
     "discord-hybrid-sharding": "^1.4.3",
     "discord.js": "^13.3.1",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "prettier": "^2.5.1"
   }
 }
