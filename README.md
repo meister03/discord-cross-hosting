@@ -27,14 +27,14 @@ npm i discord-hybrid-sharding@latest
 
 
 # Guide:
-1. **How it works**
-2. **Test | Response Time & Results**
-3. **Using the Package with Hybrid-Sharding & Machine, Shard Count Managing** 
-4. **Use TLS for a secure Connection**
-5. **Standalone Mode**
-6. **Custom Cluster List Parsing with `.parseClusterList`**
-7. **Api References**
-8. **Example**
+- [1. How it works](#1-how-does-it-work-)
+- [2. Test | Response Time & Results:](#2-test---response-time---results-)
+- [3. Using the Package with Hybrid-Sharding & Machine,Shard Count Managing](#3-using-the-package-with-hybrid-sharding---machine-shard-count-managing)
+- [4. Use TLS for a secure Connection](#4-using-the-package-with-the--tls--option)
+- [5. Standalone Mode](#5-standalone-mode-is-on-work--add-the--standalone--true--in-the-bridge-options)
+- [6. Custom Cluster List Parsing with `.parseClusterList`](#6-custom-cluster-list-parsing-with--parseclusterlist-)
+- [7. Api References:](#7-temporary-api-references-)
+- [8. Example](#8-example-)
 
 ## 1. How does it work?
 For ensuring a fast, reliable and secure Connection, where you can also send a ton of Data, followed to our decision that we changed to a TCP-Server. This opens up the opportunity to connect all your services to the same Server.
