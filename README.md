@@ -36,11 +36,11 @@ npm i discord-hybrid-sharding@latest
 7. **Api References**
 8. **Example**
 
-## 1.How does it works?
+## 1. How does it works?
 For ensuring a fast, reliable and secure Connection, where you can also sent a ton of Data, followed to our decision that we changed to a TCP-Server. This opens up the opportunity to connect all your services to the same Server.
 The TCP-Server is used as Bridge and as Control Unit for managing the Machine & Shard Count.
 
-## 2.Test | Response Time & Results:
+## 2. Test | Response Time & Results:
 The following Test has been accomplished on 4 different hosted Machines with different Locations.
 Each of the Machines had 2 Clusters (Process), which contained 2 internal Shards.
 The test Object was a 20k Server Discord Bot. (Also has been tested with bots bigger than 70k)
@@ -61,7 +61,7 @@ The amount of data does not influence the time so much. Overall the time shows a
 |`...this.guilds.cache.values()`| `21-44 ms`    | 
 |`this`,Guilds,Roles,Channels...| `25-48 ms`    |
 
-## 3.Using the Package with Hybrid-Sharding & Machine,Shard Count Managing 
+## 3. Using the Package with Hybrid-Sharding & Machine,Shard Count Managing 
 ### This Feature can only be used with `discord-hybrid-sharding`
 This is the most comfortable Solution, when you are taff on manually managing, creating Shard list. 
 Another Advantage is, that you are combining Internal Sharding and Normal Sharding, which follows to less resources, also known as Clustering.
@@ -342,7 +342,7 @@ client.requestShardData({maxClusters: 2}).then(e => {
 |`requestToGuild(message = {})` | Sends a Request to the Guild and returns the reply, which can be answered with .reply |
 
 
-## 8.Example:
+## 8. Example:
 As an example, We will show you how to use the Package with a Bot, Dashboard...
 Bridge:
 ```js
