@@ -5,11 +5,11 @@
 The first package which allows `broadcastEval()` over cross-hosted machines and efficient machine & shard management.
 
 # Features:
-- `broadcastEval()` over cross-hosted Machines (functions with `context` or strings)
-- Sending Messages and custom Requests to cross-hosted Machines
-- Machine & Shard Count/List Managing -> RollingRestart on Update
-- Connected Services such as a Dashboard...
-- Super Fast IPC with `.reply`, `.send`, `.request` options...
+- `broadcastEval()` over cross-hosted machines (using functions with `context` or strings)
+- Send messages and custom requests to cross-hosted machines.
+- Machine & shard count / list managing + rolling restart on update.
+- Support for other connected services such as dashboards.
+- Super fast IPC with `.reply`, `.send`, `.request` options.
 
 ### See below for the Guide
 
@@ -154,7 +154,7 @@ client.machine = new Shard(client.cluster); // Initalize Cluster
 client.on('ready', () => {
 	client.machine.broadcastEval(`this.guilds.cache.size`).then(results => {
 		console.log(results);
-	}).catch(e => console.log(e))  // broadcastEval() over all cross-hosted Clients
+	}).catch(e => console.log(e))  // broadcastEval() over all cross-hosted clients
 })
 
 client.login(process.env.token);
