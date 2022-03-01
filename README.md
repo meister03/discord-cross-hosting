@@ -36,7 +36,7 @@ npm i discord-hybrid-sharding@latest
 7. **Api References**
 8. **Example**
 
-## 1. How does it works?
+## 1. How does it work?
 For ensuring a fast, reliable and secure Connection, where you can also sent a ton of Data, followed to our decision that we changed to a TCP-Server. This opens up the opportunity to connect all your services to the same Server.
 The TCP-Server is used as Bridge and as Control Unit for managing the Machine & Shard Count.
 
