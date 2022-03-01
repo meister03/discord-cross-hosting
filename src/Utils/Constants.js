@@ -23,12 +23,12 @@ exports.DefaultOptions = {
     http: {
         api: 'https://discord.com/api',
         version: '9',
-    }
-}
+    },
+};
 
 exports.Endpoints = {
-    botGateway: '/gateway/bot'
-}
+    botGateway: '/gateway/bot',
+};
 
 function createEnum(keys) {
     const obj = {};
