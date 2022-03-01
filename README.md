@@ -2,7 +2,7 @@
 <p align="center"><img src="https://img.shields.io/npm/v/discord-cross-hosting"> <img src="https://img.shields.io/npm/dm/discord-cross-hosting?label=downloads"> <img src="https://img.shields.io/npm/l/discord-cross-hosting"> <img src="https://img.shields.io/github/repo-size/meister03/discord-cross-hosting">  <a href="https://discord.gg/YTdNBHh"><img src="https://discordapp.com/api/guilds/697129454761410600/widget.png" alt="Discord server"/></a></p>
 
 # Discord-cross-hosting
-The first package, which allows broadcastEvaling over Cross Hosted Machines and effecient Machine & Shard Managing.
+The first package, which allows broadcastEvaling over Cross Hosted Machines and efficient Machine & Shard Managing.
 
 # Features:
 - BroadcastEval over cross-hosted Machines (`functions with context` or `strings`)
@@ -50,12 +50,12 @@ The test Object was a 20k Server Discord Bot. (Also has been tested with bots bi
 - Discord Bot: 20000 Servers
 - Test performed: 100 times
 ### Test 1 | Sending Messages:
-All Shards recieved a random long Message sent from a Machine in less than `7-18 milliseconds`
+All Shards received a random long Message sent from a Machine in less than `7-18 milliseconds`
 ### Test 2 | BroadcastEval:
-The amount of data does not influence the time so much. Overall the time shows a very good perfomance.
+The amount of data does not influence the time so much. Overall the time shows a very good performance.
 | BroadcastEval:                | Response Time |
 | ------------------------------| ------------- |
-| Math Evalution                | `7-12 ms`     |
+| Math Evaluation               | `7-12 ms`     |
 |`this.guilds.cache.size`       | `19-24 ms`    |
 |`this.guilds.cache.get('123')` | `22-27 ms`    |
 |`...this.guilds.cache.values()`| `21-44 ms`    | 
@@ -69,9 +69,9 @@ Another Advantage is, that you are combining Internal Sharding and Normal Shardi
 ### 3.1. How many processes are needed?
 * There will be 3 important files: Bridge (`Server.js`), Cluster (`Cluster.js`), Bot (`Bot.js`)
 ### 3.2 Bridge:
-* The Bridge is the main unit, which calculates the ShardList, recieves the requests and sends the responses (BroadcastEval).
+* The Bridge is the main unit, which calculates the ShardList, receives the requests and sends the responses (BroadcastEval).
 * The Bridge should run 24/7 as it is required for the communication between the Clusters and the Bot.
-* Start the Bridge with `node Server.js` and you will recieve some Debug Messages in your Console
+* Start the Bridge with `node Server.js` and you will receive some Debug Messages in your Console
 Bridge | Server.js
 ```js
     const {Bridge} = require('discord-cross-hosting');
@@ -97,7 +97,7 @@ Bridge | Server.js
 * The ClusterManager connects to the Bridge and requests the Sharddata and it also proceeds the requests from the Bridge.
 * The ClusterManager spawns Processes (aka Shard in Djs)(aka Cluster here), which contains Internal Shards
 * For having 1 InternalShard per Process, the `shardsPerCluster` has to be `1` on the Bridge Options.
-* The ClusterFile can be started at anytime with `node Cluster.js` and it will recieve the appropriated Shardlist and finally spawn them
+* The ClusterFile can be started at anytime with `node Cluster.js` and it will receive the appropriated Shardlist and finally spawn them
 * **This File will be hosted on your wished Machines with the bot.js file and your code**
 
 Cluster | Cluster.js
@@ -169,9 +169,9 @@ client.login(process.env.token);
 * When using the package on a "open System" -> when you want to connect from different Machines on your IP/Domain, then a secure connection has to be ensured in order to prevent security flaws.
 * This is done by using the `TLS` Option, which will be set to `true` on the Bridge & Client Options.
 * The TLS Option can be used with:
-  - [`PSK`](https://nodejs.org/api/tls.html#pre-shared-keys), which allows basic securtiy.
+  - [`PSK`](https://nodejs.org/api/tls.html#pre-shared-keys), which allows basic security.
   - [`Certificate`](https://nodejs.org/api/tls.html#tlscreatesecurecontextoptions) which requires a generated Certificate and a Private Key, but allows a high Security level.
-* For futher Info and Control over the Options check the official [`TLS`](https://nodejs.org/api/tls.html) Documentation
+* For further Info and Control over the Options check the official [`TLS`](https://nodejs.org/api/tls.html) Documentation
 
 ### 4.1. `PSK` Mode:
 ```js
@@ -244,7 +244,7 @@ const client = new Client({
 * The average resource usage (`ram`, `cpu`) for one cluster has to be measured in order to define the maxClusters per Machine and a reliable Cluster Strategy...
 
 ### Bridge:
-* You can override the function `.parseClusterList` with your own function inorder to parse a custom ShardList/ClusterList
+* You can override the function `.parseClusterList` with your own function in order to parse a custom ShardList/ClusterList
 ```js
 /// Bridge Options
 const server = new Bridge({...})
@@ -284,7 +284,7 @@ client.requestShardData({maxClusters: 2}).then(e => {
 | shardsPerCluster  | number/1 |The total amount of Shards per Cluster/Process|
 | totalShards  | number |The amount of Total Shards in all Machines|
 | totalMachines  | number |The amount of Total Machines in order to chunk the ShardList|
-| token  | string |The Discord Bot Token in order to fetch the recommanded ShardCount|
+| token  | string |The Discord Bot Token in order to fetch the recommended ShardCount|
 | shardList | array |A array of ShardIds to host on the connected Machines|
 
 ### 7.1.2 Bridge `Events`:
@@ -442,7 +442,7 @@ const client = new Discord.Client({
 
 client.cluster = new Cluster.Client(client); 
 
-////Initalize ClientMachine
+////Initialize ClientMachine
 const {Shard} = require('discord-cross-hosting');
 client.machine = new Shard(client.cluster);
 
@@ -481,7 +481,7 @@ client.on('ready', ( ) => {
 })
 
 ///My Express stuff- custom code
-/* Pseodo Code*/
+/* Pseudo Code*/
 const express = require('express');
 const app = express();
 app.listen(3000, () => {console.log('Listening on port 3000')});
