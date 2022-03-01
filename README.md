@@ -1,15 +1,15 @@
 <p align="center"><a href="https://nodei.co/npm/discord-cross-hosting/"><img src="https://nodei.co/npm/discord-cross-hosting.png"></a></p>
 <p align="center"><img src="https://img.shields.io/npm/v/discord-cross-hosting"> <img src="https://img.shields.io/npm/dm/discord-cross-hosting?label=downloads"> <img src="https://img.shields.io/npm/l/discord-cross-hosting"> <img src="https://img.shields.io/github/repo-size/meister03/discord-cross-hosting">  <a href="https://discord.gg/YTdNBHh"><img src="https://discordapp.com/api/guilds/697129454761410600/widget.png" alt="Discord server"/></a></p>
 
-# Discord-cross-hosting
-The first package, which allows broadcastEvaling over Cross Hosted Machines and effecient Machine & Shard Managing.
+# discord-cross-hosting
+The first package which allows `broadcastEval()` over cross-hosted machines and efficient machine & shard management.
 
 # Features:
-- BroadcastEval over cross-hosted Machines (`functions with context` or `strings`)
-- Sending Messages and custom Requests to cross-hosted Machines
-- Machine & Shard Count/List Managing -> RollingRestart on Update
-- Connected Services such as a Dashboard...
-- Super Fast IPC with `.reply`, `.send`, `.request` options...
+- `broadcastEval()` over cross-hosted machines (using functions with `context` or strings)
+- Send messages and custom requests to cross-hosted machines.
+- Machine & shard count / list managing + rolling restart on update.
+- Support for other connected services such as dashboards.
+- Super fast IPC with `.reply`, `.send`, `.request` options.
 
 ### See below for the Guide
 
@@ -27,20 +27,20 @@ npm i discord-hybrid-sharding@latest
 
 
 # Guide:
-1. **How it works**
-2. **Test | Response Time & Results**
-3. **Using the Package with Hybrid-Sharding & Machine, Shard Count Managing** 
-4. **Use TLS for a secure Connection**
-5. **Standalone Mode**
-6. **Custom Cluster List Parsing with `.parseClusterList`**
-7. **Api References**
-8. **Example**
+- [1. How it works](#1-how-does-it-work)
+- [2. Test | Response Time & Results:](#2-test--response-time--results)
+- [3. Using the Package with Hybrid-Sharding & Machine,Shard Count Managing](#3-using-the-package-with-hybrid-sharding--machineshard-count-managing)
+- [4. Use TLS for a secure Connection](#4-using-the-package-with-the-tls-option)
+- [5. Standalone Mode](#5-standalone-mode-is-on-work-add-the-standalone-true-in-the-bridge-options)
+- [6. Custom Cluster List Parsing with `.parseClusterList`](#6-custom-cluster-list-parsing-with-parseclusterlist)
+- [7. Api References:](#7-temporary-api-references)
+- [8. Example](#8-example)
 
-## 1.How does it works?
-For ensuring a fast, reliable and secure Connection, where you can also sent a ton of Data, followed to our decision that we changed to a TCP-Server. This opens up the opportunity to connect all your services to the same Server.
+## 1. How does it work?
+For ensuring a fast, reliable and secure Connection, where you can also send a ton of Data, followed to our decision that we changed to a TCP-Server. This opens up the opportunity to connect all your services to the same Server.
 The TCP-Server is used as Bridge and as Control Unit for managing the Machine & Shard Count.
 
-## 2.Test | Response Time & Results:
+## 2. Test | Response Time & Results:
 The following Test has been accomplished on 4 different hosted Machines with different Locations.
 Each of the Machines had 2 Clusters (Process), which contained 2 internal Shards.
 The test Object was a 20k Server Discord Bot. (Also has been tested with bots bigger than 70k)
@@ -49,19 +49,19 @@ The test Object was a 20k Server Discord Bot. (Also has been tested with bots bi
 - Total Shards: 16
 - Discord Bot: 20000 Servers
 - Test performed: 100 times
-### Test 1 | Sending Messages:
-All Shards recieved a random long Message sent from a Machine in less than `7-18 milliseconds`
-### Test 2 | BroadcastEval:
-The amount of data does not influence the time so much. Overall the time shows a very good perfomance.
-| BroadcastEval:                | Response Time |
+### Test 1 | Sending Messages
+All Shards received a random long Message sent from a Machine in less than `7-18 milliseconds`
+### Test 2 | broadcastEval()
+The amount of data does not influence the time so much. Overall the time shows a very good performance.
+| broadcastEval()               | Response Time |
 | ------------------------------| ------------- |
-| Math Evalution                | `7-12 ms`     |
+| Math Evaluation               | `7-12 ms`     |
 |`this.guilds.cache.size`       | `19-24 ms`    |
 |`this.guilds.cache.get('123')` | `22-27 ms`    |
 |`...this.guilds.cache.values()`| `21-44 ms`    | 
 |`this`,Guilds,Roles,Channels...| `25-48 ms`    |
 
-## 3.Using the Package with Hybrid-Sharding & Machine,Shard Count Managing 
+## 3. Using the Package with Hybrid-Sharding & Machine,Shard Count Managing 
 ### This Feature can only be used with `discord-hybrid-sharding`
 This is the most comfortable Solution, when you are taff on manually managing, creating Shard list. 
 Another Advantage is, that you are combining Internal Sharding and Normal Sharding, which follows to less resources, also known as Clustering.
@@ -69,19 +69,19 @@ Another Advantage is, that you are combining Internal Sharding and Normal Shardi
 ### 3.1. How many processes are needed?
 * There will be 3 important files: Bridge (`Server.js`), Cluster (`Cluster.js`), Bot (`Bot.js`)
 ### 3.2 Bridge:
-* The Bridge is the main unit, which calculates the ShardList, recieves the requests and sends the responses (BroadcastEval).
+* The Bridge is the main unit, which calculates the ShardList, receives the requests and sends the responses (`broadcastEval()`).
 * The Bridge should run 24/7 as it is required for the communication between the Clusters and the Bot.
-* Start the Bridge with `node Server.js` and you will recieve some Debug Messages in your Console
+* Start the Bridge with `node Server.js` and you will receive some Debug Messages in your Console
 Bridge | Server.js
 ```js
     const {Bridge} = require('discord-cross-hosting');
 
     const server = new Bridge({ 
-        port: 4444, //The Port of the Server | Proxy Connection (Replit) needs Port 443
+        port: 4444, // The Port of the Server | Proxy Connection (Replit) needs Port 443
         authToken: 'Your_auth_token_same_in_cluster.js', 
-        totalShards: 40, //The Total Shards of the Bot or 'auto'
-        totalMachines: 2, //The Total Machines, where the Clusters will run
-        shardsPerCluster: 10, //The amount of Internal Shards, which are in one Cluster
+        totalShards: 40, // The Total Shards of the Bot or 'auto'
+        totalMachines: 2, // The Total Machines, where the Clusters will run
+        shardsPerCluster: 10, // The amount of Internal Shards, which are in one Cluster
         token: 'Your_Bot_Token',
     });
 
@@ -97,7 +97,7 @@ Bridge | Server.js
 * The ClusterManager connects to the Bridge and requests the Sharddata and it also proceeds the requests from the Bridge.
 * The ClusterManager spawns Processes (aka Shard in Djs)(aka Cluster here), which contains Internal Shards
 * For having 1 InternalShard per Process, the `shardsPerCluster` has to be `1` on the Bridge Options.
-* The ClusterFile can be started at anytime with `node Cluster.js` and it will recieve the appropriated Shardlist and finally spawn them
+* The ClusterFile can be started at any time with `node Cluster.js` and it will receive the appropriated Shardlist and finally spawn them
 * **This File will be hosted on your wished Machines with the bot.js file and your code**
 
 Cluster | Cluster.js
@@ -106,17 +106,17 @@ const {Client} = require('discord-cross-hosting');
 
 const client = new Client({
     agent: 'bot', 
-    host: "localhost", ///Domain without https
-    port: 4444, ///Proxy Connection (Replit) needs Port 443
-    //handshake: true, When Replit or any other Proxy is used
+    host: "localhost", // Domain without https
+    port: 4444, // Proxy Connection (Replit) needs Port 443
+    // handshake: true, When Replit or any other Proxy is used
     authToken: 'theauthtoken',
-    rollingRestarts: false, //Enable, when bot should respawn when cluster list changes.
+    rollingRestarts: false, // Enable, when bot should respawn when cluster list changes.
 });
 client.on('debug', console.log)
 client.connect();
 
 const Cluster = require("discord-hybrid-sharding");
-const manager = new Cluster.Manager(`${__dirname}/bot.js`,{totalShards: 1 ,totalClusters: 'auto'}) //Some dummy Data
+const manager = new Cluster.Manager(`${__dirname}/bot.js`,{totalShards: 1 ,totalClusters: 'auto'}) // Some dummy Data
 manager.on('clusterCreate', cluster => console.log(`Launched Cluster ${cluster.id}`));
 manager.on('debug', console.log)
 
@@ -141,20 +141,20 @@ Bot | Bot.js
 const Cluster = require("discord-hybrid-sharding");
 const Discord = require("discord.js");
 const client = new Discord.Client({
-    intents: ['GUILDS'], //Your Intents
- 	shards: Cluster.data.SHARD_LIST,        //  A Array of Shard list, which will get spawned
+    intents: ['GUILDS'], // Your Intents
+ 	shards: Cluster.data.SHARD_LIST,        // An Array of Shard list, which will get spawned
 	shardCount: Cluster.data.TOTAL_SHARDS, // The Number of Total Shards
 });
 
 client.cluster = new Cluster.Client(client); 
 
 const {Shard}= require('discord-cross-hosting');
-client.machine = new Shard(client.cluster); //Initalize Cluster
+client.machine = new Shard(client.cluster); // Initalize Cluster
 
 client.on('ready', () => {
 	client.machine.broadcastEval(`this.guilds.cache.size`).then(results => {
 		console.log(results);
-	}).catch(e => console.log(e))  ///BroadcastEval over all Cross-hosted Clients
+	}).catch(e => console.log(e))  // broadcastEval() over all cross-hosted clients
 })
 
 client.login(process.env.token);
@@ -163,15 +163,15 @@ client.login(process.env.token);
 ### 3.5 How can I use the Feature?
 * Start the Bridge at first and the Cluster (on all machines you want) with `node Server.js` and `node Cluster.js`
 * When you now change the ShardCount or the options of the Bridge and restart it, it will send a message to all connected Clusters, which will update the Shardlist and restart the Clusters, when the ShardList changed.
-* You can broadcastEval from the bridge, from the ClusterManager and from the Client
+* You can `broadcastEval()` from the bridge, from the ClusterManager and from the Client
 
 ## 4. Using the Package with the `TLS` Option
 * When using the package on a "open System" -> when you want to connect from different Machines on your IP/Domain, then a secure connection has to be ensured in order to prevent security flaws.
 * This is done by using the `TLS` Option, which will be set to `true` on the Bridge & Client Options.
 * The TLS Option can be used with:
-  - [`PSK`](https://nodejs.org/api/tls.html#pre-shared-keys), which allows basic securtiy.
+  - [`PSK`](https://nodejs.org/api/tls.html#pre-shared-keys), which allows basic security.
   - [`Certificate`](https://nodejs.org/api/tls.html#tlscreatesecurecontextoptions) which requires a generated Certificate and a Private Key, but allows a high Security level.
-* For futher Info and Control over the Options check the official [`TLS`](https://nodejs.org/api/tls.html) Documentation
+* For further Info and Control over the Options check the official [`TLS`](https://nodejs.org/api/tls.html) Documentation
 
 ### 4.1. `PSK` Mode:
 ```js
@@ -244,13 +244,13 @@ const client = new Client({
 * The average resource usage (`ram`, `cpu`) for one cluster has to be measured in order to define the maxClusters per Machine and a reliable Cluster Strategy...
 
 ### Bridge:
-* You can override the function `.parseClusterList` with your own function inorder to parse a custom ShardList/ClusterList
+* You can override the function `.parseClusterList` with your own function in order to parse a custom ShardList/ClusterList
 ```js
-/// Bridge Options
+// Bridge Options
 const server = new Bridge({...})
-///See above for the Bridge Code | Has been removed for a better overview
+// See above for the Bridge Code | Has been removed for a better overview
 server.parseClusterList = (clusterList) =>{
-    let strategy = [2,Infinity]; //How many Clusters per Machines: 1.Machine: 2, 2.Machine: Rest of the Clusters
+    let strategy = [2,Infinity]; // How many Clusters per Machines: 1.Machine: 2, 2.Machine: Rest of the Clusters
     let parsedList = [];
     for(let i = 0; i < strategy.length; i++){
         parsedList.push(clusterList.splice(0, strategy[i]))
@@ -264,7 +264,7 @@ server.parseClusterList = (clusterList) =>{
 Client:
 * By providing `maxClusters` as options, the Bridge will provide the ClusterList with the similar/same length
 ```js
-///See above for the Client Code | Has been removed for a better overview
+// See above for the Client Code | Has been removed for a better overview
 client.requestShardData({maxClusters: 2}).then(e => {
     if (!e) return;
     manager.totalShards = e.totalShards;
@@ -284,8 +284,8 @@ client.requestShardData({maxClusters: 2}).then(e => {
 | shardsPerCluster  | number/1 |The total amount of Shards per Cluster/Process|
 | totalShards  | number |The amount of Total Shards in all Machines|
 | totalMachines  | number |The amount of Total Machines in order to chunk the ShardList|
-| token  | string |The Discord Bot Token in order to fetch the recommanded ShardCount|
-| shardList | array |A array of ShardIds to host on the connected Machines|
+| token  | string |The Discord Bot Token in order to fetch the recommended ShardCount|
+| shardList | array |An array of ShardIds to host on the connected Machines|
 
 ### 7.1.2 Bridge `Events`:
 | Event |  Description |
@@ -342,8 +342,8 @@ client.requestShardData({maxClusters: 2}).then(e => {
 |`requestToGuild(message = {})` | Sends a Request to the Guild and returns the reply, which can be answered with .reply |
 
 
-## 8.Example:
-As an example, We will show you how to use the Package with a Bot, Dashboard...
+## 8. Example:
+As an example, we will show you how to use the Package with a Bot, Dashboard...
 Bridge:
 ```js
 const {Bridge} = require('discord-cross-hosting');
@@ -363,12 +363,12 @@ server.on('ready', (url) => {
 })
 
 server.on('clientMessage', (message)=>{
-    if(!message._sCustom) return; //If message is a Internal Message
+    if(!message._sCustom) return; // If message is a Internal Message
     console.log(message)
 })
 
 server.on('clientRequest', (message)=>{
-    if(!message._sCustom && !message._sRequest) return; //If message is a Internal Message
+    if(!message._sCustom && !message._sRequest) return; // If message is a Internal Message
     if(message.ack) return message.reply({message: 'I am alive!'})
     console.log(message)
     message.reply({data: 'Hello World'});
@@ -403,7 +403,7 @@ const manager = new Cluster.Manager(`${__dirname}/bot.js`, {
 manager.on('clusterCreate', cluster => console.log(`Launched Cluster ${cluster.id}`));
 manager.on('debug', console.log)
 
-///Request ShardData from the Bridge
+// Request ShardData from the Bridge
 client.requestShardData().then(e => {
     if (!e) return;
     manager.totalShards = e.totalShards;
@@ -413,16 +413,16 @@ client.requestShardData().then(e => {
     manager.spawn({timeout:  -1})
 }).catch(e => console.log(e));
 
-//Listen to the Manager Events
+// Listen to the Manager Events
 client.listen(manager);
 
 client.on('bridgeMessage', (message)=>{
-    if(!message._sCustom) return; //If message is a Internal Message
+    if(!message._sCustom) return; // If message is a Internal Message
     console.log(message)
 })
 
 client.on('bridgeRequest', (message)=>{
-    if(!message._sCustom && !message._sRequest) return; //If message is a Internal Message
+    if(!message._sCustom && !message._sRequest) return; // If message is a Internal Message
     console.log(message)
     if(message.ack) return message.reply({message: 'I am alive!'})
     message.reply({data: 'Hello World'});
@@ -442,7 +442,7 @@ const client = new Discord.Client({
 
 client.cluster = new Cluster.Client(client); 
 
-////Initalize ClientMachine
+// Initialize ClientMachine
 const {Shard} = require('discord-cross-hosting');
 client.machine = new Shard(client.cluster);
 
@@ -480,12 +480,12 @@ client.on('ready', ( ) => {
     console.log('Client is ready');
 })
 
-///My Express stuff- custom code
-/* Pseodo Code*/
+// My Express stuff- custom code
+/* Pseudo Code*/
 const express = require('express');
 const app = express();
 app.listen(3000, () => {console.log('Listening on port 3000')});
-///listen to express event:
+// listen to express event:
 app.get('/guild/:id', async function (req, res) {
     const guildId = req.params.id; 
     client.requestToGuild({ guildId: guildId }).then(e => res.send(e)).catch(e => res.send(e));
