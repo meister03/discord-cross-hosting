@@ -5,7 +5,7 @@
   "main": "index.js",
   "types": "./typings.d.ts",
   "dependencies": {
-    "net-ipc": "github:timotejroiko/net-ipc",
+    "net-ipc": "^2.0.1",
     "node-fetch": "^2.6.1"
   },
   "repository": {
