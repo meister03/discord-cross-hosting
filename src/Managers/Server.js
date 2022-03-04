@@ -1,7 +1,8 @@
 const { Server } = require('net-ipc');
+
+const { IPCMessage, BaseMessage } = require('../Structures/IPCMessage.js');
 const { messageType } = require('../Utils/Constants.js');
 const Util = require('../Utils/Util.js');
-const { IPCMessage, BaseMessage } = require('../Structures/IPCMessage.js');
 
 class BridgeServer extends Server {
     constructor(options = {}) {
@@ -9,7 +10,7 @@ class BridgeServer extends Server {
 
         /**
          * A User chosen Token for basic Authorization, when tls is disabled.
-         * @type {String}
+         * @type {string}
          */
         this.authToken = options.authToken;
         if (!this.authToken) throw new Error('MACHINE_MISSING_OPTION', 'authToken must be provided', 'String');
@@ -18,13 +19,13 @@ class BridgeServer extends Server {
         /*********************/
         /**
          * The Total Amount of Shards per Clusters
-         * @type {Number}
+         * @type {number}
          */
         this.shardsPerCluster = options.shardsPerCluster ?? 1;
 
         /**
          * The Total Amount of Shards
-         * @type {Number}
+         * @type {number}
          */
         this.totalShards = options.totalShards || 'auto';
         if (this.totalShards !== undefined) {
@@ -42,7 +43,7 @@ class BridgeServer extends Server {
 
         /**
          * The Total Amount of Machines
-         * @type {Number}
+         * @type {number}
          */
         this.totalMachines = options.totalMachines;
         if (!this.totalMachines)
@@ -56,7 +57,7 @@ class BridgeServer extends Server {
 
         /**
          * Your Discord Bot token
-         * @type {String}
+         * @type {string}
          */
         this.token = options.token ? options.token.replace(/^Bot\s*/i, '') : null;
 
@@ -68,7 +69,7 @@ class BridgeServer extends Server {
 
         /**
          * If the Package will be used in standalone mode
-         * @type {Boolean}
+         * @type {boolean}
          */
         this.standAlone = options.standAlone ?? false;
 
@@ -86,11 +87,11 @@ class BridgeServer extends Server {
 
         /**
          * The Manager instance, which should be listened, when broadcasting
-         * @type {Object}
+         * @type {object}
          */
         this.manager;
 
-        //End options parsing
+        // End options parsing
 
         this.on('ready', this._handleReady.bind(this));
         this.on('error', this._handleError.bind(this));
@@ -111,38 +112,44 @@ class BridgeServer extends Server {
 
     /**
      * Handle the Ready Event and lot out, when the Bridge is ready.
+     * @param url
      * @private
      */
     _handleReady(url) {
         this._debug(`[READY] Bridge operational on ${url}`);
         setTimeout(() => {
-            if (!this.standAlone) this.initalizeShardData();
+            if (!this.standAlone) this.initializeShardData();
         }, 5000);
     }
 
     /**
      * Handle the Error Event of the Bridge
+     * @param _error
      * @private
      */
-    _handleError(error) {}
+    _handleError(_error) {}
 
     /**
      * Handles the Connection of new Clients
+     * @param client
+     * @param initialData
      * @private
      */
-    _handleConnect(client, initialdata) {
-        if (initialdata?.authToken !== this.authToken) return client.close('ACCESS DENIED').catch(e => console.log(e));
-        client.authToken = initialdata.authToken;
-        client.agent = initialdata.agent;
+    _handleConnect(client, initialData) {
+        if (initialData?.authToken !== this.authToken) return client.close('ACCESS DENIED').catch(e => console.log(e));
+        client.authToken = initialData.authToken;
+        client.agent = initialData.agent;
         this.clients.set(client.id, client);
         this._debug(`[CM => Connected][${client.id}]`, { cm: true });
     }
 
     /**
      * Handles the Disconnection of Clients
+     * @param client
+     * @param _reason
      * @private
      */
-    _handleDisconnect(client, reason) {
+    _handleDisconnect(client, _reason) {
         client = this.clients.get(client.id);
         if (!client) return;
         if (client.agent !== 'bot') return this.clients.delete(client.id);
@@ -155,8 +162,9 @@ class BridgeServer extends Server {
     }
 
     /**
-     * Handles the Message Event of the Bridge and executes Requests based on the Mesage
-     * @param {Object} message - Message, which has been sent from the Bridge
+     * Handles the Message Event of the Bridge and executes Requests based on the Message
+     * @param {object} message - Message, which has been sent from the Bridge
+     * @param client
      * @private
      */
     _handleMessage(message, client) {
@@ -182,22 +190,24 @@ class BridgeServer extends Server {
             );
             return;
         }
-        let emitmessage;
-        if (typeof message === 'object') emitmessage = new IPCMessage(client, message);
-        else emitmessage = message;
-        this.emit('clientMessage', emitmessage, client);
+        let emitMessage;
+        if (typeof message === 'object') emitMessage = new IPCMessage(client, message);
+        else emitMessage = message;
+        this.emit('clientMessage', emitMessage, client);
     }
 
     /**
-     * Handles the Request Event of the Bridge and executes Requests based on the Mesage
-     * @param {Object} message - Request, which has been sent from the Bridge
+     * Handles the Request Event of the Bridge and executes Requests based on the Message
+     * @param {object} message - Request, which has been sent from the Bridge
+     * @param res
+     * @param client
      * @private
      */
     _handleRequest(message, res, client) {
         if (typeof message === 'string') message = JSON.parse(message);
         if (message?.type === undefined) return;
         if (!this.clients.has(client.id)) return;
-        ///BroadcastEval
+        // BroadcastEval
         if (message.type === messageType.CLIENT_BROADCAST_REQUEST) {
             const clients = [...this.clients.values()].filter(
                 message.options?.agent ? c => message.options.agent.includes(c.agent) : c => c.agent === 'bot',
@@ -206,23 +216,23 @@ class BridgeServer extends Server {
             message.type = messageType.SERVER_BROADCAST_REQUEST;
             const promises = [];
             for (const client of clients) promises.push(client.request(message, message.options?.timeout));
-            Promise.all(promises).then(e => res(e).catch(e => null));
-            //return res.send(responses);
+            Promise.all(promises).then(e => res(e).catch(_e => null));
+            // return res.send(responses);
         }
 
-        ///Shard Data Request
+        // Shard Data Request
         if (message.type === messageType.SHARDLIST_DATA_REQUEST) {
             client = this.clients.get(client.id);
 
             if (!this.shardClusterListQueue[0]) return res([]);
 
-            //Check if Client has a Custom Cluster Strategy
+            // Check if Client has a Custom Cluster Strategy
             if (!message.maxClusters) {
                 client.shardList = this.shardClusterListQueue[0];
                 this.shardClusterListQueue.shift();
             } else {
-                this.shardClusterListQueue.sort((a, b) => b.length - a.length); ///Sort by length: descending
-                //console.log(this.shardClusterListQueue)
+                this.shardClusterListQueue.sort((a, b) => b.length - a.length); // Sort by length: descending
+                // console.log(this.shardClusterListQueue)
                 const position = this.shardClusterListQueue.findIndex(x => x.length < message.maxClusters + 1);
                 if (position === -1) {
                     return res({ error: 'No Cluster List with less than ' + (message.maxClusters + 1) + ' found!' });
@@ -236,7 +246,7 @@ class BridgeServer extends Server {
                 cm: true,
             });
 
-            ///Map clusterList:
+            // Map clusterList:
 
             const clusterIds = this.shardClusterList.map(x => x.length);
             const shardListPosition = this.shardClusterList.findIndex(
@@ -255,7 +265,7 @@ class BridgeServer extends Server {
             return;
         }
 
-        ///Guild Data Request
+        // Guild Data Request
         if (message.type === messageType.GUILD_DATA_REQUEST) {
             this.requestToGuild(message)
                 .then(e => res(e))
@@ -267,9 +277,9 @@ class BridgeServer extends Server {
             if (!message.agent && !message.clientId)
                 return res({ ...message, error: 'AGENT MISSING OR CLIENTID MISSING FOR FINDING TARGET CLIENT' });
             if (message.clientId) {
-                const targetclient = this.clients.get(message.clientId);
-                if (!targetclient) return res({ ...message, error: 'CLIENT NOT FOUND WITH PROVIDED CLIENT ID' });
-                return targetclient
+                const targetClient = this.clients.get(message.clientId);
+                if (!targetClient) return res({ ...message, error: 'CLIENT NOT FOUND WITH PROVIDED CLIENT ID' });
+                return targetClient
                     .request(message, message.options?.timeout)
                     .then(e => res(e))
                     .catch(e => res({ ...message, error: e }));
@@ -283,17 +293,17 @@ class BridgeServer extends Server {
                 .catch(e => res({ ...message, error: e }));
         }
 
-        let emitmessage;
-        if (typeof message === 'object') emitmessage = new IPCMessage(client, message, res);
-        else emitmessage = message;
-        this.emit('clientRequest', emitmessage, client);
+        let emitMessage;
+        if (typeof message === 'object') emitMessage = new IPCMessage(client, message, res);
+        else emitMessage = message;
+        this.emit('clientRequest', emitMessage, client);
     }
 
     /**
      * Based on the User provided Data a Shard List, ShardCount and a ShardCluster List is created.
-     * @return {array} shardClusterList - The shardClusterList, which should be spaned on the MachineClient's
+     * @returns {Array[]} shardClusterList - The shardClusterList, which should be spanned on the MachineClient's
      */
-    async initalizeShardData() {
+    async initializeShardData() {
         if (this.totalShards === 'auto' && !this.shardList) {
             if (!this.token)
                 throw new Error(
@@ -334,7 +344,7 @@ class BridgeServer extends Server {
         this.shardClusterListQueue = this.shardClusterList.slice(0);
         this._debug(`Created shardClusterList: ${JSON.stringify(this.shardClusterList)}`);
 
-        //Update Shard Data:
+        // Update Shard Data:
         const clients = [...this.clients.values()].filter(c => c.agent === 'bot');
         const message = {};
         message.totalShards = this.totalShards;
@@ -377,37 +387,40 @@ class BridgeServer extends Server {
     /**
      * Sends a Request to the Guild and returns the reply
      * @param {BaseMessage} message Message, which should be sent as request and handled by the User
+     * @param options
      * @returns {Promise<*>} Reply of the Message
      * @example
      * client.crosshost.request({content: 'hello', guildId: '123456789012345678'})
-     *   .then(result => console.log(result)) //hi
+     *   .then(result => console.log(result)) // hi
      *   .catch(console.error);
      */
     async requestToGuild(message = {}, options = {}) {
-        //console.log(message)
+        // console.log(message)
         if (!message?.guildId) throw new Error('GuildID has not been provided!');
         const internalShard = Util.shardIdForGuildId(message.guildId, this.totalShards);
-        //console.log(`RequestToGuild: ` + internalShard)
+        // console.log(`RequestToGuild: ` + internalShard)
 
-        const targetclient = [...this.clients.values()].find(x => x?.shardList?.flat()?.includes(internalShard));
-        //console.log(`RequestToGuild Client: ` + targetclient.id)
+        const targetClient = [...this.clients.values()].find(x => x?.shardList?.flat()?.includes(internalShard));
+        // console.log(`RequestToGuild Client: ` + targetClient.id)
 
-        if (!targetclient) throw new Error('Internal Shard not found!');
-        if (!message.options) message.options = opitons;
+        if (!targetClient) throw new Error('Internal Shard not found!');
+        if (!message.options) message.options = options;
 
         if (message.eval) message.type = messageType.GUILD_EVAL_REQUEST;
         else message.type = messageType.GUILD_DATA_REQUEST;
 
         message.options.shard = internalShard;
 
-        return targetclient.request(message, message.options.timeout);
+        return targetClient.request(message, message.options.timeout);
     }
 
     /**
-     * Logsout the Debug Messages
+     * Logs the Debug Messages
      * <warn>Using this method just emits the Debug Event.</warn>
      * <info>This is usually not necessary to manually specify.</info>
-     * @returns {log} returns the log message
+     * @param message
+     * @param options
+     * @returns {string} returns the log message
      */
     _debug(message, options = {}) {
         let log;
@@ -417,15 +430,14 @@ class BridgeServer extends Server {
             log = `[Bridge] ` + message;
         }
         /**
-         * Emitted upon recieving a message
+         * Emitted upon receiving a message
          * @event ClusterManager#debug
-         * @param {log} Message, which was recieved
+         * @param {string} log Message which was received
          */
         this.emit('debug', log);
         return log;
     }
 }
-module.exports = BridgeServer;
 
 Object.defineProperty(Array.prototype, 'chunkList', {
     value: function (chunkSize) {
@@ -434,3 +446,5 @@ Object.defineProperty(Array.prototype, 'chunkList', {
         return R;
     },
 });
+
+module.exports = BridgeServer;

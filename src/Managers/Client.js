@@ -1,27 +1,29 @@
 const { Client } = require('net-ipc');
-const { messageType } = require('../Utils/Constants.js');
+
 const { IPCMessage, BaseMessage } = require('../Structures/IPCMessage.js');
+const { messageType } = require('../Utils/Constants.js');
+
 class BridgeClient extends Client {
     constructor(options = {}) {
         super(options);
 
         /**
          * A authentication token to be able to verify the connection to the Bridge.
-         * @type {String}}
+         * @type {string}}
          */
         this.authToken = options?.authToken;
         if (!this.authToken) throw new Error('ClIENT_MISSING_OPTION', 'authToken must be provided', 'String');
 
         /**
          * A custom settable agent name. BroadcastEvals are just executed on Agents with the name 'bot'
-         * @type {String}
+         * @type {string}
          */
         this.agent = options?.agent;
         if (!this.agent) throw new Error('ClIENT_MISSING_OPTION', 'agent must be provided', 'Default: bot');
 
         /**
          * If Rolling Restart should be disabled.
-         * @type {Boolean}
+         * @type {boolean}
          */
         this.rollingRestarts = options?.rollingRestarts ?? false;
 
@@ -44,7 +46,7 @@ class BridgeClient extends Client {
 
     /**
      * Connect your MachineClient to the Bridge with your Custom Data.
-     * @param {Object} args - Custom Data, which can be sent to the Bridge when connecting.
+     * @param {object} args - Custom Data, which can be sent to the Bridge when connecting.
      */
     connect(args = {}) {
         this._debug(`[Connect] Connecting to Bridge with the given Data`);
@@ -53,15 +55,17 @@ class BridgeClient extends Client {
 
     /**
      * Handle the Ready Event and lot out, when the Client connected to the Bridge.
+     * @param _data
      * @private
      */
-    _handleReady(data) {
+    _handleReady(_data) {
         this._debug(`[Ready] Client connected to Bridge`);
     }
 
     /**
-     * Handles the Request Event of the Client and executes Requests based on the Mesage
-     * @param {Object} message - Request, which has been sent from the Bridge
+     * Handles the Request Event of the Client and executes Requests based on the Message
+     * @param {object} message - Request, which has been sent from the Bridge
+     * @param client
      * @private
      */
     _handleMessage(message, client) {
@@ -70,47 +74,49 @@ class BridgeClient extends Client {
 
         if (message.type === messageType.SHARDLIST_DATA_UPDATE) {
             if (!this.rollingRestarts) return;
-            const checkifclusterlistisuptodate = message.shardClusterList.find(
+            const checkIfClusterListIsUpToDate = message.shardClusterList.find(
                 x => JSON.stringify(x) === JSON.stringify(this.shardList),
             );
 
-            if (!checkifclusterlistisuptodate || this.totalShards !== message.totalShards) {
+            if (!checkIfClusterListIsUpToDate || this.totalShards !== message.totalShards) {
                 this._debug(`[SHARDLIST_DATA_UPDATE] ShardData changed, waiting 5s until RollingRestart...`, {
                     bridge: true,
                 });
                 setTimeout(async () => {
                     const response = await this.requestShardData();
-                    //if (!response?.shardList) return; -> Kill Old Clusters
+                    // if (!response?.shardList) return; -> Kill Old Clusters
                     this.manager.totalShards = response.totalShards;
                     this.manager.shardList = response.shardList || [];
                     this.manager.totalClusters = response.shardList?.length;
                     this.manager.shardclusterlist = response.shardList || [];
-                    this.manager.shardClusterList = response.shardList || []; //Support Old and New version of hybrid-sharding
+                    this.manager.shardClusterList = response.shardList || []; // Support Old and New version of hybrid-sharding
                     this.manager.clusterList = response.clusterList || [];
                     this._debug(`[Start] RollingRestart`);
                     this.rollingRestart();
                 }, 5000);
             } else {
-                super.send({ type: messageType.CLIENT_SHARDLIST_DATA_CURRENT, shardList: this.shardList }); ///removes this shardList from the queue
+                super.send({ type: messageType.CLIENT_SHARDLIST_DATA_CURRENT, shardList: this.shardList }); // removes this shardList from the queue
                 this._debug(`[SHARDLIST_DATA_UPDATE] ShardData did not changed!`, { bridge: true });
                 return;
             }
         }
-        let emitmessage;
-        if (typeof message === 'object') emitmessage = new IPCMessage(client, message);
-        else emitmessage = message;
-        this.emit('bridgeMessage', emitmessage, client);
+        let emitMessage;
+        if (typeof message === 'object') emitMessage = new IPCMessage(client, message);
+        else emitMessage = message;
+        this.emit('bridgeMessage', emitMessage, client);
     }
 
     /**
-     * Handles the Request Event of the Client and executes Requests based on the Mesage
-     * @param {Object} message - Request, which has been sent from the Bridge
+     * Handles the Request Event of the Client and executes Requests based on the Message
+     * @param {object} message - Request, which has been sent from the Bridge
+     * @param res
+     * @param client
      * @private
      */
     _handleRequest(message, res, client) {
         if (typeof message === 'string') message = JSON.parse(message);
         if (message?.type === undefined) return;
-        ///BroadcastEval
+        // BroadcastEval
         if (message.type === messageType.SERVER_BROADCAST_REQUEST) {
             if (!this.manager) throw new Error(`A Cluster/Shard Manager has not been loaded to net-ipc`);
             message.type = messageType.CLIENT_BROADCAST_RESPONSE;
@@ -125,16 +131,17 @@ class BridgeClient extends Client {
             // console.log(message)
             if (!this.manager) throw new Error(`A Cluster/Shard Manager has not been loaded to net-ipc`);
             message.type = messageType.GUILD_DATA_RESPONSE;
-            ///Find Shard
-            if (message.options.hasOwnProperty('shard')) {
-                const findcluster = [...this.manager.clusters.values()].find(i =>
+            // Find Shard
+
+            if (message.options.shard) {
+                const findCluster = [...this.manager.clusters.values()].find(i =>
                     i.shardlist[0].includes(message.options.shard),
                 );
-                message.options.cluster = findcluster ? findcluster.id : 0;
+                message.options.cluster = findCluster ? findCluster.id : 0;
                 // console.log(`Guild Data Cluster Request: ${message.options.cluster}`)
             } else return res({ error: 'No Shard has been provided!', ...message });
             const cluster = this.manager.clusters.get(message.options.cluster);
-            //console.log(`Found Cluster to send request: ${cluster?.id}`)
+            // console.log(`Found Cluster to send request: ${cluster?.id}`)
             if (cluster === undefined)
                 return res({ ...message, error: `Cluster ${message.options.cluster} not found!` });
             cluster
@@ -152,15 +159,16 @@ class BridgeClient extends Client {
                 .catch(e => res(e));
             return;
         }
-        let emitmessage;
-        if (typeof message === 'object') emitmessage = new IPCMessage(client || this, message, res);
-        else emitmessage = message;
-        this.emit('bridgeRequest', emitmessage, client || this);
+        let emitMessage;
+        if (typeof message === 'object') emitMessage = new IPCMessage(client || this, message, res);
+        else emitMessage = message;
+        this.emit('bridgeRequest', emitMessage, client || this);
     }
 
     /**
      * Request some Shard and Important Data from the Bridge.
-     * @return {Object} response - The ShardList, TotalShards and other Data requested from the Bridge
+     * @param options
+     * @returns {object} response - The ShardList, TotalShards and other Data requested from the Bridge
      */
     async requestShardData(options = {}) {
         const message = {};
@@ -177,10 +185,10 @@ class BridgeClient extends Client {
         return response;
     }
 
-    ///BroadcastEval Stuff
+    // BroadcastEval Stuff
     /**
      * Listens to NET-IPC messages such as BroadcastEval or Normal Messages
-     * @param {Object} manager the Shard/Cluster Manager, which should be listened on.
+     * @param {object} manager the Shard/Cluster Manager, which should be listened on.
      * @returns {manager}
      */
     listen(manager) {
@@ -214,10 +222,11 @@ class BridgeClient extends Client {
     /**
      * Sends a Message to the Bridge
      * @param {BaseMessage} message Message, which should be sent to Bridge
+     * @param options
      * @returns {Promise<*>} Message
      * @example
      * client.send({content: 'hello'})
-     *   .then(result => console.log(result)) //hi
+     *   .then(result => console.log(result)) // hi
      *   .catch(console.error);
      * @see {@link IPCMessage#reply}
      */
@@ -231,7 +240,7 @@ class BridgeClient extends Client {
             message._sReply = false;
             message = new BaseMessage(message).toJSON();
         }
-        //Message sent by ClusterClient, which should not be resolved to avoid memory leaks
+        // Message sent by ClusterClient, which should not be resolved to avoid memory leaks
         if (options.resolve === false) {
             super.send(JSON.stringify(message));
             return true;
@@ -242,10 +251,11 @@ class BridgeClient extends Client {
     /**
      * Sends a Request to the Bridge and returns the reply
      * @param {BaseMessage} message Message, which should be sent as request
+     * @param options
      * @returns {Promise<*>} Reply of the Message
      * @example
      * client.request({content: 'hello'}, {timeout: 1000})
-     *   .then(result => console.log(result)) //hi
+     *   .then(result => console.log(result)) // hi
      *   .catch(console.error);
      * @see {@link IPCMessage#reply}
      */
@@ -253,7 +263,7 @@ class BridgeClient extends Client {
         if (!message) throw new Error('Request has not been provided!');
         if (typeof message === 'string' && !options.internal) message = JSON.parse(message);
         if (typeof message !== 'object' && !options.internal) throw new TypeError('The Request has to be an object');
-        //console.log(message)
+        // console.log(message)
         if (!message.options) message.options = options;
         if (!options.internal) {
             message._sRequest = true;
@@ -265,10 +275,11 @@ class BridgeClient extends Client {
     /**
      * Sends a Request to the Guild and returns the reply
      * @param {BaseMessage} message Message, which should be sent as request and handled by the User
+     * @param options
      * @returns {Promise<*>} Reply of the Message
      * @example
      * client.crosshost.request({content: 'hello', guildId: '123456789012345678'})
-     *   .then(result => console.log(result)) //hi
+     *   .then(result => console.log(result)) // hi
      *   .catch(console.error);
      */
     async requestToGuild(message = {}, options = {}) {
@@ -282,10 +293,11 @@ class BridgeClient extends Client {
     /**
      * Sends a Request to the Client and returns the reply
      * @param {BaseMessage} message Message, which should be sent as request and handled by the User
+     * @param options
      * @returns {Promise<*>} Reply of the Message
      * @example
      * client.requestToClient({content: 'hello', agent: 'dashboard', clientId: 'CLient_id_provided_by_machine'})
-     *   .then(result => console.log(result)) //hi
+     *   .then(result => console.log(result)) // hi
      *   .catch(console.error);
      */
     async requestToClient(message = {}, options = {}) {
@@ -332,15 +344,15 @@ class BridgeClient extends Client {
                     this._debug(`[RollingRestart][Spawn] Cluster ${cluster.id}`);
                     cluster.spawn({ timeout: this.manager.shardClusterList[i].length * 10000 }).catch(e => e);
                     cluster.on('ready', () => {
-                        const clusterposition = clusters.findIndex(x => x.id === cluster.id);
-                        if (clusterposition === undefined || clusterposition === -1) return;
+                        const clusterPosition = clusters.findIndex(x => x.id === cluster.id);
+                        if (clusterPosition === undefined || clusterPosition === -1) return;
                         try {
                             clusters.find(x => x.id === cluster.id)?.kill({ force: true });
                         } catch (error) {
                             console.log(error);
                         }
                         this._debug(`[RollingRestart][Kill] Old Cluster ${cluster.id}`);
-                        clusters.splice(clusterposition, 1);
+                        clusters.splice(clusterPosition, 1);
                     });
                 }, i * 7000 * this.manager.shardClusterList[i].length);
             } else {
@@ -362,10 +374,12 @@ class BridgeClient extends Client {
     }
 
     /**
-     * Logsout the Debug Messages
+     * Logs the Debug Messages
      * <warn>Using this method just emits the Debug Event.</warn>
      * <info>This is usually not necessary to manually specify.</info>
-     * @returns {log} returns the log message
+     * @param message
+     * @param options
+     * @returns {string} returns the log message
      */
     _debug(message, options = {}) {
         let log;
@@ -375,12 +389,13 @@ class BridgeClient extends Client {
             log = `[CM] ` + message;
         }
         /**
-         * Emitted upon recieving a message
+         * Emitted upon receiving a message
          * @event ClusterManager#debug
-         * @param {log} Message, which was recieved
+         * @param {string} log Message which was received
          */
         this.emit('debug', log);
         return log;
     }
 }
+
 module.exports = BridgeClient;

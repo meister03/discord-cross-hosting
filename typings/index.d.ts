@@ -84,7 +84,7 @@ declare module 'discord-cross-hosting' {
          * @param message.guildId The guild id of the request
          * @example
          * client.crosshost.request({content: 'hello', guildId: '123456789012345678'})
-         *   .then(result => console.log(result)) //hi
+         *   .then(result => console.log(result)) // hi
          *   .catch(console.error);
          */
         public requestToGuild(message: { guildId: string; [key: string]: any }): Promise<any>;
@@ -183,7 +183,7 @@ declare module 'discord-cross-hosting' {
          * Sends a Request to the Bridge and returns the reply
          * @example
          * client.request({content: 'hello'}, {timeout: 1000})
-         *   .then(result => console.log(result)) //hi
+         *   .then(result => console.log(result)) // hi
          *   .catch(console.error);
          */
         // @ts-ignore
@@ -200,7 +200,7 @@ declare module 'discord-cross-hosting' {
          * @param message.guildId The guild id of the request
          * @example
          * client.crosshost.request({content: 'hello', guildId: '123456789012345678'})
-         *   .then(result => console.log(result)) //hi
+         *   .then(result => console.log(result)) // hi
          *   .catch(console.error);
          */
         public requestToGuild(
@@ -215,7 +215,7 @@ declare module 'discord-cross-hosting' {
          * Sends a Request to the Client and returns the reply
          * @example
          * client.requestToClient({content: 'hello', agent: 'dashboard', clientId: 'CLient_id_provided_by_machine'})
-         *   .then(result => console.log(result)) //hi
+         *   .then(result => console.log(result)) // hi
          *   .catch(console.error);
          */
         public requestToClient(
@@ -257,7 +257,7 @@ declare module 'discord-cross-hosting' {
          * Sends a request to the Bridge
          * @example
          * client.crosshost.request({content: 'hello'})
-         *   .then(result => console.log(result)) //hi
+         *   .then(result => console.log(result)) // hi
          *   .catch(console.error);
          */
         public request<M extends string | { [key: string]: any }>(
@@ -271,7 +271,7 @@ declare module 'discord-cross-hosting' {
          * Sends a Request to the Guild and returns the reply
          * @example
          * client.crosshost.requestToGuild({content: 'hello', guildId: '123456789012345678'})
-         *   .then(result => console.log(result)) //hi
+         *   .then(result => console.log(result)) // hi
          *   .catch(console.error);
          */
         public requestToGuild(
@@ -286,7 +286,7 @@ declare module 'discord-cross-hosting' {
          * Sends a Request to the Client and returns the reply
          * @example
          * client.crosshost.requestToClient({content: 'hello', agent: 'dashboard', clientId: 'CLient_id_provided_by_machine'})
-         *   .then(result => console.log(result)) //hi
+         *   .then(result => console.log(result)) // hi
          *   .catch(console.error);
          */
         public requestToClient(

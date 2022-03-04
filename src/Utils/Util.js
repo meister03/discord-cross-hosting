@@ -1,14 +1,15 @@
 const fetch = require('node-fetch');
+
 const { DefaultOptions, Endpoints } = require('./Constants.js');
 
 const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 class Util {
-    //Discord.js v12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L287
+    // Discord.js v12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L287
     /**
      * Sets default properties on an object that aren't already specified.
-     * @param {Object} def Default properties
-     * @param {Object} given Object to assign defaults to
-     * @returns {Object}
+     * @param {object} def Default properties
+     * @param {object} given Object to assign defaults to
+     * @returns {object}
      * @private
      */
     static mergeDefault(def, given) {
@@ -23,11 +24,11 @@ class Util {
         return given;
     }
 
-    //Discord.js v12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L346
+    // Discord.js v12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L346
     /**
      * Makes a plain error info object from an Error.
      * @param {Error} err Error to get info from
-     * @returns {Object}
+     * @returns {object}
      * @private
      */
     static makePlainError(err) {
@@ -38,10 +39,10 @@ class Util {
         };
     }
 
-    //Discord.js v12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L333
+    // Discord.js v12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L333
     /**
      * Makes an Error from a plain info object.
-     * @param {Object} obj Error info
+     * @param {object} obj Error info
      * @param {string} obj.name Error type
      * @param {string} obj.message Message for the error
      * @param {string} obj.stack Stack for the error
@@ -67,7 +68,7 @@ class Util {
         });
     }
 
-    //Discord.js V12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L239
+    // Discord.js V12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L239
     /**
      * Gets the recommended shard count from Discord.
      * @param {string} token Discord auth token
@@ -88,10 +89,10 @@ class Util {
             .then(data => data.shards * (1000 / guildsPerShard));
     }
 
-    //Discord.js V13 Code | Credits: https://github.com/discordjs/discord.js/blob/stable/src/sharding/ShardClientUtil.js#L234
+    // Discord.js V13 Code | Credits: https://github.com/discordjs/discord.js/blob/stable/src/sharding/ShardClientUtil.js#L234
     /**
      * Get the shard id for a given guild id.
-     * @param {Snowflake} guildId Snowflake guild id to get shard id for
+     * @param {string} guildId Snowflake guild id to get shard id for
      * @param {number} shardCount Number of shards
      * @returns {number}
      */
@@ -101,4 +102,5 @@ class Util {
         return shard;
     }
 }
+
 module.exports = Util;

@@ -1,4 +1,5 @@
 const { messageType } = require('../Utils/Constants.js');
+
 class BaseMessage {
     constructor(message = {}) {
         /**
@@ -9,21 +10,21 @@ class BaseMessage {
 
         /**
          * Creates a Message ID for identifying it for further Usage such as on replies
-         * @type {String}
+         * @type {string}
          */
         this.nonce = message.nonce || Date.now().toString(36) + Math.random().toString(36);
         message.nonce = this.nonce;
 
         /**
-         * Destructs the Message Object and initalizes it on the Constructor
-         * @type {String}
+         * Destructs the Message Object and initializes it on the Constructor
+         * @type {string}
          */
         this.destructMessage(message);
     }
 
     /**
-     * Destructs the Message Object and initalizes it on the Constructor
-     * @param {Object} message The Message, which was passed in the Constructor
+     * Destructs the Message Object and initializes it on the Constructor
+     * @param {object} message The Message, which was passed in the Constructor
      */
     destructMessage(message) {
         for (let [key, value] of Object.entries(message)) {
@@ -61,7 +62,7 @@ class IPCMessage extends BaseMessage {
         this.raw = new BaseMessage(message).toJSON();
 
         /**
-        * Replys to the given Request
+        * Replies to the given Request
         * @type {function reply(message) {
             
         }}
@@ -108,4 +109,5 @@ class IPCMessage extends BaseMessage {
         return this.res(message.toJSON());
     }
 }
+
 module.exports = { IPCMessage, BaseMessage };
