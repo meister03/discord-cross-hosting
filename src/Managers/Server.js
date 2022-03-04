@@ -10,7 +10,6 @@ class BridgeServer extends Server {
 
         /**
          * A User chosen Token for basic Authorization, when tls is disabled.
-         *
          * @type {string}
          */
         this.authToken = options.authToken;
@@ -20,14 +19,12 @@ class BridgeServer extends Server {
         /*********************/
         /**
          * The Total Amount of Shards per Clusters
-         *
          * @type {number}
          */
         this.shardsPerCluster = options.shardsPerCluster ?? 1;
 
         /**
          * The Total Amount of Shards
-         *
          * @type {number}
          */
         this.totalShards = options.totalShards || 'auto';
@@ -46,7 +43,6 @@ class BridgeServer extends Server {
 
         /**
          * The Total Amount of Machines
-         *
          * @type {number}
          */
         this.totalMachines = options.totalMachines;
@@ -61,42 +57,36 @@ class BridgeServer extends Server {
 
         /**
          * Your Discord Bot token
-         *
          * @type {string}
          */
         this.token = options.token ? options.token.replace(/^Bot\s*/i, '') : null;
 
         /**
          * The shardList, which will be hosted by all Machines
-         *
          * @type {Array[]}
          */
         this.shardList = options.shardList ?? [];
 
         /**
          * If the Package will be used in standalone mode
-         *
          * @type {boolean}
          */
         this.standAlone = options.standAlone ?? false;
 
         /**
          * The shardCLusterList, which will be hosted by all Machines
-         *
          * @type {Array[]}
          */
         this.shardClusterList;
 
         /**
          * The shardCLusterLisQueue, the shardList which has to be spawned on the appropriated Machine
-         *
          * @type {Array[]}
          */
         this.shardClusterListQueue;
 
         /**
          * The Manager instance, which should be listened, when broadcasting
-         *
          * @type {object}
          */
         this.manager;
@@ -122,7 +112,6 @@ class BridgeServer extends Server {
 
     /**
      * Handle the Ready Event and lot out, when the Bridge is ready.
-     *
      * @param url
      * @private
      */
@@ -135,7 +124,6 @@ class BridgeServer extends Server {
 
     /**
      * Handle the Error Event of the Bridge
-     *
      * @param _error
      * @private
      */
@@ -143,7 +131,6 @@ class BridgeServer extends Server {
 
     /**
      * Handles the Connection of new Clients
-     *
      * @param client
      * @param initialData
      * @private
@@ -158,7 +145,6 @@ class BridgeServer extends Server {
 
     /**
      * Handles the Disconnection of Clients
-     *
      * @param client
      * @param _reason
      * @private
@@ -177,7 +163,6 @@ class BridgeServer extends Server {
 
     /**
      * Handles the Message Event of the Bridge and executes Requests based on the Message
-     *
      * @param {object} message - Message, which has been sent from the Bridge
      * @param client
      * @private
@@ -213,7 +198,6 @@ class BridgeServer extends Server {
 
     /**
      * Handles the Request Event of the Bridge and executes Requests based on the Message
-     *
      * @param {object} message - Request, which has been sent from the Bridge
      * @param res
      * @param client
@@ -317,7 +301,6 @@ class BridgeServer extends Server {
 
     /**
      * Based on the User provided Data a Shard List, ShardCount and a ShardCluster List is created.
-     *
      * @returns {Array[]} shardClusterList - The shardClusterList, which should be spanned on the MachineClient's
      */
     async initializeShardData() {
@@ -379,7 +362,6 @@ class BridgeServer extends Server {
 
     /**
      * Evaluates a script or function on all clusters, or a given cluster, in the context of the {@link Client}s.
-     *
      * @param {string|Function} script JavaScript to run on each cluster
      * @param {object} options Options provided for the ClusterClient broadcastEval Function
      * @returns {Promise<*>|Promise<Array<*>>} Results of the script execution
@@ -404,7 +386,6 @@ class BridgeServer extends Server {
 
     /**
      * Sends a Request to the Guild and returns the reply
-     *
      * @param {BaseMessage} message Message, which should be sent as request and handled by the User
      * @param options
      * @returns {Promise<*>} Reply of the Message
@@ -437,7 +418,6 @@ class BridgeServer extends Server {
      * Logs the Debug Messages
      * <warn>Using this method just emits the Debug Event.</warn>
      * <info>This is usually not necessary to manually specify.</info>
-     *
      * @param message
      * @param options
      * @returns {string} returns the log message
@@ -451,7 +431,6 @@ class BridgeServer extends Server {
         }
         /**
          * Emitted upon receiving a message
-         *
          * @event ClusterManager#debug
          * @param {string} log Message which was received
          */

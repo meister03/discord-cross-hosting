@@ -8,7 +8,6 @@ class ShardClient {
 
     /**
      * Evaluates a script or function on all machine, or a given shard, in the context of the {@link Client}s.
-     *
      * @param {string|Function} script JavaScript to run on each cluster
      * @param {number} [shard] Shard to run script on, all if undefined
      * @param options
@@ -32,7 +31,6 @@ class ShardClient {
 
     /**
      * Sends a message to all connected Machines.
-     *
      * @param {*} message The message, which should be sent.
      * @param options
      * @returns {Promise<*>}
@@ -50,7 +48,6 @@ class ShardClient {
 
     /**
      * Sends a request to the Bridge
-     *
      * @param {*} message The message, which should be sent.
      * @param options
      * @returns {Promise<*>} The reply from the Bridge
@@ -72,7 +69,6 @@ class ShardClient {
 
     /**
      * Sends a Request to the Guild and returns the reply
-     *
      * @param {BaseMessage} message Message, which should be sent as request and handled by the User
      * @param options
      * @returns {Promise<*>} Reply of the Message
@@ -91,7 +87,6 @@ class ShardClient {
 
     /**
      * Sends a Request to the Client and returns the reply
-     *
      * @param {BaseMessage} message Message, which should be sent as request and handled by the User
      * @param options
      * @returns {Promise<*>} Reply of the Message

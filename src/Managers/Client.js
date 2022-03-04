@@ -9,7 +9,6 @@ class BridgeClient extends Client {
 
         /**
          * A authentication token to be able to verify the connection to the Bridge.
-         *
          * @type {string}}
          */
         this.authToken = options?.authToken;
@@ -17,7 +16,6 @@ class BridgeClient extends Client {
 
         /**
          * A custom settable agent name. BroadcastEvals are just executed on Agents with the name 'bot'
-         *
          * @type {string}
          */
         this.agent = options?.agent;
@@ -25,21 +23,18 @@ class BridgeClient extends Client {
 
         /**
          * If Rolling Restart should be disabled.
-         *
          * @type {boolean}
          */
         this.rollingRestarts = options?.rollingRestarts ?? false;
 
         /**
          * A array of Internal ShardIds, which should be spawned in the Machine.
-         *
          * @type {Array}
          */
         this.shardList;
 
         /**
          * The Amount of Total Shards in all Machines.
-         *
          * @type {Array}
          */
         this.totalShards;
@@ -51,7 +46,6 @@ class BridgeClient extends Client {
 
     /**
      * Connect your MachineClient to the Bridge with your Custom Data.
-     *
      * @param {object} args - Custom Data, which can be sent to the Bridge when connecting.
      */
     connect(args = {}) {
@@ -61,7 +55,6 @@ class BridgeClient extends Client {
 
     /**
      * Handle the Ready Event and lot out, when the Client connected to the Bridge.
-     *
      * @param _data
      * @private
      */
@@ -71,7 +64,6 @@ class BridgeClient extends Client {
 
     /**
      * Handles the Request Event of the Client and executes Requests based on the Message
-     *
      * @param {object} message - Request, which has been sent from the Bridge
      * @param client
      * @private
@@ -116,7 +108,6 @@ class BridgeClient extends Client {
 
     /**
      * Handles the Request Event of the Client and executes Requests based on the Message
-     *
      * @param {object} message - Request, which has been sent from the Bridge
      * @param res
      * @param client
@@ -176,7 +167,6 @@ class BridgeClient extends Client {
 
     /**
      * Request some Shard and Important Data from the Bridge.
-     *
      * @param options
      * @returns {object} response - The ShardList, TotalShards and other Data requested from the Bridge
      */
@@ -198,7 +188,6 @@ class BridgeClient extends Client {
     // BroadcastEval Stuff
     /**
      * Listens to NET-IPC messages such as BroadcastEval or Normal Messages
-     *
      * @param {object} manager the Shard/Cluster Manager, which should be listened on.
      * @returns {manager}
      */
@@ -211,7 +200,6 @@ class BridgeClient extends Client {
 
     /**
      * Evaluates a script or function on all clusters, or a given cluster, in the context of the {@link Client}s.
-     *
      * @param {string|Function} script JavaScript to run on each cluster
      * @param {object} options Options provided for the ClusterClient broadcastEval Function
      * @returns {Promise<*>|Promise<Array<*>>} Results of the script execution
@@ -233,7 +221,6 @@ class BridgeClient extends Client {
 
     /**
      * Sends a Message to the Bridge
-     *
      * @param {BaseMessage} message Message, which should be sent to Bridge
      * @param options
      * @returns {Promise<*>} Message
@@ -263,7 +250,6 @@ class BridgeClient extends Client {
 
     /**
      * Sends a Request to the Bridge and returns the reply
-     *
      * @param {BaseMessage} message Message, which should be sent as request
      * @param options
      * @returns {Promise<*>} Reply of the Message
@@ -288,7 +274,6 @@ class BridgeClient extends Client {
     }
     /**
      * Sends a Request to the Guild and returns the reply
-     *
      * @param {BaseMessage} message Message, which should be sent as request and handled by the User
      * @param options
      * @returns {Promise<*>} Reply of the Message
@@ -307,7 +292,6 @@ class BridgeClient extends Client {
 
     /**
      * Sends a Request to the Client and returns the reply
-     *
      * @param {BaseMessage} message Message, which should be sent as request and handled by the User
      * @param options
      * @returns {Promise<*>} Reply of the Message
@@ -325,7 +309,6 @@ class BridgeClient extends Client {
 
     /**
      * Executes a rolling Restart, which has been executed by the Bridge
-     *
      * @private
      */
     rollingRestart() {
@@ -394,7 +377,6 @@ class BridgeClient extends Client {
      * Logs the Debug Messages
      * <warn>Using this method just emits the Debug Event.</warn>
      * <info>This is usually not necessary to manually specify.</info>
-     *
      * @param message
      * @param options
      * @returns {string} returns the log message
@@ -408,7 +390,6 @@ class BridgeClient extends Client {
         }
         /**
          * Emitted upon receiving a message
-         *
          * @event ClusterManager#debug
          * @param {string} log Message which was received
          */

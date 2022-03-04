@@ -10,6 +10,7 @@
     "plugins": ["prettier", "jsdoc"],
     "extends": ["eslint:recommended", "plugin:prettier/recommended"],
     "rules": {
+        "jsdoc/newline-after-description": ["warn", "never"],
         "jsdoc/no-undefined-types": "warn",
         "no-unused-vars": [
             "error",
