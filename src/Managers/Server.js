@@ -300,7 +300,7 @@ class BridgeServer extends Server {
 
     /**
      * Based on the User provided Data a Shard List, ShardCount and a ShardCluster List is created.
-     * @return {Array[]} shardClusterList - The shardClusterList, which should be spaned on the MachineClient's
+     * @returns {Array[]} shardClusterList - The shardClusterList, which should be spaned on the MachineClient's
      */
     async initalizeShardData() {
         if (this.totalShards === 'auto' && !this.shardList) {
