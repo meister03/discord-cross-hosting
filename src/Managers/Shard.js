@@ -1,5 +1,6 @@
 const { BaseMessage } = require('../Structures/IPCMessage.js');
 const { messageType } = require('../Utils/Constants.js');
+
 class ShardClient {
     constructor(shard) {
         this.shard = shard;

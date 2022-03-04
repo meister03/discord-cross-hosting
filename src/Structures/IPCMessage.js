@@ -1,4 +1,5 @@
 const { messageType } = require('../Utils/Constants.js');
+
 class BaseMessage {
     constructor(message = {}) {
         /**

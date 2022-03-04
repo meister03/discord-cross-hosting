@@ -1,6 +1,8 @@
 const { Client } = require('net-ipc');
-const { messageType } = require('../Utils/Constants.js');
+
 const { IPCMessage, BaseMessage } = require('../Structures/IPCMessage.js');
+const { messageType } = require('../Utils/Constants.js');
+
 class BridgeClient extends Client {
     constructor(options = {}) {
         super(options);

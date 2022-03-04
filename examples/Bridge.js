@@ -1,4 +1,5 @@
 const { Bridge } = require('discord-cross-hosting');
+
 const server = new Bridge({
     port: 4423,
     authToken: 'xxx-auth-token',

@@ -1,4 +1,6 @@
 const { Client } = require('discord-cross-hosting');
+const Cluster = require('discord-hybrid-sharding');
+
 const client = new Client({
     agent: 'bot',
     host: 'localhost',
@@ -13,7 +15,6 @@ client.on('ready', () => {
     console.log('Client is ready');
 });
 
-const Cluster = require('discord-hybrid-sharding');
 let { token } = require('./config.json');
 const manager = new Cluster.Manager(`${__dirname}/bot.js`, {
     totalShards: 2,

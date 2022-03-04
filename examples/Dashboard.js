@@ -1,4 +1,6 @@
 const { Client } = require('discord-cross-hosting');
+const express = require('express');
+
 const client = new Client({ agent: 'dashboard', host: 'localhost', port: 4423, authToken: 'xxx-auth-token' });
 
 client.on('debug', console.log);
@@ -9,7 +11,7 @@ client.on('ready', () => {
 
 // My Express stuff- custom code
 /* Pseudo Code*/
-const express = require('express');
+
 const app = express();
 app.listen(3000, () => {
     console.log('Listening on port 3000');

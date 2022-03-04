@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+
 const { DefaultOptions, Endpoints } = require('./Constants.js');
 
 const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
