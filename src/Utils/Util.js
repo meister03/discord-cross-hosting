@@ -3,7 +3,7 @@ const { DefaultOptions, Endpoints } = require('./Constants.js');
 
 const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 class Util {
-    //Discord.js v12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L287
+    // Discord.js v12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L287
     /**
      * Sets default properties on an object that aren't already specified.
      *
@@ -24,7 +24,7 @@ class Util {
         return given;
     }
 
-    //Discord.js v12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L346
+    // Discord.js v12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L346
     /**
      * Makes a plain error info object from an Error.
      *
@@ -40,7 +40,7 @@ class Util {
         };
     }
 
-    //Discord.js v12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L333
+    // Discord.js v12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L333
     /**
      * Makes an Error from a plain info object.
      *
@@ -71,7 +71,7 @@ class Util {
         });
     }
 
-    //Discord.js V12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L239
+    // Discord.js V12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L239
     /**
      * Gets the recommended shard count from Discord.
      *
@@ -93,7 +93,7 @@ class Util {
             .then(data => data.shards * (1000 / guildsPerShard));
     }
 
-    //Discord.js V13 Code | Credits: https://github.com/discordjs/discord.js/blob/stable/src/sharding/ShardClientUtil.js#L234
+    // Discord.js V13 Code | Credits: https://github.com/discordjs/discord.js/blob/stable/src/sharding/ShardClientUtil.js#L234
     /**
      * Get the shard id for a given guild id.
      *

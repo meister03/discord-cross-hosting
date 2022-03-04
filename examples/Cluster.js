@@ -39,12 +39,12 @@ client
 client.listen(manager);
 
 client.on('bridgeMessage', message => {
-    if (!message._sCustom) return; //If message is a Internal Message
+    if (!message._sCustom) return; // If message is a Internal Message
     console.log(message);
 });
 
 client.on('bridgeRequest', message => {
-    if (!message._sCustom && !message._sRequest) return; //If message is a Internal Message
+    if (!message._sCustom && !message._sRequest) return; // If message is a Internal Message
     console.log(message);
     if (message.ack) return message.reply({ message: 'I am alive!' });
     message.reply({ data: 'Hello World' });

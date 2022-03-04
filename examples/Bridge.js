@@ -17,12 +17,12 @@ server.on('ready', url => {
 });
 
 server.on('clientMessage', message => {
-    if (!message._sCustom) return; //If message is a Internal Message
+    if (!message._sCustom) return; // If message is a Internal Message
     console.log(message);
 });
 
 server.on('clientRequest', message => {
-    if (!message._sCustom && !message._sRequest) return; //If message is a Internal Message
+    if (!message._sCustom && !message._sRequest) return; // If message is a Internal Message
     if (message.ack) return message.reply({ message: 'I am alive!' });
     console.log(message);
     message.reply({ data: 'Hello World' });

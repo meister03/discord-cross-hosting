@@ -100,7 +100,7 @@ class BridgeServer extends Server {
          */
         this.manager;
 
-        //End options parsing
+        // End options parsing
 
         this.on('ready', this._handleReady.bind(this));
         this.on('error', this._handleError.bind(this));
@@ -222,7 +222,7 @@ class BridgeServer extends Server {
         if (typeof message === 'string') message = JSON.parse(message);
         if (message?.type === undefined) return;
         if (!this.clients.has(client.id)) return;
-        //BroadcastEval
+        // BroadcastEval
         if (message.type === messageType.CLIENT_BROADCAST_REQUEST) {
             const clients = [...this.clients.values()].filter(
                 message.options?.agent ? c => message.options.agent.includes(c.agent) : c => c.agent === 'bot',
@@ -232,22 +232,22 @@ class BridgeServer extends Server {
             const promises = [];
             for (const client of clients) promises.push(client.request(message, message.options?.timeout));
             Promise.all(promises).then(e => res(e).catch(_e => null));
-            //return res.send(responses);
+            // return res.send(responses);
         }
 
-        //Shard Data Request
+        // Shard Data Request
         if (message.type === messageType.SHARDLIST_DATA_REQUEST) {
             client = this.clients.get(client.id);
 
             if (!this.shardClusterListQueue[0]) return res([]);
 
-            //Check if Client has a Custom Cluster Strategy
+            // Check if Client has a Custom Cluster Strategy
             if (!message.maxClusters) {
                 client.shardList = this.shardClusterListQueue[0];
                 this.shardClusterListQueue.shift();
             } else {
-                this.shardClusterListQueue.sort((a, b) => b.length - a.length); //Sort by length: descending
-                //console.log(this.shardClusterListQueue)
+                this.shardClusterListQueue.sort((a, b) => b.length - a.length); // Sort by length: descending
+                // console.log(this.shardClusterListQueue)
                 const position = this.shardClusterListQueue.findIndex(x => x.length < message.maxClusters + 1);
                 if (position === -1) {
                     return res({ error: 'No Cluster List with less than ' + (message.maxClusters + 1) + ' found!' });
@@ -261,7 +261,7 @@ class BridgeServer extends Server {
                 cm: true,
             });
 
-            //Map clusterList:
+            // Map clusterList:
 
             const clusterIds = this.shardClusterList.map(x => x.length);
             const shardListPosition = this.shardClusterList.findIndex(
@@ -280,7 +280,7 @@ class BridgeServer extends Server {
             return;
         }
 
-        //Guild Data Request
+        // Guild Data Request
         if (message.type === messageType.GUILD_DATA_REQUEST) {
             this.requestToGuild(message)
                 .then(e => res(e))
@@ -360,7 +360,7 @@ class BridgeServer extends Server {
         this.shardClusterListQueue = this.shardClusterList.slice(0);
         this._debug(`Created shardClusterList: ${JSON.stringify(this.shardClusterList)}`);
 
-        //Update Shard Data:
+        // Update Shard Data:
         const clients = [...this.clients.values()].filter(c => c.agent === 'bot');
         const message = {};
         message.totalShards = this.totalShards;
@@ -409,17 +409,17 @@ class BridgeServer extends Server {
      * @returns {Promise<*>} Reply of the Message
      * @example
      * client.crosshost.request({content: 'hello', guildId: '123456789012345678'})
-     *   .then(result => console.log(result)) //hi
+     *   .then(result => console.log(result)) // hi
      *   .catch(console.error);
      */
     async requestToGuild(message = {}, options = {}) {
-        //console.log(message)
+        // console.log(message)
         if (!message?.guildId) throw new Error('GuildID has not been provided!');
         const internalShard = Util.shardIdForGuildId(message.guildId, this.totalShards);
-        //console.log(`RequestToGuild: ` + internalShard)
+        // console.log(`RequestToGuild: ` + internalShard)
 
         const targetClient = [...this.clients.values()].find(x => x?.shardList?.flat()?.includes(internalShard));
-        //console.log(`RequestToGuild Client: ` + targetClient.id)
+        // console.log(`RequestToGuild Client: ` + targetClient.id)
 
         if (!targetClient) throw new Error('Internal Shard not found!');
         if (!message.options) message.options = options;

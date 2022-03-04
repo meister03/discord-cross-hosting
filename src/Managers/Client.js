@@ -90,18 +90,18 @@ class BridgeClient extends Client {
                 });
                 setTimeout(async () => {
                     const response = await this.requestShardData();
-                    //if (!response?.shardList) return; -> Kill Old Clusters
+                    // if (!response?.shardList) return; -> Kill Old Clusters
                     this.manager.totalShards = response.totalShards;
                     this.manager.shardList = response.shardList || [];
                     this.manager.totalClusters = response.shardList?.length;
                     this.manager.shardclusterlist = response.shardList || [];
-                    this.manager.shardClusterList = response.shardList || []; //Support Old and New version of hybrid-sharding
+                    this.manager.shardClusterList = response.shardList || []; // Support Old and New version of hybrid-sharding
                     this.manager.clusterList = response.clusterList || [];
                     this._debug(`[Start] RollingRestart`);
                     this.rollingRestart();
                 }, 5000);
             } else {
-                super.send({ type: messageType.CLIENT_SHARDLIST_DATA_CURRENT, shardList: this.shardList }); //removes this shardList from the queue
+                super.send({ type: messageType.CLIENT_SHARDLIST_DATA_CURRENT, shardList: this.shardList }); // removes this shardList from the queue
                 this._debug(`[SHARDLIST_DATA_UPDATE] ShardData did not changed!`, { bridge: true });
                 return;
             }
@@ -123,7 +123,7 @@ class BridgeClient extends Client {
     _handleRequest(message, res, client) {
         if (typeof message === 'string') message = JSON.parse(message);
         if (message?.type === undefined) return;
-        //BroadcastEval
+        // BroadcastEval
         if (message.type === messageType.SERVER_BROADCAST_REQUEST) {
             if (!this.manager) throw new Error(`A Cluster/Shard Manager has not been loaded to net-ipc`);
             message.type = messageType.CLIENT_BROADCAST_RESPONSE;
@@ -138,7 +138,7 @@ class BridgeClient extends Client {
             // console.log(message)
             if (!this.manager) throw new Error(`A Cluster/Shard Manager has not been loaded to net-ipc`);
             message.type = messageType.GUILD_DATA_RESPONSE;
-            //Find Shard
+            // Find Shard
             if (message.options.hasOwnProperty('shard')) {
                 const findCluster = [...this.manager.clusters.values()].find(i =>
                     i.shardlist[0].includes(message.options.shard),
@@ -147,7 +147,7 @@ class BridgeClient extends Client {
                 // console.log(`Guild Data Cluster Request: ${message.options.cluster}`)
             } else return res({ error: 'No Shard has been provided!', ...message });
             const cluster = this.manager.clusters.get(message.options.cluster);
-            //console.log(`Found Cluster to send request: ${cluster?.id}`)
+            // console.log(`Found Cluster to send request: ${cluster?.id}`)
             if (cluster === undefined)
                 return res({ ...message, error: `Cluster ${message.options.cluster} not found!` });
             cluster
@@ -192,7 +192,7 @@ class BridgeClient extends Client {
         return response;
     }
 
-    //BroadcastEval Stuff
+    // BroadcastEval Stuff
     /**
      * Listens to NET-IPC messages such as BroadcastEval or Normal Messages
      *
@@ -236,7 +236,7 @@ class BridgeClient extends Client {
      * @returns {Promise<*>} Message
      * @example
      * client.send({content: 'hello'})
-     *   .then(result => console.log(result)) //hi
+     *   .then(result => console.log(result)) // hi
      *   .catch(console.error);
      * @see {@link IPCMessage#reply}
      */
@@ -250,7 +250,7 @@ class BridgeClient extends Client {
             message._sReply = false;
             message = new BaseMessage(message).toJSON();
         }
-        //Message sent by ClusterClient, which should not be resolved to avoid memory leaks
+        // Message sent by ClusterClient, which should not be resolved to avoid memory leaks
         if (options.resolve === false) {
             super.send(JSON.stringify(message));
             return true;
@@ -266,7 +266,7 @@ class BridgeClient extends Client {
      * @returns {Promise<*>} Reply of the Message
      * @example
      * client.request({content: 'hello'}, {timeout: 1000})
-     *   .then(result => console.log(result)) //hi
+     *   .then(result => console.log(result)) // hi
      *   .catch(console.error);
      * @see {@link IPCMessage#reply}
      */
@@ -274,7 +274,7 @@ class BridgeClient extends Client {
         if (!message) throw new Error('Request has not been provided!');
         if (typeof message === 'string' && !options.internal) message = JSON.parse(message);
         if (typeof message !== 'object' && !options.internal) throw new TypeError('The Request has to be an object');
-        //console.log(message)
+        // console.log(message)
         if (!message.options) message.options = options;
         if (!options.internal) {
             message._sRequest = true;
@@ -291,7 +291,7 @@ class BridgeClient extends Client {
      * @returns {Promise<*>} Reply of the Message
      * @example
      * client.crosshost.request({content: 'hello', guildId: '123456789012345678'})
-     *   .then(result => console.log(result)) //hi
+     *   .then(result => console.log(result)) // hi
      *   .catch(console.error);
      */
     async requestToGuild(message = {}, options = {}) {
@@ -310,7 +310,7 @@ class BridgeClient extends Client {
      * @returns {Promise<*>} Reply of the Message
      * @example
      * client.requestToClient({content: 'hello', agent: 'dashboard', clientId: 'CLient_id_provided_by_machine'})
-     *   .then(result => console.log(result)) //hi
+     *   .then(result => console.log(result)) // hi
      *   .catch(console.error);
      */
     async requestToClient(message = {}, options = {}) {

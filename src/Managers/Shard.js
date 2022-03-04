@@ -23,7 +23,7 @@ class ShardClient {
             throw new Error('Script for BroadcastEvaling must be a valid String or Function!');
         options.usev13 = false;
         script = typeof script === 'function' ? `(${script})(this, ${JSON.stringify(options.context)})` : script;
-        //console.log(`this.netipc.broadcastEval('${script}', ${JSON.stringify(options)})`);
+        // console.log(`this.netipc.broadcastEval('${script}', ${JSON.stringify(options)})`);
         return this.shard
             .evalOnManager(`this.netipc.broadcastEval('${script}', ${JSON.stringify(options)})`)
             .catch(console.log);
@@ -54,7 +54,7 @@ class ShardClient {
      * @param options
      * @returns {Promise<*>} The reply from the Bridge
      * client.crosshost.request({content: 'hello'})
-     * .then(result => console.log(result)) //hi
+     * .then(result => console.log(result)) // hi
      * .catch(console.error);
      */
     async request(message = {}, options = {}) {
@@ -77,7 +77,7 @@ class ShardClient {
      * @returns {Promise<*>} Reply of the Message
      * @example
      * client.crosshost.requestToGuild({content: 'hello', guildId: '123456789012345678'})
-     *   .then(result => console.log(result)) //hi
+     *   .then(result => console.log(result)) // hi
      *   .catch(console.error);
      */
     async requestToGuild(message = {}, options = {}) {
@@ -96,7 +96,7 @@ class ShardClient {
      * @returns {Promise<*>} Reply of the Message
      * @example
      * client.crosshost.requestToClient({content: 'hello', agent: 'dashboard', clientId: 'CLient_id_provided_by_machine'})
-     *   .then(result => console.log(result)) //hi
+     *   .then(result => console.log(result)) // hi
      *   .catch(console.error);
      */
     async requestToClient(message = {}, options = {}) {
