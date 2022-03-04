@@ -12,7 +12,9 @@
         "lint": "eslint . --ext .js",
         "lint:fix": "eslint . --fix --ext .js",
         "format": "prettier --check .",
-        "format:fix": "prettier --write ."
+        "format:fix": "prettier --write .",
+        "start:bridge": "node test/server.js",
+        "start:cluster": "node test/cluster.js"
     },
     "repository": {
         "type": "git",
