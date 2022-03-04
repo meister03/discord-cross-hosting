@@ -91,7 +91,7 @@ class Util {
     //Discord.js V13 Code | Credits: https://github.com/discordjs/discord.js/blob/stable/src/sharding/ShardClientUtil.js#L234
     /**
      * Get the shard id for a given guild id.
-     * @param {Snowflake} guildId Snowflake guild id to get shard id for
+     * @param {string} guildId Snowflake guild id to get shard id for
      * @param {number} shardCount Number of shards
      * @returns {number}
      */

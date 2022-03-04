@@ -55,7 +55,7 @@ class BridgeClient extends Client {
      * Handle the Ready Event and lot out, when the Client connected to the Bridge.
      * @private
      */
-    _handleReady(data) {
+    _handleReady(_data) {
         this._debug(`[Ready] Client connected to Bridge`);
     }
 
@@ -365,7 +365,7 @@ class BridgeClient extends Client {
      * Logsout the Debug Messages
      * <warn>Using this method just emits the Debug Event.</warn>
      * <info>This is usually not necessary to manually specify.</info>
-     * @returns {log} returns the log message
+     * @returns {string} returns the log message
      */
     _debug(message, options = {}) {
         let log;
@@ -377,7 +377,7 @@ class BridgeClient extends Client {
         /**
          * Emitted upon recieving a message
          * @event ClusterManager#debug
-         * @param {log} Message, which was recieved
+         * @param {string} log Message which was recieved
          */
         this.emit('debug', log);
         return log;

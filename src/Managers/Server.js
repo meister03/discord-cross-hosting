@@ -124,7 +124,7 @@ class BridgeServer extends Server {
      * Handle the Error Event of the Bridge
      * @private
      */
-    _handleError(error) {}
+    _handleError(_error) {}
 
     /**
      * Handles the Connection of new Clients
@@ -142,7 +142,7 @@ class BridgeServer extends Server {
      * Handles the Disconnection of Clients
      * @private
      */
-    _handleDisconnect(client, reason) {
+    _handleDisconnect(client, _reason) {
         client = this.clients.get(client.id);
         if (!client) return;
         if (client.agent !== 'bot') return this.clients.delete(client.id);
@@ -206,7 +206,7 @@ class BridgeServer extends Server {
             message.type = messageType.SERVER_BROADCAST_REQUEST;
             const promises = [];
             for (const client of clients) promises.push(client.request(message, message.options?.timeout));
-            Promise.all(promises).then(e => res(e).catch(e => null));
+            Promise.all(promises).then(e => res(e).catch(_e => null));
             //return res.send(responses);
         }
 
@@ -291,7 +291,7 @@ class BridgeServer extends Server {
 
     /**
      * Based on the User provided Data a Shard List, ShardCount and a ShardCluster List is created.
-     * @return {array} shardClusterList - The shardClusterList, which should be spaned on the MachineClient's
+     * @return {Array[]} shardClusterList - The shardClusterList, which should be spaned on the MachineClient's
      */
     async initalizeShardData() {
         if (this.totalShards === 'auto' && !this.shardList) {
@@ -393,7 +393,7 @@ class BridgeServer extends Server {
         //console.log(`RequestToGuild Client: ` + targetclient.id)
 
         if (!targetclient) throw new Error('Internal Shard not found!');
-        if (!message.options) message.options = opitons;
+        if (!message.options) message.options = options;
 
         if (message.eval) message.type = messageType.GUILD_EVAL_REQUEST;
         else message.type = messageType.GUILD_DATA_REQUEST;
@@ -407,7 +407,7 @@ class BridgeServer extends Server {
      * Logsout the Debug Messages
      * <warn>Using this method just emits the Debug Event.</warn>
      * <info>This is usually not necessary to manually specify.</info>
-     * @returns {log} returns the log message
+     * @returns {string} returns the log message
      */
     _debug(message, options = {}) {
         let log;
@@ -419,7 +419,7 @@ class BridgeServer extends Server {
         /**
          * Emitted upon recieving a message
          * @event ClusterManager#debug
-         * @param {log} Message, which was recieved
+         * @param {string} log Message which was recieved
          */
         this.emit('debug', log);
         return log;

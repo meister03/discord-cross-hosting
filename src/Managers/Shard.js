@@ -1,4 +1,4 @@
-const { IPCMessage, BaseMessage } = require('../Structures/IPCMessage.js');
+const { BaseMessage } = require('../Structures/IPCMessage.js');
 const { messageType } = require('../Utils/Constants.js');
 class ShardClient {
     constructor(shard) {
@@ -30,7 +30,7 @@ class ShardClient {
     /**
      * Sends a message to all connected Machines.
      * @param {*} message The message, which should be sent.
-     * @returns {Promise<request>}
+     * @returns {Promise<*>}
      */
     async send(message, options = {}) {
         if (!message) throw new Error('Request has not been provided!');
@@ -46,7 +46,7 @@ class ShardClient {
     /**
      * Sends a request to the Bridge
      * @param {*} message The message, which should be sent.
-     * @returns {Promise<request>} The reply from the Bridge
+     * @returns {Promise<*>} The reply from the Bridge
      * client.crosshost.request({content: 'hello'})
      * .then(result => console.log(result)) //hi
      * .catch(console.error);

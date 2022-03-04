@@ -9,6 +9,8 @@
         "node-fetch": "^2.6.1"
     },
     "scripts": {
+        "lint": "eslint . --ext .js",
+        "lint:fix": "eslint . --fix --ext .js",
         "format": "prettier --check .",
         "format:fix": "prettier --write ."
     },
@@ -41,6 +43,10 @@
     "devDependencies": {
         "discord-hybrid-sharding": "^1.4.3",
         "discord.js": "^13.3.1",
+        "eslint": "^8.10.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-jsdoc": "^37.9.6",
+        "eslint-plugin-prettier": "^4.0.0",
         "express": "^4.17.1",
         "prettier": "^2.5.1"
     }

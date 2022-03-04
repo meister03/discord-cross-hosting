@@ -18,7 +18,7 @@ app.listen(3000, () => {
 app.get('/guild/:id', async function (req, res) {
     const guildId = req.params.id;
     client
-        .requestToGuild({ guildId: '734707332163829780' })
+        .requestToGuild({ guildId })
         .then(e => res.send(e))
         .catch(e => res.send(e));
 });
