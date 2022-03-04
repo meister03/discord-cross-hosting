@@ -141,7 +141,7 @@ declare module 'discord-cross-hosting' {
          */
         public requestShardData(options?: { timeout?: number; maxClusters?: number }): Promise<{
             totalShards: number;
-            shardList: number[];
+            shardList: number[][];
             clusterList: number[];
         }>;
 
