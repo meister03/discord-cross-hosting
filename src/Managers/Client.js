@@ -101,7 +101,7 @@ class BridgeClient extends Client {
                     this.rollingRestart();
                 }, 5000);
             } else {
-                super.send({ type: messageType.CLIENT_SHARDLIST_DATA_CURRENT, shardList: this.shardList }); ///removes this shardList from the queue
+                super.send({ type: messageType.CLIENT_SHARDLIST_DATA_CURRENT, shardList: this.shardList }); //removes this shardList from the queue
                 this._debug(`[SHARDLIST_DATA_UPDATE] ShardData did not changed!`, { bridge: true });
                 return;
             }
@@ -123,7 +123,7 @@ class BridgeClient extends Client {
     _handleRequest(message, res, client) {
         if (typeof message === 'string') message = JSON.parse(message);
         if (message?.type === undefined) return;
-        ///BroadcastEval
+        //BroadcastEval
         if (message.type === messageType.SERVER_BROADCAST_REQUEST) {
             if (!this.manager) throw new Error(`A Cluster/Shard Manager has not been loaded to net-ipc`);
             message.type = messageType.CLIENT_BROADCAST_RESPONSE;
@@ -138,7 +138,7 @@ class BridgeClient extends Client {
             // console.log(message)
             if (!this.manager) throw new Error(`A Cluster/Shard Manager has not been loaded to net-ipc`);
             message.type = messageType.GUILD_DATA_RESPONSE;
-            ///Find Shard
+            //Find Shard
             if (message.options.hasOwnProperty('shard')) {
                 const findCluster = [...this.manager.clusters.values()].find(i =>
                     i.shardlist[0].includes(message.options.shard),
@@ -192,7 +192,7 @@ class BridgeClient extends Client {
         return response;
     }
 
-    ///BroadcastEval Stuff
+    //BroadcastEval Stuff
     /**
      * Listens to NET-IPC messages such as BroadcastEval or Normal Messages
      *

@@ -23,7 +23,7 @@ const manager = new Cluster.Manager(`${__dirname}/bot.js`, {
 manager.on('clusterCreate', cluster => console.log(`Launched Cluster ${cluster.id}`));
 manager.on('debug', console.log);
 
-///Request ShardData from the Bridge
+//Request ShardData from the Bridge
 client
     .requestShardData()
     .then(e => {

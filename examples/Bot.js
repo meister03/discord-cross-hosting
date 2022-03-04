@@ -8,7 +8,7 @@ const client = new Discord.Client({
 
 client.cluster = new Cluster.Client(client);
 
-////Initialize ClientMachine
+// Initialize ClientMachine
 const { Shard } = require('discord-cross-hosting');
 client.machine = new Shard(client.cluster);
 

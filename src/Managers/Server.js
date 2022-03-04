@@ -222,7 +222,7 @@ class BridgeServer extends Server {
         if (typeof message === 'string') message = JSON.parse(message);
         if (message?.type === undefined) return;
         if (!this.clients.has(client.id)) return;
-        ///BroadcastEval
+        //BroadcastEval
         if (message.type === messageType.CLIENT_BROADCAST_REQUEST) {
             const clients = [...this.clients.values()].filter(
                 message.options?.agent ? c => message.options.agent.includes(c.agent) : c => c.agent === 'bot',
@@ -235,7 +235,7 @@ class BridgeServer extends Server {
             //return res.send(responses);
         }
 
-        ///Shard Data Request
+        //Shard Data Request
         if (message.type === messageType.SHARDLIST_DATA_REQUEST) {
             client = this.clients.get(client.id);
 
@@ -246,7 +246,7 @@ class BridgeServer extends Server {
                 client.shardList = this.shardClusterListQueue[0];
                 this.shardClusterListQueue.shift();
             } else {
-                this.shardClusterListQueue.sort((a, b) => b.length - a.length); ///Sort by length: descending
+                this.shardClusterListQueue.sort((a, b) => b.length - a.length); //Sort by length: descending
                 //console.log(this.shardClusterListQueue)
                 const position = this.shardClusterListQueue.findIndex(x => x.length < message.maxClusters + 1);
                 if (position === -1) {
@@ -261,7 +261,7 @@ class BridgeServer extends Server {
                 cm: true,
             });
 
-            ///Map clusterList:
+            //Map clusterList:
 
             const clusterIds = this.shardClusterList.map(x => x.length);
             const shardListPosition = this.shardClusterList.findIndex(
@@ -280,7 +280,7 @@ class BridgeServer extends Server {
             return;
         }
 
-        ///Guild Data Request
+        //Guild Data Request
         if (message.type === messageType.GUILD_DATA_REQUEST) {
             this.requestToGuild(message)
                 .then(e => res(e))
