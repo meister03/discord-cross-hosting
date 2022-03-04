@@ -102,4 +102,5 @@ class ShardClient {
         return this.request(message, { internal: true });
     }
 }
+
 module.exports = ShardClient;

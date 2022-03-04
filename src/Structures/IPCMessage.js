@@ -109,4 +109,5 @@ class IPCMessage extends BaseMessage {
         return this.res(message.toJSON());
     }
 }
+
 module.exports = { IPCMessage, BaseMessage };

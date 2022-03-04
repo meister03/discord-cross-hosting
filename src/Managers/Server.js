@@ -438,7 +438,6 @@ class BridgeServer extends Server {
         return log;
     }
 }
-module.exports = BridgeServer;
 
 Object.defineProperty(Array.prototype, 'chunkList', {
     value: function (chunkSize) {
@@ -447,3 +446,5 @@ Object.defineProperty(Array.prototype, 'chunkList', {
         return R;
     },
 });
+
+module.exports = BridgeServer;

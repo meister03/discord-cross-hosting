@@ -397,4 +397,5 @@ class BridgeClient extends Client {
         return log;
     }
 }
+
 module.exports = BridgeClient;
