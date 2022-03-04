@@ -74,23 +74,25 @@ Another Advantage is, that you are combining Internal Sharding and Normal Shardi
 * Start the Bridge with `node Server.js` and you will receive some Debug Messages in your Console
 Bridge | Server.js
 ```js
-    const {Bridge} = require('discord-cross-hosting');
+const { Bridge } = require('discord-cross-hosting');
 
-    const server = new Bridge({ 
-        port: 4444, // The Port of the Server | Proxy Connection (Replit) needs Port 443
-        authToken: 'Your_auth_token_same_in_cluster.js', 
-        totalShards: 40, // The Total Shards of the Bot or 'auto'
-        totalMachines: 2, // The Total Machines, where the Clusters will run
-        shardsPerCluster: 10, // The amount of Internal Shards, which are in one Cluster
-        token: 'Your_Bot_Token',
-    });
+const server = new Bridge({
+    port: 4444, // The Port of the Server | Proxy Connection (Replit) needs Port 443
+    authToken: 'Your_auth_token_same_in_cluster.js',
+    totalShards: 40, // The Total Shards of the Bot or 'auto'
+    totalMachines: 2, // The Total Machines, where the Clusters will run
+    shardsPerCluster: 10, // The amount of Internal Shards, which are in one Cluster
+    token: 'Your_Bot_Token',
+});
 
-    server.on('debug', console.log)
-    server.start();
-    server.on('ready', (url) => {
-        console.log('Server is ready' + url);   
-        setInterval(() => {server.broadcastEval('this.guilds.cache.size').then(console.log).catch(console.log)}, 10000)
-    })
+server.on('debug', console.log);
+server.start();
+server.on('ready', url => {
+    console.log('Server is ready' + url);
+    setInterval(() => {
+        server.broadcastEval('this.guilds.cache.size').then(console.log).catch(console.log);
+    }, 10000);
+});
 ```
 ### 3.3 Cluster:
 * The Cluster is the file, where the ShardingManager/ClusterManager is created.
@@ -102,34 +104,37 @@ Bridge | Server.js
 
 Cluster | Cluster.js
 ```js
-const {Client} = require('discord-cross-hosting');
+const { Client } = require('discord-cross-hosting');
+const Cluster = require('discord-hybrid-sharding');
 
 const client = new Client({
-    agent: 'bot', 
-    host: "localhost", // Domain without https
+    agent: 'bot',
+    host: 'localhost', // Domain without https
     port: 4444, // Proxy Connection (Replit) needs Port 443
     // handshake: true, When Replit or any other Proxy is used
     authToken: 'theauthtoken',
     rollingRestarts: false, // Enable, when bot should respawn when cluster list changes.
 });
-client.on('debug', console.log)
+client.on('debug', console.log);
 client.connect();
 
-const Cluster = require("discord-hybrid-sharding");
-const manager = new Cluster.Manager(`${__dirname}/bot.js`,{totalShards: 1 ,totalClusters: 'auto'}) // Some dummy Data
+const manager = new Cluster.Manager(`${__dirname}/bot.js`, { totalShards: 1, totalClusters: 'auto' }); // Some dummy Data
 manager.on('clusterCreate', cluster => console.log(`Launched Cluster ${cluster.id}`));
-manager.on('debug', console.log)
+manager.on('debug', console.log);
 
 client.listen(manager);
-client.requestShardData().then(e => {
-    if(!e) return;
-    if(!e.shardList) return;
-    manager.totalShards = e.totalShards;
-    manager.totalClusters = e.shardList.length;
-    manager.shardList = e.shardList;
-    manager.clusterList = e.clusterList;
-    manager.spawn({timeout: -1})
-}).catch(e => console.log(e));
+client
+    .requestShardData()
+    .then(e => {
+        if (!e) return;
+        if (!e.shardList) return;
+        manager.totalShards = e.totalShards;
+        manager.totalClusters = e.shardList.length;
+        manager.shardList = e.shardList;
+        manager.clusterList = e.clusterList;
+        manager.spawn({ timeout: -1 });
+    })
+    .catch(e => console.log(e));
 ```
 
 ### 3.4 Bot:
@@ -138,24 +143,28 @@ client.requestShardData().then(e => {
 
 Bot | Bot.js
 ```js
-const Cluster = require("discord-hybrid-sharding");
-const Discord = require("discord.js");
+const { Shard } = require('discord-cross-hosting');
+const Cluster = require('discord-hybrid-sharding');
+const Discord = require('discord.js');
+
 const client = new Discord.Client({
     intents: ['GUILDS'], // Your Intents
- 	shards: Cluster.data.SHARD_LIST,        // An Array of Shard list, which will get spawned
-	shardCount: Cluster.data.TOTAL_SHARDS, // The Number of Total Shards
+    shards: Cluster.data.SHARD_LIST, // An Array of Shard list, which will get spawned
+    shardCount: Cluster.data.TOTAL_SHARDS, // The Number of Total Shards
 });
 
-client.cluster = new Cluster.Client(client); 
+client.cluster = new Cluster.Client(client);
 
-const {Shard}= require('discord-cross-hosting');
 client.machine = new Shard(client.cluster); // Initialize Cluster
 
 client.on('ready', () => {
-	client.machine.broadcastEval(`this.guilds.cache.size`).then(results => {
-		console.log(results);
-	}).catch(e => console.log(e))  // broadcastEval() over all cross-hosted clients
-})
+    client.machine
+        .broadcastEval(`this.guilds.cache.size`)
+        .then(results => {
+            console.log(results);
+        })
+        .catch(e => console.log(e)); // broadcastEval() over all cross-hosted clients
+});
 
 client.login(process.env.token);
 ```
@@ -176,62 +185,62 @@ client.login(process.env.token);
 ### 4.1. `PSK` Mode:
 ```js
 /* Bridge */
-const server = new Bridge({ 
+const server = new Bridge({
     port: 4423,
-    authToken: 'xxx-auth-token', 
-    totalShards: 2, 
+    authToken: 'xxx-auth-token',
+    totalShards: 2,
     totalMachines: 1,
     shardsPerCluster: 2,
     tls: true,
     options: {
-      pskCallback: (socket, identity) => {
-        const key = Buffer.from("passwordhere");
-        if(identity === "username") return key;
-      },
-      ciphers: "PSK",
-    }
+        pskCallback: (socket, identity) => {
+            const key = Buffer.from('passwordhere');
+            if (identity === 'username') return key;
+        },
+        ciphers: 'PSK',
+    },
 });
 
 /* Machine */
-const client = new Client({ 
-    agent: 'bot', 
-    host: "localhost", 
+const client = new Client({
+    agent: 'bot',
+    host: 'localhost',
     port: 4423,
-    authToken: 'xxx-auth-token', 
-    retries: 360 ,
+    authToken: 'xxx-auth-token',
+    retries: 360,
     tls: true,
     options: {
         pskCallback: () => {
-          return { psk: Buffer.from("passwordhere"), identity: "username" }
+            return { psk: Buffer.from('passwordhere'), identity: 'username' };
         },
-        ciphers: "PSK",
+        ciphers: 'PSK',
         checkServerIdentity: () => void 0,
-    }
+    },
 });
 ```
 ### 4.2. `Certificate` Mode:
 ```js
 /* Bridge */
-const server = new Bridge({ 
+const server = new Bridge({
     port: 4423,
-    authToken: 'xxx-auth-token', 
-    totalShards: 2, 
+    authToken: 'xxx-auth-token',
+    totalShards: 2,
     totalMachines: 1,
     shardsPerCluster: 2,
     tls: true,
     options: {
         key: fs.readFileSync(`path to certificate`),
         cert: fs.readFileSync(`path to certificate`),
-    }
+    },
 });
 
 /*Machine */
-const client = new Client({ 
-    agent: 'bot', 
-    host: "localhost", 
+const client = new Client({
+    agent: 'bot',
+    host: 'localhost',
     port: 4423,
-    authToken: 'xxx-auth-token', 
-    retries: 360 ,
+    authToken: 'xxx-auth-token',
+    retries: 360,
     tls: true,
 });
 ```
@@ -265,14 +274,17 @@ Client:
 * By providing `maxClusters` as options, the Bridge will provide the ClusterList with the similar/same length
 ```js
 // See above for the Client Code | Has been removed for a better overview
-client.requestShardData({maxClusters: 2}).then(e => {
-    if (!e) return;
-    manager.totalShards = e.totalShards;
-    manager.totalClusters = e.shardList.length;
-    manager.shardList = e.shardList;
-    manager.clusterList = e.clusterList;
-    manager.spawn(undefined, undefined, -1)
-}).catch(e => console.log(e));
+client
+    .requestShardData({ maxClusters: 2 })
+    .then(e => {
+        if (!e) return;
+        manager.totalShards = e.totalShards;
+        manager.totalClusters = e.shardList.length;
+        manager.shardList = e.shardList;
+        manager.clusterList = e.clusterList;
+        manager.spawn(undefined, undefined, -1);
+    })
+    .catch(e => console.log(e));
 ```
 
 ## 7. Temporary Api References:
@@ -346,150 +358,165 @@ client.requestShardData({maxClusters: 2}).then(e => {
 As an example, we will show you how to use the Package with a Bot, Dashboard...
 Bridge:
 ```js
-const {Bridge} = require('discord-cross-hosting');
-const server = new Bridge({ 
+const { Bridge } = require('discord-cross-hosting');
+const server = new Bridge({
     port: 4423,
-    authToken: 'xxx-auth-token', 
-    totalShards: 2, 
+    authToken: 'xxx-auth-token',
+    totalShards: 2,
     totalMachines: 1,
-    shardsPerCluster: 2
+    shardsPerCluster: 2,
 });
-server.on('debug', console.log)
+server.on('debug', console.log);
 server.start();
 
-server.on('ready', (url) => {
+server.on('ready', url => {
     console.log('Server is ready' + url);
-    setInterval(() => {server.broadcastEval('this.guilds.cache.size').then(e => console.log(e))}, 10000)
-})
+    setInterval(() => {
+        server.broadcastEval('this.guilds.cache.size').then(e => console.log(e));
+    }, 10000);
+});
 
-server.on('clientMessage', (message)=>{
-    if(!message._sCustom) return; // If message is a Internal Message
-    console.log(message)
-})
+server.on('clientMessage', message => {
+    if (!message._sCustom) return; // If message is a Internal Message
+    console.log(message);
+});
 
-server.on('clientRequest', (message)=>{
-    if(!message._sCustom && !message._sRequest) return; // If message is a Internal Message
-    if(message.ack) return message.reply({message: 'I am alive!'})
-    console.log(message)
-    message.reply({data: 'Hello World'});
-})
+server.on('clientRequest', message => {
+    if (!message._sCustom && !message._sRequest) return; // If message is a Internal Message
+    if (message.ack) return message.reply({ message: 'I am alive!' });
+    console.log(message);
+    message.reply({ data: 'Hello World' });
+});
 ```
 
 Cluster:
 ```js
-const {Client} = require('discord-cross-hosting');
-const client = new Client({ 
-    agent: 'bot', 
-    host: "localhost", 
+const { Client } = require('discord-cross-hosting');
+const Cluster = require('discord-hybrid-sharding');
+
+const client = new Client({
+    agent: 'bot',
+    host: 'localhost',
     port: 4423,
-    authToken: 'xxx-auth-token', 
-    retries: 360 ,
+    authToken: 'xxx-auth-token',
+    retries: 360,
     rollingRestarts: false,
 });
-client.on('debug', console.log)
+client.on('debug', console.log);
 client.connect();
 
 client.on('ready', () => {
     console.log('Client is ready');
-})
+});
 
-const Cluster = require("discord-hybrid-sharding");
-let { token } = require("./config.json");
+let { token } = require('./config.json');
 const manager = new Cluster.Manager(`${__dirname}/bot.js`, {
     totalShards: 2,
     totalClusters: 2,
     token: token,
-})
+});
 manager.on('clusterCreate', cluster => console.log(`Launched Cluster ${cluster.id}`));
-manager.on('debug', console.log)
+manager.on('debug', console.log);
 
 // Request ShardData from the Bridge
-client.requestShardData().then(e => {
-    if (!e) return;
-    manager.totalShards = e.totalShards;
-    manager.totalClusters = e.shardList.length;
-    manager.shardList = e.shardList;
-    manager.clusterList = e.clusterList;
-    manager.spawn({timeout:  -1})
-}).catch(e => console.log(e));
+client
+    .requestShardData()
+    .then(e => {
+        if (!e) return;
+        manager.totalShards = e.totalShards;
+        manager.totalClusters = e.shardList.length;
+        manager.shardList = e.shardList;
+        manager.clusterList = e.clusterList;
+        manager.spawn({ timeout: -1 });
+    })
+    .catch(e => console.log(e));
 
 // Listen to the Manager Events
 client.listen(manager);
 
-client.on('bridgeMessage', (message)=>{
-    if(!message._sCustom) return; // If message is a Internal Message
-    console.log(message)
-})
+client.on('bridgeMessage', message => {
+    if (!message._sCustom) return; // If message is a Internal Message
+    console.log(message);
+});
 
-client.on('bridgeRequest', (message)=>{
-    if(!message._sCustom && !message._sRequest) return; // If message is a Internal Message
-    console.log(message)
-    if(message.ack) return message.reply({message: 'I am alive!'})
-    message.reply({data: 'Hello World'});
-})
+client.on('bridgeRequest', message => {
+    if (!message._sCustom && !message._sRequest) return; // If message is a Internal Message
+    console.log(message);
+    if (message.ack) return message.reply({ message: 'I am alive!' });
+    message.reply({ data: 'Hello World' });
+});
 ```
 
 Bot:
 ```js
-const Cluster = require("discord-hybrid-sharding");
-const Discord = require("discord.js");
+const { Shard } = require('discord-cross-hosting');
+const Cluster = require('discord-hybrid-sharding');
+const Discord = require('discord.js');
+
 const client = new Discord.Client({
     intents: ['GUILDS'],
- 	shards: Cluster.data.SHARD_LIST,        
-	shardCount: Cluster.data.TOTAL_SHARDS, 
+    shards: Cluster.data.SHARD_LIST,
+    shardCount: Cluster.data.TOTAL_SHARDS,
 });
 
-
-client.cluster = new Cluster.Client(client); 
+client.cluster = new Cluster.Client(client);
 
 // Initialize ClientMachine
-const {Shard} = require('discord-cross-hosting');
 client.machine = new Shard(client.cluster);
 
-client.on('ready', () =>{
-    console.log('Client is ready')
-    setInterval(() => {client.machine.request({ack: true, message: 'Are you alive?'}).then(e => console.log(e))}, 10000)
+client.on('ready', () => {
+    console.log('Client is ready');
+    setInterval(() => {
+        client.machine.request({ ack: true, message: 'Are you alive?' }).then(e => console.log(e));
+    }, 10000);
 });
 
-client.cluster.on('message', (message) => {
-	if(!message._sRequest) return;
-    if(message.guildId && !message.eval){
-		const guild = client.guilds.cache.get(message.guildId);
-		const customGuild = {};
-		customGuild.id = guild.id;
-		customGuild.name = guild.name;
-		customGuild.icon = guild.icon;
-		customGuild.ownerId = guild.ownerId;
-		customGuild.roles = [...guild.roles.cache.values()];
-		customGuild.channels = [...guild.channels.cache.values()];
-		message.reply({data: customGuild});
-	}
-})
+client.cluster.on('message', message => {
+    if (!message._sRequest) return;
+    if (message.guildId && !message.eval) {
+        const guild = client.guilds.cache.get(message.guildId);
+        const customGuild = {};
+        customGuild.id = guild.id;
+        customGuild.name = guild.name;
+        customGuild.icon = guild.icon;
+        customGuild.ownerId = guild.ownerId;
+        customGuild.roles = [...guild.roles.cache.values()];
+        customGuild.channels = [...guild.channels.cache.values()];
+        message.reply({ data: customGuild });
+    }
+});
 
 client.login(process.env.token);
 ```
 
 Dashboard:
 ```js
-const {Client} = require('discord-cross-hosting');
-const client = new Client({agent: 'dashboard', host: "localhost", port: 4423, authToken: 'xxx-auth-token'});
+const { Client } = require('discord-cross-hosting');
+const express = require('express');
 
-client.on('debug', console.log)
+const client = new Client({ agent: 'dashboard', host: 'localhost', port: 4423, authToken: 'xxx-auth-token' });
+
+client.on('debug', console.log);
 client.connect();
-client.on('ready', ( ) => {
+client.on('ready', () => {
     console.log('Client is ready');
-})
+});
 
 // My Express stuff- custom code
 /* Pseudo Code*/
-const express = require('express');
+
 const app = express();
-app.listen(3000, () => {console.log('Listening on port 3000')});
+app.listen(3000, () => {
+    console.log('Listening on port 3000');
+});
 // Listen to express event:
 app.get('/guild/:id', async function (req, res) {
-    const guildId = req.params.id; 
-    client.requestToGuild({ guildId: guildId }).then(e => res.send(e)).catch(e => res.send(e));
-})
+    const guildId = req.params.id;
+    client
+        .requestToGuild({ guildId: guildId })
+        .then(e => res.send(e))
+        .catch(e => res.send(e));
+});
 ```
 
 **Have fun and feel free to Contribute/Suggest or Contact me on my [Discord server](https://discord.gg/QMTwmMZ) or per DM on Meister#9667**
