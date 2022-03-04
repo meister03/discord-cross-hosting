@@ -8,7 +8,7 @@ client.on('ready', () => {
 });
 
 ///My Express stuff- custom code
-/* Pseodo Code*/
+/* Pseudo Code*/
 const express = require('express');
 const app = express();
 app.listen(3000, () => {
