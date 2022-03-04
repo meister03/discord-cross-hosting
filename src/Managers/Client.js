@@ -53,6 +53,7 @@ class BridgeClient extends Client {
 
     /**
      * Handle the Ready Event and lot out, when the Client connected to the Bridge.
+     * @param _data
      * @private
      */
     _handleReady(_data) {
@@ -62,6 +63,7 @@ class BridgeClient extends Client {
     /**
      * Handles the Request Event of the Client and executes Requests based on the Mesage
      * @param {object} message - Request, which has been sent from the Bridge
+     * @param client
      * @private
      */
     _handleMessage(message, client) {
@@ -105,6 +107,8 @@ class BridgeClient extends Client {
     /**
      * Handles the Request Event of the Client and executes Requests based on the Mesage
      * @param {object} message - Request, which has been sent from the Bridge
+     * @param res
+     * @param client
      * @private
      */
     _handleRequest(message, res, client) {
@@ -160,7 +164,8 @@ class BridgeClient extends Client {
 
     /**
      * Request some Shard and Important Data from the Bridge.
-     * @return {object} response - The ShardList, TotalShards and other Data requested from the Bridge
+     * @param options
+     * @returns {object} response - The ShardList, TotalShards and other Data requested from the Bridge
      */
     async requestShardData(options = {}) {
         const message = {};
@@ -214,6 +219,7 @@ class BridgeClient extends Client {
     /**
      * Sends a Message to the Bridge
      * @param {BaseMessage} message Message, which should be sent to Bridge
+     * @param options
      * @returns {Promise<*>} Message
      * @example
      * client.send({content: 'hello'})
@@ -242,6 +248,7 @@ class BridgeClient extends Client {
     /**
      * Sends a Request to the Bridge and returns the reply
      * @param {BaseMessage} message Message, which should be sent as request
+     * @param options
      * @returns {Promise<*>} Reply of the Message
      * @example
      * client.request({content: 'hello'}, {timeout: 1000})
@@ -265,6 +272,7 @@ class BridgeClient extends Client {
     /**
      * Sends a Request to the Guild and returns the reply
      * @param {BaseMessage} message Message, which should be sent as request and handled by the User
+     * @param options
      * @returns {Promise<*>} Reply of the Message
      * @example
      * client.crosshost.request({content: 'hello', guildId: '123456789012345678'})
@@ -282,6 +290,7 @@ class BridgeClient extends Client {
     /**
      * Sends a Request to the Client and returns the reply
      * @param {BaseMessage} message Message, which should be sent as request and handled by the User
+     * @param options
      * @returns {Promise<*>} Reply of the Message
      * @example
      * client.requestToClient({content: 'hello', agent: 'dashboard', clientId: 'CLient_id_provided_by_machine'})
@@ -365,6 +374,8 @@ class BridgeClient extends Client {
      * Logsout the Debug Messages
      * <warn>Using this method just emits the Debug Event.</warn>
      * <info>This is usually not necessary to manually specify.</info>
+     * @param message
+     * @param options
      * @returns {string} returns the log message
      */
     _debug(message, options = {}) {

@@ -111,6 +111,7 @@ class BridgeServer extends Server {
 
     /**
      * Handle the Ready Event and lot out, when the Bridge is ready.
+     * @param url
      * @private
      */
     _handleReady(url) {
@@ -122,12 +123,15 @@ class BridgeServer extends Server {
 
     /**
      * Handle the Error Event of the Bridge
+     * @param _error
      * @private
      */
     _handleError(_error) {}
 
     /**
      * Handles the Connection of new Clients
+     * @param client
+     * @param initialdata
      * @private
      */
     _handleConnect(client, initialdata) {
@@ -140,6 +144,8 @@ class BridgeServer extends Server {
 
     /**
      * Handles the Disconnection of Clients
+     * @param client
+     * @param _reason
      * @private
      */
     _handleDisconnect(client, _reason) {
@@ -157,6 +163,7 @@ class BridgeServer extends Server {
     /**
      * Handles the Message Event of the Bridge and executes Requests based on the Mesage
      * @param {object} message - Message, which has been sent from the Bridge
+     * @param client
      * @private
      */
     _handleMessage(message, client) {
@@ -191,6 +198,8 @@ class BridgeServer extends Server {
     /**
      * Handles the Request Event of the Bridge and executes Requests based on the Mesage
      * @param {object} message - Request, which has been sent from the Bridge
+     * @param res
+     * @param client
      * @private
      */
     _handleRequest(message, res, client) {
@@ -377,6 +386,7 @@ class BridgeServer extends Server {
     /**
      * Sends a Request to the Guild and returns the reply
      * @param {BaseMessage} message Message, which should be sent as request and handled by the User
+     * @param options
      * @returns {Promise<*>} Reply of the Message
      * @example
      * client.crosshost.request({content: 'hello', guildId: '123456789012345678'})
@@ -407,6 +417,8 @@ class BridgeServer extends Server {
      * Logsout the Debug Messages
      * <warn>Using this method just emits the Debug Event.</warn>
      * <info>This is usually not necessary to manually specify.</info>
+     * @param message
+     * @param options
      * @returns {string} returns the log message
      */
     _debug(message, options = {}) {
