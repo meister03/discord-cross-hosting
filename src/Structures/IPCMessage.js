@@ -17,7 +17,7 @@ class BaseMessage {
         message.nonce = this.nonce;
 
         /**
-         * Destructs the Message Object and initalizes it on the Constructor
+         * Destructs the Message Object and initializes it on the Constructor
          *
          * @type {string}
          */
@@ -25,7 +25,7 @@ class BaseMessage {
     }
 
     /**
-     * Destructs the Message Object and initalizes it on the Constructor
+     * Destructs the Message Object and initializes it on the Constructor
      *
      * @param {object} message The Message, which was passed in the Constructor
      */
@@ -67,7 +67,7 @@ class IPCMessage extends BaseMessage {
         this.raw = new BaseMessage(message).toJSON();
 
         /**
-        * Replys to the given Request
+        * Replies to the given Request
          *
         * @type {function reply(message) {
             

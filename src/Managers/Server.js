@@ -128,7 +128,7 @@ class BridgeServer extends Server {
     _handleReady(url) {
         this._debug(`[READY] Bridge operational on ${url}`);
         setTimeout(() => {
-            if (!this.standAlone) this.initalizeShardData();
+            if (!this.standAlone) this.initializeShardData();
         }, 5000);
     }
 
@@ -175,7 +175,7 @@ class BridgeServer extends Server {
     }
 
     /**
-     * Handles the Message Event of the Bridge and executes Requests based on the Mesage
+     * Handles the Message Event of the Bridge and executes Requests based on the Message
      *
      * @param {object} message - Message, which has been sent from the Bridge
      * @param client
@@ -211,7 +211,7 @@ class BridgeServer extends Server {
     }
 
     /**
-     * Handles the Request Event of the Bridge and executes Requests based on the Mesage
+     * Handles the Request Event of the Bridge and executes Requests based on the Message
      *
      * @param {object} message - Request, which has been sent from the Bridge
      * @param res
@@ -317,9 +317,9 @@ class BridgeServer extends Server {
     /**
      * Based on the User provided Data a Shard List, ShardCount and a ShardCluster List is created.
      *
-     * @returns {Array[]} shardClusterList - The shardClusterList, which should be spaned on the MachineClient's
+     * @returns {Array[]} shardClusterList - The shardClusterList, which should be spanned on the MachineClient's
      */
-    async initalizeShardData() {
+    async initializeShardData() {
         if (this.totalShards === 'auto' && !this.shardList) {
             if (!this.token)
                 throw new Error(
@@ -433,7 +433,7 @@ class BridgeServer extends Server {
     }
 
     /**
-     * Logsout the Debug Messages
+     * Logs the Debug Messages
      * <warn>Using this method just emits the Debug Event.</warn>
      * <info>This is usually not necessary to manually specify.</info>
      *
@@ -449,10 +449,10 @@ class BridgeServer extends Server {
             log = `[Bridge] ` + message;
         }
         /**
-         * Emitted upon recieving a message
+         * Emitted upon receiving a message
          *
          * @event ClusterManager#debug
-         * @param {string} log Message which was recieved
+         * @param {string} log Message which was received
          */
         this.emit('debug', log);
         return log;

@@ -68,7 +68,7 @@ class BridgeClient extends Client {
     }
 
     /**
-     * Handles the Request Event of the Client and executes Requests based on the Mesage
+     * Handles the Request Event of the Client and executes Requests based on the Message
      *
      * @param {object} message - Request, which has been sent from the Bridge
      * @param client
@@ -113,7 +113,7 @@ class BridgeClient extends Client {
     }
 
     /**
-     * Handles the Request Event of the Client and executes Requests based on the Mesage
+     * Handles the Request Event of the Client and executes Requests based on the Message
      *
      * @param {object} message - Request, which has been sent from the Bridge
      * @param res
@@ -388,7 +388,7 @@ class BridgeClient extends Client {
     }
 
     /**
-     * Logsout the Debug Messages
+     * Logs the Debug Messages
      * <warn>Using this method just emits the Debug Event.</warn>
      * <info>This is usually not necessary to manually specify.</info>
      *
@@ -404,10 +404,10 @@ class BridgeClient extends Client {
             log = `[CM] ` + message;
         }
         /**
-         * Emitted upon recieving a message
+         * Emitted upon receiving a message
          *
          * @event ClusterManager#debug
-         * @param {string} log Message which was recieved
+         * @param {string} log Message which was received
          */
         this.emit('debug', log);
         return log;
