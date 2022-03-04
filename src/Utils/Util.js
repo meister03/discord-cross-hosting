@@ -6,6 +6,7 @@ class Util {
     //Discord.js v12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L287
     /**
      * Sets default properties on an object that aren't already specified.
+     *
      * @param {object} def Default properties
      * @param {object} given Object to assign defaults to
      * @returns {object}
@@ -26,6 +27,7 @@ class Util {
     //Discord.js v12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L346
     /**
      * Makes a plain error info object from an Error.
+     *
      * @param {Error} err Error to get info from
      * @returns {object}
      * @private
@@ -41,6 +43,7 @@ class Util {
     //Discord.js v12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L333
     /**
      * Makes an Error from a plain info object.
+     *
      * @param {object} obj Error info
      * @param {string} obj.name Error type
      * @param {string} obj.message Message for the error
@@ -57,6 +60,7 @@ class Util {
 
     /**
      * A Promise, which will be resolved after a specified duration.
+     *
      * @param {number} ms Milliseconds to wait until Promise will be resolved
      * @returns {Promise<void>}
      * @private
@@ -70,6 +74,7 @@ class Util {
     //Discord.js V12 Code | Credits: https://github.com/discordjs/discord.js/blob/v12/src/util/Util.js#L239
     /**
      * Gets the recommended shard count from Discord.
+     *
      * @param {string} token Discord auth token
      * @param {number} [guildsPerShard=1000] Number of guilds per shard
      * @returns {Promise<number>} The recommended number of shards
@@ -91,6 +96,7 @@ class Util {
     //Discord.js V13 Code | Credits: https://github.com/discordjs/discord.js/blob/stable/src/sharding/ShardClientUtil.js#L234
     /**
      * Get the shard id for a given guild id.
+     *
      * @param {string} guildId Snowflake guild id to get shard id for
      * @param {number} shardCount Number of shards
      * @returns {number}

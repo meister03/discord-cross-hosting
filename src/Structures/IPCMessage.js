@@ -3,12 +3,14 @@ class BaseMessage {
     constructor(message = {}) {
         /**
          * Marks the message as a custom Message, which can be listened on the message event
+         *
          * @type {boolean}
          */
         this._sCustom = true;
 
         /**
          * Creates a Message ID for identifying it for further Usage such as on replies
+         *
          * @type {string}
          */
         this.nonce = message.nonce || Date.now().toString(36) + Math.random().toString(36);
@@ -16,6 +18,7 @@ class BaseMessage {
 
         /**
          * Destructs the Message Object and initalizes it on the Constructor
+         *
          * @type {string}
          */
         this.destructMessage(message);
@@ -23,6 +26,7 @@ class BaseMessage {
 
     /**
      * Destructs the Message Object and initalizes it on the Constructor
+     *
      * @param {object} message The Message, which was passed in the Constructor
      */
     destructMessage(message) {
@@ -50,18 +54,21 @@ class IPCMessage extends BaseMessage {
 
         /**
          * Instance, which can be the ParentCluster or the ClusterClient
+         *
          * @type {ClusterManager|ClusterClient}
          */
         this.instance = instance;
 
         /**
          * The Base Message, which is saved on the raw field.
+         *
          * @type {BaseMessage}
          */
         this.raw = new BaseMessage(message).toJSON();
 
         /**
         * Replys to the given Request
+         *
         * @type {function reply(message) {
             
         }}
@@ -71,6 +78,7 @@ class IPCMessage extends BaseMessage {
 
     /**
      * Sends a message to the cluster's process/worker or to the ParentCluster.
+     *
      * @param {BaseMessage} message Message to send to the bridge/cluster/client
      * @returns {Promise<*>}
      */
@@ -82,6 +90,7 @@ class IPCMessage extends BaseMessage {
 
     /**
      * Sends a Request to the cluster's process/worker or to the ParentCluster.
+     *
      * @param {BaseMessage} message Request to send to the bridge/cluster/client
      * @returns {Promise<reply>}
      */
@@ -96,6 +105,7 @@ class IPCMessage extends BaseMessage {
 
     /**
      * Sends a Reply to Message from the cluster's process/worker or the ParentCluster.
+     *
      * @param {BaseMessage} message Reply to send to the bridge/cluster/client
      * @returns {Promise<reply>}
      */
