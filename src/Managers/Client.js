@@ -139,7 +139,8 @@ class BridgeClient extends Client {
             if (!this.manager) throw new Error(`A Cluster/Shard Manager has not been loaded to net-ipc`);
             message.type = messageType.GUILD_DATA_RESPONSE;
             // Find Shard
-            if (message.options.hasOwnProperty('shard')) {
+
+            if (message.options.shard) {
                 const findCluster = [...this.manager.clusters.values()].find(i =>
                     i.shardlist[0].includes(message.options.shard),
                 );
