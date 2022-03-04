@@ -292,7 +292,7 @@ client.requestShardData({maxClusters: 2}).then(e => {
 | ------------- | -------------- |
 | `ready`(url)  | Event fired when the Bridge is ready|
 | `error`(error)  | Bridge Error|
-| `connect`(client, initialdata) | Client, which connected to the bridge with their Initial Data|
+| `connect`(client, initialData) | Client, which connected to the bridge with their Initial Data|
 | `disconnect`(client, reason)  |Client, which disconnected from the bridge with a providable reason|
 | `clientMessage`(message, client)  | A Message, which is sent from a connected Client|
 | `clientRequest`(message, client)  | A Request, which is sent from a connected Client and can be replied to with `message.reply()`|
@@ -322,7 +322,7 @@ client.requestShardData({maxClusters: 2}).then(e => {
 ### 7.2.3 Client `Functions`:
 | Function |  Description |
 | ------------- | -------------- |
-| `connect(initialdata= {})`  | Connect to the Bridge with some Initial Data|
+| `connect(initialData= {})`  | Connect to the Bridge with some Initial Data|
 | `requestShardData()`  | Request some Shard and Important Data from the Bridge. |
 | `listen(manager=HYBRID_SHARDING_MANAGER)` | Listens to the Hybrid-Sharding-Manager |
 | `broadcastEval(script=string, options={filter: (c => c.agent === 'bot')})` | Evaluates a script or function on all clusters, or a given cluster, in the context of the Client |

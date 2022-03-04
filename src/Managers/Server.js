@@ -144,13 +144,13 @@ class BridgeServer extends Server {
      * Handles the Connection of new Clients
      *
      * @param client
-     * @param initialdata
+     * @param initialData
      * @private
      */
-    _handleConnect(client, initialdata) {
-        if (initialdata?.authToken !== this.authToken) return client.close('ACCESS DENIED').catch(e => console.log(e));
-        client.authToken = initialdata.authToken;
-        client.agent = initialdata.agent;
+    _handleConnect(client, initialData) {
+        if (initialData?.authToken !== this.authToken) return client.close('ACCESS DENIED').catch(e => console.log(e));
+        client.authToken = initialData.authToken;
+        client.agent = initialData.agent;
         this.clients.set(client.id, client);
         this._debug(`[CM => Connected][${client.id}]`, { cm: true });
     }
@@ -204,10 +204,10 @@ class BridgeServer extends Server {
             );
             return;
         }
-        let emitmessage;
-        if (typeof message === 'object') emitmessage = new IPCMessage(client, message);
-        else emitmessage = message;
-        this.emit('clientMessage', emitmessage, client);
+        let emitMessage;
+        if (typeof message === 'object') emitMessage = new IPCMessage(client, message);
+        else emitMessage = message;
+        this.emit('clientMessage', emitMessage, client);
     }
 
     /**
@@ -292,9 +292,9 @@ class BridgeServer extends Server {
             if (!message.agent && !message.clientId)
                 return res({ ...message, error: 'AGENT MISSING OR CLIENTID MISSING FOR FINDING TARGET CLIENT' });
             if (message.clientId) {
-                const targetclient = this.clients.get(message.clientId);
-                if (!targetclient) return res({ ...message, error: 'CLIENT NOT FOUND WITH PROVIDED CLIENT ID' });
-                return targetclient
+                const targetClient = this.clients.get(message.clientId);
+                if (!targetClient) return res({ ...message, error: 'CLIENT NOT FOUND WITH PROVIDED CLIENT ID' });
+                return targetClient
                     .request(message, message.options?.timeout)
                     .then(e => res(e))
                     .catch(e => res({ ...message, error: e }));
@@ -308,10 +308,10 @@ class BridgeServer extends Server {
                 .catch(e => res({ ...message, error: e }));
         }
 
-        let emitmessage;
-        if (typeof message === 'object') emitmessage = new IPCMessage(client, message, res);
-        else emitmessage = message;
-        this.emit('clientRequest', emitmessage, client);
+        let emitMessage;
+        if (typeof message === 'object') emitMessage = new IPCMessage(client, message, res);
+        else emitMessage = message;
+        this.emit('clientRequest', emitMessage, client);
     }
 
     /**
@@ -418,10 +418,10 @@ class BridgeServer extends Server {
         const internalShard = Util.shardIdForGuildId(message.guildId, this.totalShards);
         //console.log(`RequestToGuild: ` + internalShard)
 
-        const targetclient = [...this.clients.values()].find(x => x?.shardList?.flat()?.includes(internalShard));
-        //console.log(`RequestToGuild Client: ` + targetclient.id)
+        const targetClient = [...this.clients.values()].find(x => x?.shardList?.flat()?.includes(internalShard));
+        //console.log(`RequestToGuild Client: ` + targetClient.id)
 
-        if (!targetclient) throw new Error('Internal Shard not found!');
+        if (!targetClient) throw new Error('Internal Shard not found!');
         if (!message.options) message.options = options;
 
         if (message.eval) message.type = messageType.GUILD_EVAL_REQUEST;
@@ -429,7 +429,7 @@ class BridgeServer extends Server {
 
         message.options.shard = internalShard;
 
-        return targetclient.request(message, message.options.timeout);
+        return targetClient.request(message, message.options.timeout);
     }
 
     /**

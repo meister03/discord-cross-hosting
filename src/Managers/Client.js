@@ -80,11 +80,11 @@ class BridgeClient extends Client {
 
         if (message.type === messageType.SHARDLIST_DATA_UPDATE) {
             if (!this.rollingRestarts) return;
-            const checkifclusterlistisuptodate = message.shardClusterList.find(
+            const checkIfClusterListIsUpToDate = message.shardClusterList.find(
                 x => JSON.stringify(x) === JSON.stringify(this.shardList),
             );
 
-            if (!checkifclusterlistisuptodate || this.totalShards !== message.totalShards) {
+            if (!checkIfClusterListIsUpToDate || this.totalShards !== message.totalShards) {
                 this._debug(`[SHARDLIST_DATA_UPDATE] ShardData changed, waiting 5s until RollingRestart...`, {
                     bridge: true,
                 });
@@ -106,10 +106,10 @@ class BridgeClient extends Client {
                 return;
             }
         }
-        let emitmessage;
-        if (typeof message === 'object') emitmessage = new IPCMessage(client, message);
-        else emitmessage = message;
-        this.emit('bridgeMessage', emitmessage, client);
+        let emitMessage;
+        if (typeof message === 'object') emitMessage = new IPCMessage(client, message);
+        else emitMessage = message;
+        this.emit('bridgeMessage', emitMessage, client);
     }
 
     /**
@@ -140,10 +140,10 @@ class BridgeClient extends Client {
             message.type = messageType.GUILD_DATA_RESPONSE;
             ///Find Shard
             if (message.options.hasOwnProperty('shard')) {
-                const findcluster = [...this.manager.clusters.values()].find(i =>
+                const findCluster = [...this.manager.clusters.values()].find(i =>
                     i.shardlist[0].includes(message.options.shard),
                 );
-                message.options.cluster = findcluster ? findcluster.id : 0;
+                message.options.cluster = findCluster ? findCluster.id : 0;
                 // console.log(`Guild Data Cluster Request: ${message.options.cluster}`)
             } else return res({ error: 'No Shard has been provided!', ...message });
             const cluster = this.manager.clusters.get(message.options.cluster);
@@ -165,10 +165,10 @@ class BridgeClient extends Client {
                 .catch(e => res(e));
             return;
         }
-        let emitmessage;
-        if (typeof message === 'object') emitmessage = new IPCMessage(client || this, message, res);
-        else emitmessage = message;
-        this.emit('bridgeRequest', emitmessage, client || this);
+        let emitMessage;
+        if (typeof message === 'object') emitMessage = new IPCMessage(client || this, message, res);
+        else emitMessage = message;
+        this.emit('bridgeRequest', emitMessage, client || this);
     }
 
     /**
@@ -358,15 +358,15 @@ class BridgeClient extends Client {
                     this._debug(`[RollingRestart][Spawn] Cluster ${cluster.id}`);
                     cluster.spawn({ timeout: this.manager.shardClusterList[i].length * 10000 }).catch(e => e);
                     cluster.on('ready', () => {
-                        const clusterposition = clusters.findIndex(x => x.id === cluster.id);
-                        if (clusterposition === undefined || clusterposition === -1) return;
+                        const clusterPosition = clusters.findIndex(x => x.id === cluster.id);
+                        if (clusterPosition === undefined || clusterPosition === -1) return;
                         try {
                             clusters.find(x => x.id === cluster.id)?.kill({ force: true });
                         } catch (error) {
                             console.log(error);
                         }
                         this._debug(`[RollingRestart][Kill] Old Cluster ${cluster.id}`);
-                        clusters.splice(clusterposition, 1);
+                        clusters.splice(clusterPosition, 1);
                     });
                 }, i * 7000 * this.manager.shardClusterList[i].length);
             } else {
