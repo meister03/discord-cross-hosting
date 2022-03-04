@@ -7,21 +7,21 @@ class BridgeClient extends Client {
 
         /**
          * A authentication token to be able to verify the connection to the Bridge.
-         * @type {String}}
+         * @type {string}}
          */
         this.authToken = options?.authToken;
         if (!this.authToken) throw new Error('ClIENT_MISSING_OPTION', 'authToken must be provided', 'String');
 
         /**
          * A custom settable agent name. BroadcastEvals are just executed on Agents with the name 'bot'
-         * @type {String}
+         * @type {string}
          */
         this.agent = options?.agent;
         if (!this.agent) throw new Error('ClIENT_MISSING_OPTION', 'agent must be provided', 'Default: bot');
 
         /**
          * If Rolling Restart should be disabled.
-         * @type {Boolean}
+         * @type {boolean}
          */
         this.rollingRestarts = options?.rollingRestarts ?? false;
 
@@ -44,7 +44,7 @@ class BridgeClient extends Client {
 
     /**
      * Connect your MachineClient to the Bridge with your Custom Data.
-     * @param {Object} args - Custom Data, which can be sent to the Bridge when connecting.
+     * @param {object} args - Custom Data, which can be sent to the Bridge when connecting.
      */
     connect(args = {}) {
         this._debug(`[Connect] Connecting to Bridge with the given Data`);
@@ -61,7 +61,7 @@ class BridgeClient extends Client {
 
     /**
      * Handles the Request Event of the Client and executes Requests based on the Mesage
-     * @param {Object} message - Request, which has been sent from the Bridge
+     * @param {object} message - Request, which has been sent from the Bridge
      * @private
      */
     _handleMessage(message, client) {
@@ -104,7 +104,7 @@ class BridgeClient extends Client {
 
     /**
      * Handles the Request Event of the Client and executes Requests based on the Mesage
-     * @param {Object} message - Request, which has been sent from the Bridge
+     * @param {object} message - Request, which has been sent from the Bridge
      * @private
      */
     _handleRequest(message, res, client) {
@@ -160,7 +160,7 @@ class BridgeClient extends Client {
 
     /**
      * Request some Shard and Important Data from the Bridge.
-     * @return {Object} response - The ShardList, TotalShards and other Data requested from the Bridge
+     * @return {object} response - The ShardList, TotalShards and other Data requested from the Bridge
      */
     async requestShardData(options = {}) {
         const message = {};
@@ -180,7 +180,7 @@ class BridgeClient extends Client {
     ///BroadcastEval Stuff
     /**
      * Listens to NET-IPC messages such as BroadcastEval or Normal Messages
-     * @param {Object} manager the Shard/Cluster Manager, which should be listened on.
+     * @param {object} manager the Shard/Cluster Manager, which should be listened on.
      * @returns {manager}
      */
     listen(manager) {

@@ -9,7 +9,7 @@ class BridgeServer extends Server {
 
         /**
          * A User chosen Token for basic Authorization, when tls is disabled.
-         * @type {String}
+         * @type {string}
          */
         this.authToken = options.authToken;
         if (!this.authToken) throw new Error('MACHINE_MISSING_OPTION', 'authToken must be provided', 'String');
@@ -18,13 +18,13 @@ class BridgeServer extends Server {
         /*********************/
         /**
          * The Total Amount of Shards per Clusters
-         * @type {Number}
+         * @type {number}
          */
         this.shardsPerCluster = options.shardsPerCluster ?? 1;
 
         /**
          * The Total Amount of Shards
-         * @type {Number}
+         * @type {number}
          */
         this.totalShards = options.totalShards || 'auto';
         if (this.totalShards !== undefined) {
@@ -42,7 +42,7 @@ class BridgeServer extends Server {
 
         /**
          * The Total Amount of Machines
-         * @type {Number}
+         * @type {number}
          */
         this.totalMachines = options.totalMachines;
         if (!this.totalMachines)
@@ -56,7 +56,7 @@ class BridgeServer extends Server {
 
         /**
          * Your Discord Bot token
-         * @type {String}
+         * @type {string}
          */
         this.token = options.token ? options.token.replace(/^Bot\s*/i, '') : null;
 
@@ -68,7 +68,7 @@ class BridgeServer extends Server {
 
         /**
          * If the Package will be used in standalone mode
-         * @type {Boolean}
+         * @type {boolean}
          */
         this.standAlone = options.standAlone ?? false;
 
@@ -86,7 +86,7 @@ class BridgeServer extends Server {
 
         /**
          * The Manager instance, which should be listened, when broadcasting
-         * @type {Object}
+         * @type {object}
          */
         this.manager;
 
@@ -156,7 +156,7 @@ class BridgeServer extends Server {
 
     /**
      * Handles the Message Event of the Bridge and executes Requests based on the Mesage
-     * @param {Object} message - Message, which has been sent from the Bridge
+     * @param {object} message - Message, which has been sent from the Bridge
      * @private
      */
     _handleMessage(message, client) {
@@ -190,7 +190,7 @@ class BridgeServer extends Server {
 
     /**
      * Handles the Request Event of the Bridge and executes Requests based on the Mesage
-     * @param {Object} message - Request, which has been sent from the Bridge
+     * @param {object} message - Request, which has been sent from the Bridge
      * @private
      */
     _handleRequest(message, res, client) {
