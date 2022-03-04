@@ -94,10 +94,10 @@ Bridge | Server.js
 ```
 ### 3.3 Cluster:
 * The Cluster is the file, where the ShardingManager/ClusterManager is created.
-* The ClusterManager connects to the Bridge and requests the Sharddata and it also proceeds the requests from the Bridge.
+* The ClusterManager connects to the Bridge and requests the ShardData and it also proceeds the requests from the Bridge.
 * The ClusterManager spawns Processes (aka Shard in Djs)(aka Cluster here), which contains Internal Shards
 * For having 1 InternalShard per Process, the `shardsPerCluster` has to be `1` on the Bridge Options.
-* The ClusterFile can be started at any time with `node Cluster.js` and it will receive the appropriated Shardlist and finally spawn them
+* The ClusterFile can be started at any time with `node Cluster.js` and it will receive the appropriated ShardList and finally spawn them
 * **This File will be hosted on your wished Machines with the bot.js file and your code**
 
 Cluster | Cluster.js
@@ -149,7 +149,7 @@ const client = new Discord.Client({
 client.cluster = new Cluster.Client(client); 
 
 const {Shard}= require('discord-cross-hosting');
-client.machine = new Shard(client.cluster); // Initalize Cluster
+client.machine = new Shard(client.cluster); // Initialize Cluster
 
 client.on('ready', () => {
 	client.machine.broadcastEval(`this.guilds.cache.size`).then(results => {
@@ -455,14 +455,14 @@ client.cluster.on('message', (message) => {
 	if(!message._sRequest) return;
     if(message.guildId && !message.eval){
 		const guild = client.guilds.cache.get(message.guildId);
-		const customguild = {};
-		customguild.id = guild.id;
-		customguild.name = guild.name;
-		customguild.icon = guild.icon;
-		customguild.ownerId = guild.ownerId;
-		customguild.roles = [...guild.roles.cache.values()];
-		customguild.channels = [...guild.channels.cache.values()];
-		message.reply({data: customguild});
+		const customGuild = {};
+		customGuild.id = guild.id;
+		customGuild.name = guild.name;
+		customGuild.icon = guild.icon;
+		customGuild.ownerId = guild.ownerId;
+		customGuild.roles = [...guild.roles.cache.values()];
+		customGuild.channels = [...guild.channels.cache.values()];
+		message.reply({data: customGuild});
 	}
 })
 
