@@ -294,7 +294,7 @@ class BridgeServer extends Server {
      * @return {array} shardClusterList - The shardClusterList, which should be spaned on the MachineClient's
      */
     async initalizeShardData() {
-        if (this.totalShards === 'auto' && !this.shardList) {
+        if (this.totalShards === 'auto' && this.shardList?.length === 0) {
             if (!this.token)
                 throw new Error(
                     'CLIENT_MISSING_OPTION',
