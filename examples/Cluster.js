@@ -1,4 +1,6 @@
 const { Client } = require('discord-cross-hosting');
+const Cluster = require('discord-hybrid-sharding');
+
 const client = new Client({
     agent: 'bot',
     host: 'localhost',
@@ -13,7 +15,6 @@ client.on('ready', () => {
     console.log('Client is ready');
 });
 
-const Cluster = require('discord-hybrid-sharding');
 let { token } = require('./config.json');
 const manager = new Cluster.Manager(`${__dirname}/bot.js`, {
     totalShards: 2,
@@ -23,7 +24,7 @@ const manager = new Cluster.Manager(`${__dirname}/bot.js`, {
 manager.on('clusterCreate', cluster => console.log(`Launched Cluster ${cluster.id}`));
 manager.on('debug', console.log);
 
-///Request ShardData from the Bridge
+// Request ShardData from the Bridge
 client
     .requestShardData()
     .then(e => {
@@ -35,16 +36,16 @@ client
     })
     .catch(e => console.log(e));
 
-//Listen to the Manager Events
+// Listen to the Manager Events
 client.listen(manager);
 
 client.on('bridgeMessage', message => {
-    if (!message._sCustom) return; //If message is a Internal Message
+    if (!message._sCustom) return; // If message is a Internal Message
     console.log(message);
 });
 
 client.on('bridgeRequest', message => {
-    if (!message._sCustom && !message._sRequest) return; //If message is a Internal Message
+    if (!message._sCustom && !message._sRequest) return; // If message is a Internal Message
     console.log(message);
     if (message.ack) return message.reply({ message: 'I am alive!' });
     message.reply({ data: 'Hello World' });
