@@ -11,6 +11,15 @@ The first package which allows `broadcastEval()` over cross-hosted machines and 
 - Support for other connected services such as dashboards.
 - Super fast IPC with `.reply`, `.send`, `.request` options.
 
+### Featured by Discord Creators
+[Private Community for Verified Bot Developers. ](https://discord.gg/R3hPevRtUV)
+[Meet new big bot and small bot developers and have a nice exchange...](https://discord.gg/R3hPevRtUV)
+<p>
+<a href="https://discord.gg/R3hPevRtUV">
+<img src="https://media.discordapp.net/attachments/980770619161448489/982938274677018624/banner.png?width=320&height=80">
+</a>
+</p> 
+
 ### See below for the Guide
 
 **If you need help feel free to join our <a href="https://discord.gg/YTdNBHh">discord server</a>. We will provide you all help ☺**
