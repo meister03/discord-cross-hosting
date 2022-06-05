@@ -133,9 +133,9 @@ class BridgeClient extends Client {
             message.type = messageType.GUILD_DATA_RESPONSE;
             // Find Shard
 
-            if (message.options.shard) {
+            if (!isNaN(message.options.shard)) {
                 const findCluster = [...this.manager.clusters.values()].find(i =>
-                    i.shardlist[0].includes(message.options.shard),
+                    i.shardList[0].includes(message.options.shard),
                 );
                 message.options.cluster = findCluster ? findCluster.id : 0;
                 // console.log(`Guild Data Cluster Request: ${message.options.cluster}`)
