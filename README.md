@@ -44,6 +44,7 @@ npm i discord-hybrid-sharding@latest
 - [6. Custom Cluster List Parsing with `.parseClusterList`](#6-custom-cluster-list-parsing-with-parseclusterlist)
 - [7. Api References:](#7-temporary-api-references)
 - [8. Example](#8-example)
+- [9. Cache Server (Experimental)]
 
 ## 1. How does it work?
 For ensuring a fast, reliable and secure Connection, where you can also send a ton of Data, followed to our decision that we changed to a TCP-Server. This opens up the opportunity to connect all your services to the same Server.

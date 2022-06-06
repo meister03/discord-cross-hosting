@@ -5,4 +5,6 @@ module.exports = {
     IPCMessage: require('./Structures/IPCMessage.js').IPCMessage,
     BaseMessage: require('./Structures/IPCMessage.js').BaseMessage,
     Constants: require('./Utils/Constants.js'),
+    CacheServer: require('./Plugins/CacheServer/CacheServer.js'),
+    CacheClient: require('./Plugins/CacheServer/CacheClient.js'),
 };

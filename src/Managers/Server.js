@@ -17,6 +17,13 @@ class BridgeServer extends Server {
         /*********************/
         /*  Options Parsing  */
         /*********************/
+
+         /**
+        * If the Package will be used in standalone mode
+        * @type {boolean}
+        */
+        this.standAlone = options.standAlone ?? false;
+        
         /**
          * The Total Amount of Shards per Clusters
          * @type {number}
@@ -28,7 +35,7 @@ class BridgeServer extends Server {
          * @type {number}
          */
         this.totalShards = options.totalShards || 'auto';
-        if (this.totalShards !== undefined) {
+        if (this.totalShards !== undefined && !this.standAlone) {
             if (this.totalShards !== 'auto') {
                 if (typeof this.totalShards !== 'number' || isNaN(this.totalShards)) {
                     throw new TypeError('CLIENT_INVALID_OPTION', 'Amount of internal shards', 'a number.');
@@ -66,12 +73,6 @@ class BridgeServer extends Server {
          * @type {Array[]}
          */
         this.shardList = options.shardList ?? [];
-
-        /**
-         * If the Package will be used in standalone mode
-         * @type {boolean}
-         */
-        this.standAlone = options.standAlone ?? false;
 
         /**
          * The shardCLusterList, which will be hosted by all Machines
@@ -154,7 +155,7 @@ class BridgeServer extends Server {
         if (!client) return;
         if (client.agent !== 'bot') return this.clients.delete(client.id);
         if (!client.shardList) return this.clients.delete(client.id);
-        this.shardClusterListQueue.push(client.shardList);
+        if(!this.standAlone) this.shardClusterListQueue.push(client.shardList);
         this._debug(
             `[CM => Disconnected][${client.id}] New ShardListQueue: ${JSON.stringify(this.shardClusterListQueue)}`,
         );

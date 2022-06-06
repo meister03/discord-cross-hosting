@@ -16,8 +16,15 @@ exports.messageType = createEnum([
     'GUILD_EVAL_RESPONSE',
     'CLIENT_DATA_REQUEST',
     'CLIENT_DATA_RESPONSE',
+    'SERVER_CACHE_SET_REQUEST',
+    'SERVER_CACHE_SET_RESPONSE',
+    'SERVER_CACHE_GET_REQUEST',
+    'SERVER_CACHE_GET_RESPONSE',
+    'SERVER_CACHE_DELETE_REQUEST',
+    'SERVER_CACHE_DELETE_RESPONSE',
+    'SERVER_CACHE_CLEAR_REQUEST',
+    'SERVER_CACHE_CLEAR_RESPONSE',
 ]);
-
 // Actually just move this thing to here instead of inside Util (from Discord V13)
 exports.DefaultOptions = {
     http: {

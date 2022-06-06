@@ -5,6 +5,7 @@
     "main": "./src/index.js",
     "types": "./typings/index.d.ts",
     "dependencies": {
+        "discordeno": "^13.0.0-rc45",
         "net-ipc": "^2.0.1",
         "node-fetch": "^2.6.1"
     },
