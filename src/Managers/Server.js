@@ -217,7 +217,7 @@ class BridgeServer extends Server {
             const promises = [];
             for (const client of clients) promises.push(client.request(message, message.options?.timeout));
             Promise.all(promises).then(e => res(e).catch(_e => null));
-            // return res.send(responses);
+            return;
         }
 
         // Shard Data Request
