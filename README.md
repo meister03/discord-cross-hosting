@@ -44,7 +44,7 @@ npm i discord-hybrid-sharding@latest
 - [6. Custom Cluster List Parsing with `.parseClusterList`](#6-custom-cluster-list-parsing-with-parseclusterlist)
 - [7. Api References:](#7-temporary-api-references)
 - [8. Example](#8-example)
-- [9. Cache Server (Experimental)]
+- [9. Cache Server (Experimental)](#9-cache-server)
 
 ## 1. How does it work?
 For ensuring a fast, reliable and secure Connection, where you can also send a ton of Data, followed to our decision that we changed to a TCP-Server. This opens up the opportunity to connect all your services to the same Server.
@@ -528,6 +528,66 @@ app.get('/guild/:id', async function (req, res) {
         .catch(e => res.send(e));
 });
 ```
+
+## 9. Cache Server:
+The cache server is currently a experimental feature. The intention of a cache server is globally storing data on a map and accessing it from every client. The global map can be hosted on a separate bridge or on the same cross-hosting bridge
+
+Bridge:
+```js
+const { Bridge, CacheServer } = require('discord-cross-hosting');
+const { token } = require('./config.json');
+const server = new Bridge({...}); // use existing bridge or create new one a different process and port
+const storage = new CacheServer(server, {
+    path: [
+        {
+            path: 'guilds',
+            maxSize: 100,
+        },
+        {
+            path: 'channels',
+            maxSize: 100,
+        },
+    ],
+});
+
+storage.guilds.cache //Collection Instance
+```
+
+Client:
+```js
+const { Client, CacheClient } = require('discord-cross-hosting');
+const client = new Client({
+    agent: 'cache',
+    host: 'localhost',
+    port: 4423,
+    authToken: 'xxx-auth-token',
+    retries: 360,
+});
+
+const storage = new CacheClient(client, {
+    path: [
+        {
+            path: 'guilds',
+            maxSize: 100,
+        },
+        {
+            path: 'channels',
+            maxSize: 100,
+        },
+    ],
+});
+
+storage.cache.guilds
+    .set('all', [1, 2, 3]) //set cache
+    .then(e => {
+        storage.cache.guilds.get('all')  //get cache demo
+            .then(console.log)
+            .catch(e => null);
+    })
+    .catch(e => console.log(e));
+
+```
+
 
 **Have fun and feel free to Contribute/Suggest or Contact me on my [Discord server](https://discord.gg/QMTwmMZ) or per DM on Meister#9667**
 
