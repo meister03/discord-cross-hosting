@@ -18,12 +18,12 @@ class BridgeServer extends Server {
         /*  Options Parsing  */
         /*********************/
 
-         /**
-        * If the Package will be used in standalone mode
-        * @type {boolean}
-        */
+        /**
+         * If the Package will be used in standalone mode
+         * @type {boolean}
+         */
         this.standAlone = options.standAlone ?? false;
-        
+
         /**
          * The Total Amount of Shards per Clusters
          * @type {number}
@@ -155,7 +155,7 @@ class BridgeServer extends Server {
         if (!client) return;
         if (client.agent !== 'bot') return this.clients.delete(client.id);
         if (!client.shardList) return this.clients.delete(client.id);
-        if(!this.standAlone) this.shardClusterListQueue.push(client.shardList);
+        if (!this.standAlone) this.shardClusterListQueue.push(client.shardList);
         this._debug(
             `[CM => Disconnected][${client.id}] New ShardListQueue: ${JSON.stringify(this.shardClusterListQueue)}`,
         );
@@ -217,7 +217,9 @@ class BridgeServer extends Server {
             message.type = messageType.SERVER_BROADCAST_REQUEST;
             const promises = [];
             for (const client of clients) promises.push(client.request(message, message.options?.timeout));
-            Promise.all(promises).then(e => res(e).catch(_e => null));
+            Promise.all(promises)
+                .then(e => res(e))
+                .catch(_e => null);
             return;
         }
 

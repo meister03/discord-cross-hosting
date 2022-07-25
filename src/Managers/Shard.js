@@ -21,12 +21,11 @@ class ShardClient {
     async broadcastEval(script, options = {}) {
         if (!script || (typeof script !== 'string' && typeof script !== 'function'))
             throw new Error('Script for BroadcastEvaling must be a valid String or Function!');
-        options.usev13 = false;
-        script = typeof script === 'function' ? `(${script})(this, ${JSON.stringify(options.context)})` : script;
+        //options.usev13 = false;
+        options.script =
+            typeof script === 'function' ? `(${script})(this, ${JSON.stringify(options.context)})` : script;
         // console.log(`this.netipc.broadcastEval('${script}', ${JSON.stringify(options)})`);
-        return this.shard
-            .evalOnManager(`this.netipc.broadcastEval('${script}', ${JSON.stringify(options)})`)
-            .catch(console.log);
+        return this.shard.evalOnManager(`this.netipc.broadcastEval('', ${JSON.stringify(options)})`).catch(console.log);
     }
 
     /**
