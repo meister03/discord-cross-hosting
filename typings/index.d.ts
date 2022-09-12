@@ -128,6 +128,8 @@ declare module 'discord-cross-hosting' {
          * @param options.options The options of net-ipc
          *
          */
+        clients: Map<string,BridgeClient & {shardList?: number[][]}>;
+        totalShards: number | "auto";
         constructor(options: ClientOptions);
 
         public on<T extends keyof ClientEvent>(event: T, listener: (...args: ClientEvent[T]) => any): this;
@@ -348,7 +350,7 @@ declare module 'discord-cross-hosting' {
 
     export class CacheClient {
         [x: string]: RemoteClientCache;
-        constructor(client: Bridge,storageOptions: CacheStorageOptions)
+        constructor(client: Client,storageOptions: CacheStorageOptions)
     }
 
     export class RemoteServerCache extends Collection<any, any>{
