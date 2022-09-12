@@ -1,6 +1,6 @@
-import { Collection } from "discordeno";
 
 declare module 'discord-cross-hosting' {
+    import { Collection } from "discordeno";
     import { EventEmitter } from 'events';
     import { TlsOptions, ConnectionOptions } from 'tls';
     import { ServerOpts, ConnectOpts } from 'net';
@@ -351,11 +351,11 @@ declare module 'discord-cross-hosting' {
         constructor(client: Bridge,storageOptions: CacheStorageOptions)
     }
 
-    export class RemoteServerCache extends Collection{
+    export class RemoteServerCache extends Collection<any, any>{
         constructor(server: CacheServer, path: string[])
     }
 
-    export class RemoteClientCache extends Collection{
+    export class RemoteClientCache{
         constructor(client: CacheClient, path: string[])
         public set(key:any, value:any): Promise<{sucess: true}>
         public get(key: any): Promise<any> | Promise<{error: string}>
