@@ -1,3 +1,5 @@
+import { Collection } from "discordeno";
+
 declare module 'discord-cross-hosting' {
     import { EventEmitter } from 'events';
     import { TlsOptions, ConnectionOptions } from 'tls';
@@ -333,4 +335,32 @@ declare module 'discord-cross-hosting' {
          */
         public reply(message: { [key: string]: any }): Promise<any>;
     }
+
+
+    export type CacheStorageOptions = {
+        path: Array<{ path: string, maxSize: number }> 
+    };
+    
+    export class CacheServer {
+        [x: string]: RemoteServerCache;
+        constructor(server: Bridge,storageOptions: CacheStorageOptions)
+    }
+
+    export class CacheClient {
+        [x: string]: RemoteClientCache;
+        constructor(client: Bridge,storageOptions: CacheStorageOptions)
+    }
+
+    export class RemoteServerCache extends Collection{
+        constructor(server: CacheServer, path: string[])
+    }
+
+    export class RemoteClientCache extends Collection{
+        constructor(client: CacheClient, path: string[])
+        public set(key:any, value:any): Promise<{sucess: true}>
+        public get(key: any): Promise<any> | Promise<{error: string}>
+        public delete(key:any): Promise<{sucess: true}>
+        public clear(): Promise<{sucess: true}>
+    }
+    
 }
