@@ -1,0 +1,58 @@
+{
+    "name": "discord-cross-hosting",
+    "version": "2.3.2",
+    "description": "The first package which allows broadcastEval() over cross-hosted machines and efficient machine & shard management.",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "dependencies": {
+        "@types/node": "^18.7.18",
+        "discordeno": "^13.0.0-rc45",
+        "net-ipc": "^2.0.1",
+        "node-fetch": "^2.6.1"
+    },
+    "scripts": {
+        "lint": "eslint . --ext .js",
+        "lint:fix": "eslint . --fix --ext .js",
+        "format": "prettier --check .",
+        "format:fix": "prettier --write .",
+        "start:bridge": "node test/server.js",
+        "start:cluster": "node test/cluster.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/meister03/discord-cross-hosting.git"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "keywords": [
+        "discord",
+        "bots",
+        "discord-cross-hosting",
+        "discord-sharding",
+        "discord-clustering",
+        "cluster",
+        "machine-broadcast",
+        "cross-hosting",
+        "vertical-scaling",
+        "multiply-machines",
+        "framework"
+    ],
+    "author": "meister03",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/meister03/discord-cross-hosting/issues"
+    },
+    "homepage": "https://github.com/meister03/discord-cross-hosting#readme",
+    "devDependencies": {
+        "discord-hybrid-sharding": "github:meister03/discord-hybrid-sharding",
+        "discord.js": "^13.3.1",
+        "eslint": "^8.10.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-jsdoc": "^37.9.6",
+        "eslint-plugin-prettier": "^4.0.0",
+        "express": "^4.17.1",
+        "prettier": "^2.5.1",
+        "typescript": "^4.8.3"
+    }
+}
