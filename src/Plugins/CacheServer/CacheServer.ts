@@ -29,7 +29,7 @@ export class CacheServer {
             }
             if (message._type === messageType.SERVER_CACHE_GET_REQUEST) {
                 return this._handleCacheGet(message, res);
-            }
+            } 
             if (message._type === messageType.SERVER_CACHE_DELETE_REQUEST) {
                 return this._handleCacheDelete(message, res);
             }
