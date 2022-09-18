@@ -116,7 +116,7 @@ export class Client extends NetIPCClient {
     private _handleMessage(message: RawMessage) {
         if (typeof message === 'string') message = JSON.parse(message);
         if (message?._type === undefined) return;
-        if(!this.manager) return;
+        
 
         if (message._type === messageType.SHARDLIST_DATA_UPDATE) {
             if (!this.rollingRestarts) return;
