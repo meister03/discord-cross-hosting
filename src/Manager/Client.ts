@@ -85,8 +85,7 @@ export class Client extends NetIPCClient {
 
         this.on('ready', this._handleReady.bind(this));
 
-        // @ts-expect-error
-        this.on('message', this._handleMessage.bind(this));
+        this.on('message', this._handleMessage.bind(this) as any);
          // @ts-expect-error
         this.on('request', this._handleRequest.bind(this));
     }
@@ -115,7 +114,7 @@ export class Client extends NetIPCClient {
      */
     private _handleMessage(message: RawMessage) {
         if (typeof message === 'string') message = JSON.parse(message);
-        if (message?._type === undefined) return;
+        if (message._type === undefined) return;
         
 
         if (message._type === messageType.SHARDLIST_DATA_UPDATE) {

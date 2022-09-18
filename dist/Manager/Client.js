@@ -43,7 +43,7 @@ class Client extends net_ipc_1.Client {
     _handleMessage(message) {
         if (typeof message === 'string')
             message = JSON.parse(message);
-        if ((message === null || message === void 0 ? void 0 : message._type) === undefined)
+        if (message._type === undefined)
             return;
         if (message._type === shared_1.messageType.SHARDLIST_DATA_UPDATE) {
             if (!this.rollingRestarts)
