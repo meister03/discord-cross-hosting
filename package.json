@@ -5,10 +5,9 @@
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "dependencies": {
-        "@types/node": "^18.7.18",
+        "discord-hybrid-sharding": "github:meister03/discord-hybrid-sharding",
         "discordeno": "^13.0.0-rc45",
-        "net-ipc": "^2.0.1",
-        "node-fetch": "^2.6.1"
+        "net-ipc": "^2.0.1"
     },
     "scripts": {
         "lint": "eslint . --ext .js",
@@ -45,7 +44,7 @@
     },
     "homepage": "https://github.com/meister03/discord-cross-hosting#readme",
     "devDependencies": {
-        "discord-hybrid-sharding": "github:meister03/discord-hybrid-sharding",
+        "@types/node": "^18.7.18",
         "discord.js": "^13.3.1",
         "eslint": "^8.10.0",
         "eslint-config-prettier": "^8.5.0",
