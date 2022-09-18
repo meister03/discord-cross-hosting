@@ -1,4 +1,4 @@
-export * from './Manager/Server';
+export * from './Manager/Bridge';
 export * from './Manager/Client';
 export * from './Manager/Shard';
 export * from './Structures/IPCMessage';

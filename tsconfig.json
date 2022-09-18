@@ -1,23 +1,25 @@
-{   
-    "include": ["src/**/*.ts", "index.ts"],
-    "compilerOptions": {
+{
+  "include": ["src/**/*.ts"],
+  "compilerOptions": {
       "outDir": "dist",
       "rootDir": "src",
-      "lib": ["esnext"],
-      "target": "ES5",
+      "lib": ["ES6"],
+      "target": "ES6",
+      "module": "CommonJS",
+      "moduleResolution": "Node",
       "declaration": true,
       "declarationMap": true,
       "composite": false,
       "esModuleInterop": true,
-      "moduleResolution": "Node",
       "skipLibCheck": true,
       "forceConsistentCasingInFileNames": true,
-  
+
       "removeComments": true,
-  
+
+      "allowSyntheticDefaultImports": true,
       "allowUnreachableCode": false,
       "allowUnusedLabels": false,
-  
+
       "noUnusedLocals": true,
       "noImplicitAny": true,
       "noImplicitOverride": true,
@@ -26,12 +28,13 @@
       "noFallthroughCasesInSwitch": true,
       "noUncheckedIndexedAccess": true,
       "resolveJsonModule": true,
-  
+
       "useUnknownInCatchVariables": false,
-  
+
       "strict": true,
       "strictFunctionTypes": true,
       "strictNullChecks": true,
       "strictBindCallApply": true,
-      "strictPropertyInitialization": true    },
+      "strictPropertyInitialization": true
+  }
 }

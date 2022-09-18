@@ -1,5 +1,5 @@
 import { RemoteServerCache } from './RemoteServerCache';
-import { Bridge } from '../../Manager/Server';
+import { Bridge } from '../../Manager/Bridge';
 import { RawMessage } from 'discord-hybrid-sharding';
 export declare class CacheServer {
     server: Bridge;

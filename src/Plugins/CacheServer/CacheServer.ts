@@ -1,7 +1,7 @@
 // @ts-check
 import { RemoteServerCache }from './RemoteServerCache';
 import { messageType } from '../../types/shared';
-import { Bridge } from '../../Manager/Server';
+import { Bridge } from '../../Manager/Bridge';
 import { RawMessage } from 'discord-hybrid-sharding';
 import { Connection } from 'net-ipc';
 export class CacheServer {

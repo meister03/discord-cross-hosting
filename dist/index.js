@@ -14,7 +14,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-__exportStar(require("./Manager/Server"), exports);
+__exportStar(require("./Manager/Bridge"), exports);
 __exportStar(require("./Manager/Client"), exports);
 __exportStar(require("./Manager/Shard"), exports);
 __exportStar(require("./Structures/IPCMessage"), exports);

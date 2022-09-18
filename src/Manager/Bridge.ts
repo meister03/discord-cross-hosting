@@ -81,7 +81,7 @@ export class Bridge extends Server {
     clients: Map<string, BridgeClient>;
     constructor(options: BridgeOptions) {
         super(options);
-        if (!options) throw new Error('Minimum Options have not been provided, totalShards, totalMachines, authToken are missing.')
+        //if (!options) throw new Error('Minimum Options have not been provided, totalShards, totalMachines, authToken are missing.')
 
         this.authToken = options.authToken;
         if (!this.authToken) throw new Error('MACHINE_MISSING_OPTION - authToken must be provided - String');
