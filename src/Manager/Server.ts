@@ -20,7 +20,7 @@ export interface BridgeOptions extends ServerOptions {
     /**
     * The Total Amount of Shards
     */
-    totalShards: number | 'auto';
+    totalShards?: number | 'auto';
     /**
     * The Total Amount of Machines
     */

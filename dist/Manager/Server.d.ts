@@ -6,7 +6,7 @@ export interface BridgeOptions extends ServerOptions {
     authToken: string;
     standAlone?: Boolean;
     shardsPerCluster?: number;
-    totalShards: number | 'auto';
+    totalShards?: number | 'auto';
     totalMachines: number;
     token?: string;
     shardList?: number[];
