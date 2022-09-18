@@ -1,7 +1,7 @@
 import { Client } from "../../Manager/Client";
 
 import { RemoteClientCache } from './RemoteClientCache';
-class CacheClient {
+export class CacheClient {
     client: Client;
     path: { path: string; maxSize: number; }[];
     cache: ReturnType<CacheClient['_buildCachePaths']>;
@@ -26,4 +26,3 @@ class CacheClient {
         return cache;
     }
 }
-module.exports = CacheClient;

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CacheClient = void 0;
 var RemoteClientCache_1 = require("./RemoteClientCache");
 var CacheClient = (function () {
     function CacheClient(client, options) {
@@ -18,4 +19,4 @@ var CacheClient = (function () {
     };
     return CacheClient;
 }());
-module.exports = CacheClient;
+exports.CacheClient = CacheClient;
