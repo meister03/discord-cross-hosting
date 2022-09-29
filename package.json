@@ -6,7 +6,7 @@
     "types": "./dist/index.d.ts",
     "dependencies": {
         "discord-hybrid-sharding": "github:meister03/discord-hybrid-sharding",
-        "discordeno": "^13.0.0-rc45",
+        "discordeno": "^16.0.1",
         "net-ipc": "^2.0.1"
     },
     "scripts": {
