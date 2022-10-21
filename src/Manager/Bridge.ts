@@ -2,7 +2,7 @@ import { Connection, Server, ServerOptions } from 'net-ipc';
 
 import { IPCMessage, RawMessage } from '../Structures/IPCMessage';
 import { chunkArray, evalOptions, fetchRecommendedShards, shardIdForGuildId } from 'discord-hybrid-sharding';
-import { BridgeEvents, BroadcastEvalOptions, messageType} from '../types/shared';
+import { BridgeEvents, BroadcastEvalOptions, messageType } from '../types/shared';
 
 export interface BridgeOptions extends ServerOptions {
     /**
@@ -38,6 +38,7 @@ export interface BridgeOptions extends ServerOptions {
 export interface BridgeClient extends Connection {
     shardList: number[];
     agent: string;
+    bot: boolean;
     authToken: string;
 }
 
@@ -156,13 +157,14 @@ export class Bridge extends Server {
     /**
      * Handles the Connection of new Clients
      */
-    private _handleConnect(client: Connection, initialData: { authToken?: string, agent?: string }) {
+    private _handleConnect(client: Connection, initialData: { authToken?: string, agent?: string, bot?: boolean }) {
         if (initialData?.authToken !== this.authToken) return client.close('ACCESS DENIED').catch(e => console.log(e));
 
         const newClient: BridgeClient = Object.assign(client, {
             authToken: initialData.authToken,
             shardList: [],
-            agent: (initialData.agent || 'none')
+            agent: (initialData.agent || 'none'),
+            bot: initialData.bot ?? false
         });
 
         this.clients.set(client.id as string, newClient);
@@ -175,7 +177,7 @@ export class Bridge extends Server {
     private _handleDisconnect(client: Connection, _reason: string) {
         const cachedClient = this.clients.get(client.id);
         if (!cachedClient) return;
-        if (cachedClient.agent !== 'bot') return this.clients.delete(cachedClient.id);
+        if (!cachedClient.bot) return this.clients.delete(cachedClient.id);
         if (!cachedClient.shardList) return this.clients.delete(cachedClient.id);
         if (!this.standAlone) this.shardClusterListQueue.push(cachedClient.shardList);
         this._debug(
@@ -191,13 +193,13 @@ export class Bridge extends Server {
         if (typeof message === 'string') message = JSON.parse(message);
         if (message?._type === undefined) return;
         const client = this.clients.get(_client.id);
-        if(!client) return;
+        if (!client) return;
 
         if (message._type === messageType.CLIENT_SHARDLIST_DATA_CURRENT) {
             if (!this.shardClusterListQueue[0]) return;
             client.shardList = message.shardList;
             this.clients.set(client.id, client);
- 
+
             const checkShardListPositionInQueue = this.shardClusterListQueue.findIndex(
                 x => JSON.stringify(x) === JSON.stringify(message.shardList),
             );
@@ -220,15 +222,15 @@ export class Bridge extends Server {
     /**
      * Handles the Request Event of the Bridge and executes Requests based on the Message
      */
-    private _handleRequest(message: RawMessage, res: (data: any)=> Promise<void>, _client: Connection) {
+    private _handleRequest(message: RawMessage, res: (data: any) => Promise<void>, _client: Connection) {
         if (typeof message === 'string') message = JSON.parse(message);
         if (message?._type === undefined) return;
         const client = this.clients.get(_client.id);
-        if (!client) return res({error: 'Client not registered on Bridges'});
+        if (!client) return res({ error: 'Client not registered on Bridges' });
         // BroadcastEval
         if (message._type === messageType.CLIENT_BROADCAST_REQUEST) {
             const clients = Array.from(this.clients.values()).filter(
-                message.options?.agent ? c => message.options.agent.includes(c.agent) : c => c.agent === 'bot',
+                message.options?.agent ? c => message.options.agent.includes(c.agent) : c => c.bot,
             );
 
             message._type = messageType.SERVER_BROADCAST_REQUEST;
@@ -286,8 +288,8 @@ export class Bridge extends Server {
 
         // Guild Data Request
         if (message._type === messageType.GUILD_DATA_REQUEST) {
-            if(!message.guildId) return res({error: 'Missing guildId for request to Guild'});
-            type newMessage = RawMessage & {guildId: string};
+            if (!message.guildId) return res({ error: 'Missing guildId for request to Guild' });
+            type newMessage = RawMessage & { guildId: string };
             this.requestToGuild(message as newMessage)
                 .then(e => res(e))
                 .catch(e => res({ ...message, error: e }));
@@ -396,7 +398,7 @@ export class Bridge extends Server {
             throw new Error('Script for BroadcastEvaling has not been provided or must be a valid String!');
         script = typeof script === 'function' ? `(${script})(this, ${JSON.stringify(options.context)})` : script;
 
-        if(!options) options = {filter: undefined}
+        if (!options) options = { filter: undefined }
 
         const message = { script, options, _type: messageType.SERVER_BROADCAST_REQUEST };
         const clients = Array.from(this.clients.values()).filter(options.filter || (c => c.agent === 'bot'));
@@ -415,7 +417,7 @@ export class Bridge extends Server {
      *   .then(result => console.log(result)) // hi
      *   .catch(console.error);
      */
-    public async requestToGuild(message: RawMessage & {guildId: string}, options?: evalOptions) {
+    public async requestToGuild(message: RawMessage & { guildId: string }, options?: evalOptions) {
         // console.log(message)
         if (!message?.guildId) throw new Error('GuildID has not been provided!');
         const internalShard = shardIdForGuildId(message.guildId, this.totalShards);
@@ -441,7 +443,7 @@ export class Bridge extends Server {
      * <info>This is usually not necessary to manually specify.</info>
      * @returns  returns the log message
      */
-    private _debug(message: string, options?: {cm: Boolean}) {
+    private _debug(message: string, options?: { cm: Boolean }) {
         let log;
         if (options?.cm) {
             log = `[Bridge => CM] ` + message;
