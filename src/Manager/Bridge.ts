@@ -367,7 +367,7 @@ export class Bridge extends Server {
         this._debug(`Created shardClusterList: ${JSON.stringify(this.shardClusterList)}`);
 
         // Update Shard Data:
-        const clients = Array.from(this.clients.values()).filter(c => c.agent === 'bot');
+        const clients = Array.from(this.clients.values()).filter(c => c.bot);
         const message = {
             totalShards: this.totalShards,
             shardClusterList: this.shardClusterList,
@@ -401,7 +401,7 @@ export class Bridge extends Server {
         if (!options) options = { filter: undefined }
 
         const message = { script, options, _type: messageType.SERVER_BROADCAST_REQUEST };
-        const clients = Array.from(this.clients.values()).filter(options.filter || (c => c.agent === 'bot'));
+        const clients = Array.from(this.clients.values()).filter(options.filter || (c => c.bot));
         const promises = [];
         for (const client of clients) promises.push(client.request(message, options.timeout));
         return Promise.all(promises);
