@@ -176,7 +176,7 @@ export class Bridge extends Server {
         const cachedClient = this.clients.get(client.id);
         if (!cachedClient) return;
         if (cachedClient.agent !== 'bot') return this.clients.delete(cachedClient.id);
-        if (!cachedClient.shardList) return this.clients.delete(cachedClient.id);
+        if (!cachedClient.shardList || !cachedClient.shardList.length) return this.clients.delete(cachedClient.id);
         if (!this.standAlone) this.shardClusterListQueue.push(cachedClient.shardList);
         this._debug(
             `[CM => Disconnected][${cachedClient.id}] New ShardListQueue: ${JSON.stringify(this.shardClusterListQueue)}`,
