@@ -61,9 +61,8 @@ export interface ClientEvents {
     debug: [message: string];
     request: [request: any, res: (d: any) => Promise<void>];
 }
-interface BridgeConnection extends Connection {
+export interface BridgeConnection extends Connection {
     agent: string;
     authToken: string;
 }
-export {};
 //# sourceMappingURL=shared.d.ts.map
