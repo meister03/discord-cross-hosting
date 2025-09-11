@@ -29,7 +29,7 @@ export declare class Client extends NetIPCClient {
         timeout?: number;
     }): Promise<any>;
     listen(manager: ClusterManager): ClusterManager & {
-        netipc?: Client | undefined;
+        netipc?: Client;
     };
     broadcastEval(script: string, options?: evalOptions & {
         script?: string;

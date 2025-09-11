@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { Serializable } from 'child_process';
 import { Client } from '../../Manager/Client';
 export declare class RemoteClientCache {
